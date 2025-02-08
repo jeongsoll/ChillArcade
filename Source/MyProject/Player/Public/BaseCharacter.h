@@ -24,10 +24,16 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Mesh)
-	USkeletalMeshComponent *PlayerSkeletalMesh;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Actor)
-	class ASendArrInfoManager* SendArrInfoManager;
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	class USendArrInfoManagerComponent* SendArrComponent;
+	
+	UFUNCTION(BlueprintCallable)
+	void SetBalloon();
+	UFUNCTION(BlueprintCallable)
+	void CheckLocation();
+	UFUNCTION(BlueprintCallable)
+	void UseEatItem();
+	UFUNCTION(BlueprintCallable)
+	void UseEquipItem();
 };
