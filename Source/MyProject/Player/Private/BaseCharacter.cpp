@@ -2,6 +2,8 @@
 
 
 #include "BaseCharacter.h"
+#include "ArrLocation.h"
+#include "BaseWaterBalloon.h"
 #include "LogUtils.h"
 #include "SendArrInfoManagerComponent.h"
 
@@ -43,21 +45,41 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 void ABaseCharacter::SetBalloon()
 {
-	const int X = FMath::FloorToInt(GetActorLocation().X / 100);
-	const int Y = FMath::FloorToInt(GetActorLocation().Y / 100);
+	// 설지할 수 있는지 확인
+
+	FArrLocation BalloonLoc;
+	BalloonLoc.X = FMath::FloorToInt(GetActorLocation().X / 100);
+	BalloonLoc.Y = FMath::FloorToInt(GetActorLocation().Y / 100);
 
 	if (SendArrComponent) {
-		SendArrComponent->SendBalloonLocation(X , Y);
+		SendArrComponent->SendBalloonLocation(BalloonLoc);
+	}
+
+	
+	// 스폰 예시
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride =
+		ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	
+	ABaseWaterBalloon* NewBalloon = GetWorld()->SpawnActor<ABaseWaterBalloon>(
+		ABaseWaterBalloon::StaticClass() ,
+		GetActorTransform() ,
+		SpawnParams
+	);
+	
+	if (NewBalloon) {
+		NewBalloon->Initialize(BalloonLoc);
 	}
 }
 
 void ABaseCharacter::CheckLocation()
 {
-	const int X = FMath::FloorToInt(GetActorLocation().X / 100);
-	const int Y = FMath::FloorToInt(GetActorLocation().Y / 100);
+	FArrLocation PlayerLoc;
+	PlayerLoc.X = FMath::FloorToInt(GetActorLocation().X / 100);
+	PlayerLoc.Y = FMath::FloorToInt(GetActorLocation().Y / 100);
 
 	if (SendArrComponent) {
-		SendArrComponent->SendPlayerLocation(X , Y);
+		SendArrComponent->SendPlayerLocation(PlayerLoc);
 	}
 }
 

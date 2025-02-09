@@ -2,7 +2,7 @@
 
 
 #include "SendArrInfoManagerComponent.h"
-
+#include "ArrLocation.h"
 #include "LogUtils.h"
 
 
@@ -36,13 +36,28 @@ void USendArrInfoManagerComponent::TickComponent(float DeltaTime , ELevelTick Ti
 	// ...
 }
 
-void USendArrInfoManagerComponent::SendPlayerLocation(int X , int Y)
+void USendArrInfoManagerComponent::SendPlayerLocation(struct FArrLocation Loc)
 {
-	LogUtils::Log("Location Array : ", X, Y);
+	LogUtils::Log("Location Array : ", Loc.X, Loc.Y);
 }
 
-void USendArrInfoManagerComponent::SendBalloonLocation(int X, int Y)
+void USendArrInfoManagerComponent::SendBalloonLocation(struct FArrLocation Loc)
 {
-	LogUtils::Log("Balloon Array : ", X, Y);
+	LogUtils::Log("Balloon Array : ", Loc.X, Loc.Y);
 }
+
+void USendArrInfoManagerComponent::SendBalloonExplodeLocation(TArray<struct FArrLocation> Loc)
+{
+	for (const auto& [X, Y] : Loc) {
+		LogUtils::Log("Explode Location : ", X, Y);
+	}
+}
+
+void USendArrInfoManagerComponent::SendRemoveLocation(TArray<struct FArrLocation> Loc)
+{
+	for (const auto& [X, Y] : Loc) {
+		LogUtils::Log("Remove Location : ", X, Y);
+	}
+}
+
 

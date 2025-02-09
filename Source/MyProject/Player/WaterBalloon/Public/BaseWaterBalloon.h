@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ArrLocation.h"
 #include "GameFramework/Actor.h"
 #include "BaseWaterBalloon.generated.h"
 
@@ -21,4 +22,22 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
+
+	void Initialize(const struct FArrLocation& NewLocation);
+	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
+	class USendArrInfoManagerComponent* SendArrComponent;
+
+	UPROPERTY()
+	FTimerHandle ExplodeTimerHandle;
+	
+	UFUNCTION(BlueprintCallable)
+	void ExplodeTime();
+	UFUNCTION(BlueprintCallable)
+	void CheckExplodeLocations(struct FArrLocation Loc);
+	UFUNCTION(BlueprintCallable)
+	void CheckRemoveLocations(struct FArrLocation Loc);
+	// UFUNCTION(BlueprintCallable)
+	// void CheckIsInMap(struct FArrLocation Loc);
+	FArrLocation BalloonLocation;
 };

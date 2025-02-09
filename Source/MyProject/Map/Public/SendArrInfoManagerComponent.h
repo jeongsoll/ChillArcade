@@ -6,7 +6,6 @@
 #include "Components/ActorComponent.h"
 #include "SendArrInfoManagerComponent.generated.h"
 
-
 UCLASS(ClassGroup=(Custom) , meta=(BlueprintSpawnableComponent))
 class MYPROJECT_API USendArrInfoManagerComponent : public UActorComponent {
 	GENERATED_BODY()
@@ -25,8 +24,13 @@ public:
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 
 	UFUNCTION(BlueprintCallable)
-	void SendPlayerLocation(int X , int Y);
+	void SendPlayerLocation(struct FArrLocation Loc);
 	UFUNCTION(BlueprintCallable)
-	void SendBalloonLocation(int X , int Y);
+	void SendBalloonLocation(struct FArrLocation Loc);
+	UFUNCTION(BlueprintCallable)
+	void SendBalloonExplodeLocation(TArray<struct FArrLocation> Loc);
+	UFUNCTION(BlueprintCallable)
+	void SendRemoveLocation(TArray<struct FArrLocation> Loc);
+	
 	
 };
