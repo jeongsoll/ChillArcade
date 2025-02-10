@@ -24,8 +24,8 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	// 그리드 x축, y축 지정할 변수
-	int8 gridSizeX = 15;
-	int8 gridSizeY = 17;
+	int8 gridSizeX = 17;
+	int8 gridSizeY = 15;
 
 	// 얼마나 떨어질지 정하는 변수
 	int8 landSpacing = 100;

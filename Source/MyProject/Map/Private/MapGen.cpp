@@ -36,14 +36,14 @@ void AMapGen::SetGrid(int8 gridX, int8 gridY)
 {
 	UWorld* world = GetWorld();
 	//그리드 반복문으로 생성
-	for (int y = 0; y < gridY; ++y)
+	for (int x = 0; x < gridX; ++x)
 	{
-		for (int x = 0; x < gridX; ++x)
+		for (int y = 0; y < gridY; ++y)
 		{
 			UE_LOG(LogTemp, Warning, TEXT("map[%d][%d] = %d"), y, x, map[y][x]);
 		
 			//x,y값이 증가할 때 landSpacing을 곱해서 landSpacing만큼 떨어트리는 변수
-			FVector location = GetActorLocation() + FVector(y * landSpacing, x * landSpacing, 0.0f);
+			FVector location = GetActorLocation() + FVector(x * landSpacing, y * landSpacing, 0.0f);
 			switch(map[y][x])
 			{
 				case 0:
