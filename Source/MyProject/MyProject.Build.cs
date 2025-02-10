@@ -14,7 +14,13 @@ public class MyProject : ModuleRules
 
 		PublicIncludePaths.AddRange(new string[] {
 			"MyProject/Common/Public",
+			"MyProject/Common/Gamemode/Public",
+			"MyProject/Utility/Public",
 			"MyProject/Player/Public",
+			"MyProject/Player/Controller/Public",
+			"MyProject/Player/WaterBalloon/Public",
+			"MyProject/Widget/Lobby/Public",
+			"MyProject/Widget/WaitRoom/Public",
 			"MyProject/Computer/Public",
 			"MyProject/Map/Public"
 
