@@ -164,14 +164,18 @@ void AMyController::UpdateDirection()
 {
 	TMap<float , FVector> LatestInputs;
 
-	if (bUpPressed)
+	if (bUpPressed) {
 		LatestInputs.Add(LastUpTime , FVector(1 , 0 , 0));
-	if (bDownPressed)
+	}
+	if (bDownPressed) {
 		LatestInputs.Add(LastDownTime , FVector(-1 , 0 , 0));
-	if (bRightPressed)
+	}
+	if (bRightPressed) {
 		LatestInputs.Add(LastRightTime , FVector(0 , 1 , 0));
-	if (bLeftPressed)
+	}
+	if (bLeftPressed) {
 		LatestInputs.Add(LastLeftTime , FVector(0 , -1 , 0));
+	}
 
 	if (LatestInputs.Num() > 0) {
 		TArray<float> Times;
