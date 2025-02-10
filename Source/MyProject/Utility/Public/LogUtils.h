@@ -13,7 +13,6 @@ public:
 			GEngine->AddOnScreenDebugMessage(-1, 5.0f, FColor::Magenta, Message);
 		}
 	}
-
 	// LogUtils::Log("Speed", SpeedA, SpeedB, SpeedC)  --> Speed : 10.0, 20.0, 30.0
 	template<typename... Args>
 	static void Log(const FString& Prefix, Args... args) {
