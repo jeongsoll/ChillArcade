@@ -36,7 +36,22 @@ public:
 	void UseEatItem();
 	UFUNCTION(BlueprintCallable)
 	void UseEquipItem();
+	UFUNCTION(BlueprintCallable)
+	void SetRide(TSubclassOf<class ABaseRide> Ride);
+	UFUNCTION(BlueprintCallable)
+	bool CheckRide();
+	UFUNCTION(BlueprintCallable)
+	void RemoveRide();
+	
+	UPROPERTY(BlueprintReadWrite)
+	TSubclassOf<ABaseRide> EquippedRideClass;
 
 	UPROPERTY(BlueprintReadWrite)
 	float Speed;
+	
+	UPROPERTY(BlueprintReadWrite)
+	bool bHasRiding{false};
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UChildActorComponent* RidingComponent;
 };

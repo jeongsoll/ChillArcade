@@ -3,16 +3,16 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BaseItem.h"
-#include "TurtleItem.generated.h"
+#include "BaseRide.h"
+#include "SpaceShipRide.generated.h"
 
 UCLASS()
-class MYPROJECT_API ATurtleItem : public ABaseItem {
+class MYPROJECT_API ASpaceShipRide : public ABaseRide {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this actor's properties
-	ATurtleItem();
+	ASpaceShipRide();
 
 protected:
 	// Called when the game starts or when spawned
@@ -21,10 +21,4 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	
-	UFUNCTION(BlueprintCallable)
-	void EquipPlayerTurtle(class ABaseCharacter* Player);
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<class ATurtleRide> TurtleRideFactory;
 };
