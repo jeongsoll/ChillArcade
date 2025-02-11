@@ -20,12 +20,12 @@ ABaseCharacter::ABaseCharacter()
 		GetMesh()->SetSkeletalMesh(BaseMeshObject.Object);
 		GetMesh()->SetRelativeLocationAndRotation(FVector(0.f , 0.f , -90.f) , FRotator(0.f , -90.f , 0.f));
 	}
-
-	static ConstructorHelpers::FClassFinder<UAnimInstance> AnimBP
-	(TEXT("/Game/Player/BP_AppleAnimation.BP_AppleAnimation_C"));
-	if (AnimBP.Succeeded()) {
-		GetMesh()->SetAnimInstanceClass(AnimBP.Class);
-	}
+	
+	// static ConstructorHelpers::FClassFinder<UAnimationAsset> AnimBP
+	// (TEXT("/Game/Player/BP_AppleAnimation.BP_AppleAnimation_C"));
+	// if (AnimBP.Succeeded()) {
+	// 	GetMesh()->SetAnimInstanceClass(AnimBP.Class);
+	// }
 	
 	SendArrComponent = CreateDefaultSubobject<USendArrInfoManagerComponent>(
 		TEXT("SendArrManager")
@@ -75,11 +75,11 @@ void ABaseCharacter::SetBalloon()
 	SpawnParams.SpawnCollisionHandlingOverride =
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	
-	ABaseWaterBalloon* NewBalloon = GetWorld()->SpawnActor<ABaseWaterBalloon>(
+	ABaseWaterBalloon* NewBalloon{GetWorld()->SpawnActor<ABaseWaterBalloon>(
 		ABaseWaterBalloon::StaticClass() ,
 		GetActorTransform() ,
 		SpawnParams
-	);
+	)};
 	
 	if (NewBalloon) {
 		NewBalloon->Initialize(BalloonLoc);
