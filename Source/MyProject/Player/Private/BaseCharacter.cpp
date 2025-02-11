@@ -62,7 +62,7 @@ void ABaseCharacter::SetBalloon()
 	// 설지할 수 있는지 확인
 
 	FArrLocation BalloonLoc;
-	BalloonLoc.X = FMath::FloorToInt(GetActorLocation().X / 100);
+	BalloonLoc.X = FMath::FloorToInt(MAP_ROW_MAX - GetActorLocation().X / 100);
 	BalloonLoc.Y = FMath::FloorToInt(GetActorLocation().Y / 100);
 
 	if (SendArrComponent) {
@@ -90,7 +90,7 @@ void ABaseCharacter::SetBalloon()
 void ABaseCharacter::CheckLocation()
 {
 	FArrLocation PlayerLoc;
-	PlayerLoc.X = FMath::FloorToInt(GetActorLocation().X / 100);
+	PlayerLoc.X = FMath::FloorToInt(MAP_ROW_MAX - GetActorLocation().X / 100);
 	PlayerLoc.Y = FMath::FloorToInt(GetActorLocation().Y / 100);
 
 	if (SendArrComponent) {
