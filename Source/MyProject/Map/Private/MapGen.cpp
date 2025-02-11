@@ -43,12 +43,12 @@ void AMapGen::SetGrid(int8 gridX, int8 gridY)
 			UE_LOG(LogTemp, Warning, TEXT("map[%d][%d] = %d"), y, x, map[y][x]);
 		
 			//x,y값이 증가할 때 landSpacing을 곱해서 landSpacing만큼 떨어트리는 변수
-			FVector location = GetActorLocation() + FVector(x * landSpacing, y * landSpacing, 0.0f);
-			switch(map[y][x])
+			FVector location = GetActorLocation() + FVector(1700.f - (x * landSpacing), y * landSpacing, 0.0f);
+			switch(map[x][y])
 			{
 				case 0:
 					// 바닥 타일
-					world->SpawnActor<ATile>(TileFactory, location, FRotator::ZeroRotator);
+				world->SpawnActor<ATile>(TileFactory, location, FRotator::ZeroRotator);
 					break;
 				case 1:
 					// 안사라지는 벽(이동 불가)
