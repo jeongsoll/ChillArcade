@@ -43,7 +43,7 @@ void AMapGen::SetGrid(int8 gridX, int8 gridY)
 			UE_LOG(LogTemp, Warning, TEXT("map[%d][%d] = %d"), y, x, map[y][x]);
 		
 			//x,y값이 증가할 때 landSpacing을 곱해서 landSpacing만큼 떨어트리는 변수
-			FVector location = GetActorLocation() + FVector(1700.f - (x * landSpacing), y * landSpacing, 0.0f);
+			FVector location = GetActorLocation() + FVector(landSpacing * (gridX - 1) - (x * landSpacing), y * landSpacing, 0.0f);
 			switch(map[x][y])
 			{
 				case 0:
