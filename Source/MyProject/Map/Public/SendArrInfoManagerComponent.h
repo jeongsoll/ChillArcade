@@ -23,6 +23,9 @@ public:
 	virtual void TickComponent(float DeltaTime , ELevelTick TickType ,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 
+	UPROPERTY(EditAnywhere)
+	class AMapGen* map;
+	
 	UFUNCTION(BlueprintCallable)
 	void SendPlayerLocation(struct FArrLocation Loc);
 	UFUNCTION(BlueprintCallable)

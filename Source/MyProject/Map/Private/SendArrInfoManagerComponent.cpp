@@ -4,6 +4,7 @@
 #include "SendArrInfoManagerComponent.h"
 #include "ArrLocation.h"
 #include "LogUtils.h"
+#include "MapGen.h"
 
 
 // Sets default values for this component's properties
@@ -22,7 +23,6 @@ void USendArrInfoManagerComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
 	
 }
 
