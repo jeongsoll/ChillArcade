@@ -54,10 +54,8 @@ void ABaseWaterBalloon::CheckExplodeLocations(FArrLocation Loc)
 	TArray<FArrLocation> Locations;
 	// 설치된 위치 추가
 	Locations.Add(Loc);
-
-	const int32 MaxX{13} , MaxY{15};
-	const int32 MinX{-1} , MinY{-1};
-	const int32 ExplodeRange{2};
+	
+	int32 ExplodeRange{2};
 	
 	// 위쪽 검사
 	for (int32 i{1}; i <= ExplodeRange; ++i) {
@@ -65,7 +63,7 @@ void ABaseWaterBalloon::CheckExplodeLocations(FArrLocation Loc)
 		//if (CheckWall(InitialLocation)) {}
 		FArrLocation UpLocation;
 
-		if (Loc.X + i == MaxX) {
+		if (Loc.X + i == MAP_ROW_MAX) {
 			break;
 		}
 
@@ -76,7 +74,7 @@ void ABaseWaterBalloon::CheckExplodeLocations(FArrLocation Loc)
 	for (int32 i{1}; i <= ExplodeRange; ++i) {
 		FArrLocation DownLocation;
 
-		if (Loc.X - i == MinX) {
+		if (Loc.X - i == MAP_MIN) {
 			break;
 		}
 
@@ -87,7 +85,7 @@ void ABaseWaterBalloon::CheckExplodeLocations(FArrLocation Loc)
 	for (int32 i{1}; i <= ExplodeRange; ++i) {
 		FArrLocation RightLocation;
 
-		if (Loc.Y + i == MaxY) {
+		if (Loc.Y + i == MAP_COLUMN_MAX) {
 			break;
 		}
 
@@ -98,7 +96,7 @@ void ABaseWaterBalloon::CheckExplodeLocations(FArrLocation Loc)
 	for (int32 i{1}; i <= ExplodeRange; ++i) {
 		FArrLocation LeftLocation;
 
-		if (Loc.Y - i == MinY) {
+		if (Loc.Y - i == MAP_MIN) {
 			break;
 		}
 

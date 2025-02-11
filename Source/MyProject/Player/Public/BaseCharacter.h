@@ -36,4 +36,7 @@ public:
 	void UseEatItem();
 	UFUNCTION(BlueprintCallable)
 	void UseEquipItem();
+
+	UPROPERTY(BlueprintReadWrite)
+	float Speed;
 };
