@@ -3,6 +3,7 @@
 
 #include "BaseCharacter.h"
 #include "ArrLocation.h"
+#include "BaseRide.h"
 #include "BaseWaterBalloon.h"
 #include "LogUtils.h"
 #include "SendArrInfoManagerComponent.h"
@@ -20,7 +21,9 @@ ABaseCharacter::ABaseCharacter()
 		GetMesh()->SetSkeletalMesh(BaseMeshObject.Object);
 		GetMesh()->SetRelativeLocationAndRotation(FVector(0.f , 0.f , -90.f) , FRotator(0.f , -90.f , 0.f));
 	}
-	
+
+	RidingComponent = CreateDefaultSubobject<UChildActorComponent>(TEXT("Riding"));
+	RidingComponent->SetupAttachment(GetRootComponent());
 	// static ConstructorHelpers::FClassFinder<UAnimationAsset> AnimBP
 	// (TEXT("/Game/Player/BP_AppleAnimation.BP_AppleAnimation_C"));
 	// if (AnimBP.Succeeded()) {
@@ -106,4 +109,22 @@ void ABaseCharacter::UseEatItem()
 void ABaseCharacter::UseEquipItem()
 {
 	//
+}
+
+void ABaseCharacter::SetRide(TSubclassOf<class ABaseRide> Ride)
+{
+	EquippedRideClass = Ride;
+	GetMesh()->AddLocalOffset(FVector(0, 0, 100.f));
+
+	
+}
+
+bool ABaseCharacter::CheckRide()
+{
+	return !!EquippedRideClass;
+}
+
+void ABaseCharacter::RemoveRide()
+{
+	EquippedRideClass = nullptr;
 }
