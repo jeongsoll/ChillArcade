@@ -33,6 +33,7 @@ protected:
 	void OnMoveRightCompleted(const FInputActionValue& Value);
 	void OnMoveLeftCompleted(const FInputActionValue& Value);
 	void UpdateDirection();
+	bool CheckCollision();
 
 public:
 	UPROPERTY(EditAnywhere , BlueprintReadOnly , Category = "Input")

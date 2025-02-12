@@ -2,10 +2,13 @@
 
 
 #include "MyController.h"
+
+#include "ArrLocation.h"
 #include "BaseCharacter.h"
 #include "InputMappingContext.h" /*UInputMappingContext*/
 #include "EnhancedInputSubsystems.h" /*UEnhancedInputLocalPlayerSubsystem*/
 #include "EnhancedInputComponent.h" /*UEnhancedInputComponent*/
+#include "LogUtils.h"
 
 AMyController::AMyController()
 {
@@ -14,7 +17,7 @@ AMyController::AMyController()
 	if (ImcPlayer.Succeeded()) {
 		InputMappingContext = ImcPlayer.Object;
 	}
-	
+
 	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionMoveUp
 		(TEXT("/Game/Player/Input/IA_MoveUp.IA_MoveUp"));
 	if (InputActionMoveUp.Succeeded()) {
@@ -57,7 +60,7 @@ void AMyController::BeginPlay()
 		subsystem->AddMappingContext(InputMappingContext , 0);
 	}
 
-	ControlledPlayer = Cast<ABaseCharacter>(GetPawn());
+	ControlledPlayer = Cast<ABaseCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
 }
 
 void AMyController::Tick(float DeltaTime)
@@ -65,9 +68,30 @@ void AMyController::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	if (ControlledPlayer && !Direction.IsZero()) {
-		ControlledPlayer->AddMovementInput(Direction);
-		ControlledPlayer->CheckLocation();
+		float RotateValue{};
+		if (1 == Direction.X) {
+			RotateValue = -90;
+		}
+		if (-1 == Direction.X) {
+			RotateValue = 90;
+		}
+		if (1 == Direction.Y) {
+			RotateValue = 0;
+		}
+		if (-1 == Direction.Y) {
+			RotateValue = 180;
+		}
+		ControlledPlayer->GetMesh()->SetRelativeRotation(FRotator(0 , RotateValue , 0));
+		
+		if (CheckCollision()) {
+			//ControlledPlayer->AddMovementInput(Direction);
+			ControlledPlayer->Speed = 600.f;
+
+			ControlledPlayer->AddActorLocalOffset(Direction * 5.f);
+			ControlledPlayer->CheckLocation();
+		}
 	}
+	ControlledPlayer->Speed = 0.f;
 }
 
 void AMyController::SetupInputComponent()
@@ -186,4 +210,32 @@ void AMyController::UpdateDirection()
 	else {
 		Direction = FVector::ZeroVector;
 	}
+}
+
+bool AMyController::CheckCollision()
+{
+	FArrLocation PlayerArray{ControlledPlayer->CheckLocation().X , ControlledPlayer->CheckLocation().Y};
+	FVector PlayerLocation{ControlledPlayer->GetActorLocation()};
+	float PlayerLength{70.f};
+	//LogUtils::Log("Player Location" , PlayerLocation.X , PlayerLocation.Y);
+
+	FArrLocation CollisionCheckWallArray{
+		PlayerArray.X - FMath::FloorToInt(Direction.X) , PlayerArray.Y + FMath::FloorToInt(Direction.Y)
+	};
+	FVector WallLocation{
+		FVector((MAP_ROW_MAX - CollisionCheckWallArray.X) * 100.f - 50.f , (CollisionCheckWallArray.Y+ 1) * 100.f - 50.f, 0.f)
+	};
+	//LogUtils::Log("Wall Location" , WallLocation.X , WallLocation.Y);
+	//LogUtils::Log("Wall Location" , CollisionCheckWallArray.X , CollisionCheckWallArray.Y);
+
+	if (map[CollisionCheckWallArray.X][CollisionCheckWallArray.Y] == EMapType::Blocking) {
+		if (FMath::Abs(Direction.X) == 1 && FMath::Abs(WallLocation.X - PlayerLocation.X) < PlayerLength) {
+			return false;
+		}
+		if (FMath::Abs(Direction.Y) == 1 && FMath::Abs(WallLocation.Y - PlayerLocation.Y) < PlayerLength) {
+			return false;
+		}
+	}
+
+	return true;
 }

@@ -40,13 +40,13 @@ void USendArrInfoManagerComponent::TickComponent(float DeltaTime , ELevelTick Ti
 void USendArrInfoManagerComponent::SendPlayerLocation(struct FArrLocation Loc)
 {
 	LogUtils::Log("Location Array : " , Loc.X , Loc.Y);
-	Map->UpdateMapPlayer(Loc);
+	//Map->UpdateMapPlayer(Loc);
 }
 
 void USendArrInfoManagerComponent::SendBalloonLocation(struct FArrLocation Loc)
 {
 	//LogUtils::Log("Balloon Array : " , Loc.X , Loc.Y);
-	Map->UpdateMapBalloon(Loc);
+	//Map->UpdateMapBalloon(Loc);
 }
 
 void USendArrInfoManagerComponent::SendBalloonExplodeLocation(TArray<struct FArrLocation> Loc)
@@ -59,5 +59,5 @@ void USendArrInfoManagerComponent::SendBalloonExplodeLocation(TArray<struct FArr
 void USendArrInfoManagerComponent::SendRemoveLocation(struct FArrLocation Loc)
 {
 	//LogUtils::Log("Remove Location : " , Loc.X , Loc.Y);
-	Map->UpdateMapDestroyed(Loc);
+	//Map->UpdateMapDestroyed(Loc);
 }

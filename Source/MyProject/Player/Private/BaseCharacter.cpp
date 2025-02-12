@@ -8,6 +8,7 @@
 #include "LogUtils.h"
 #include "SendArrInfoManagerComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Slate/SGameLayerManager.h"
 
 // Sets default values
 ABaseCharacter::ABaseCharacter()
@@ -26,11 +27,11 @@ ABaseCharacter::ABaseCharacter()
 	RidingComponent->SetupAttachment(GetRootComponent());
 	RidingComponent->SetRelativeLocation(FVector(0.f , 0.f , -45.f));
 
-	static ConstructorHelpers::FClassFinder<UAnimInstance> AnimBP
-		(TEXT("/Game/Player/Animation/ABP_AppleAnimation.ABP_AppleAnimation_C"));
-	if (AnimBP.Succeeded()) {
-		GetMesh()->SetAnimInstanceClass(AnimBP.Class);
-	}
+	// static ConstructorHelpers::FClassFinder<UAnimInstance> AnimBP
+	// 	(TEXT("/Game/Player/Animation/ABP_AppleAnimation.ABP_AppleAnimation_C"));
+	// if (AnimBP.Succeeded()) {
+	// 	GetMesh()->SetAnimInstanceClass(AnimBP.Class);
+	// }
 
 	SendArrComponent = CreateDefaultSubobject<USendArrInfoManagerComponent>(
 		TEXT("SendArrManager")
@@ -53,7 +54,7 @@ void ABaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	Speed = GetVelocity().Length();
+	//Speed = GetVelocity().Length();
 }
 
 // Called to bind functionality to input
@@ -76,7 +77,7 @@ void ABaseCharacter::SetBalloon()
 }
 
 // 캐릭터 위치 확인
-void ABaseCharacter::CheckLocation()
+struct FArrLocation ABaseCharacter::CheckLocation()
 {
 	FArrLocation PlayerLoc;
 	PlayerLoc.X = FMath::FloorToInt(MAP_ROW_MAX - GetActorLocation().X / 100);
@@ -85,6 +86,8 @@ void ABaseCharacter::CheckLocation()
 	if (SendArrComponent) {
 		SendArrComponent->SendPlayerLocation(PlayerLoc);
 	}
+
+	return PlayerLoc;
 }
 
 void ABaseCharacter::UseEatItem()

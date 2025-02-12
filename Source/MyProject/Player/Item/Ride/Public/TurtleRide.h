@@ -21,9 +21,13 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
+	UFUNCTION(BlueprintCallable)
+	void ChangeFast();
 	UPROPERTY(EditAnywhere , BlueprintReadWrite)
 	class UBoxComponent* Root;
 	UPROPERTY(EditAnywhere , BlueprintReadWrite)
-	class UStaticMesh* Mesh;
+	class UStaticMeshComponent* Mesh;
+	UPROPERTY(EditAnywhere , BlueprintReadWrite)
+	class UStaticMeshComponent* FastMesh;
+	
 };

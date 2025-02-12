@@ -31,7 +31,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetBalloon();
 	UFUNCTION(BlueprintCallable)
-	void CheckLocation();
+	struct FArrLocation CheckLocation();
 	UFUNCTION(BlueprintCallable)
 	void UseEatItem();
 	UFUNCTION(BlueprintCallable)
