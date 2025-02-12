@@ -3,12 +3,17 @@
 
 #include "MyProject/Player/Item/Ride/Public/BaseRide.h"
 
+#include "Components/BoxComponent.h"
+
 
 // Sets default values
 ABaseRide::ABaseRide()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	Root = CreateDefaultSubobject<UBoxComponent>(TEXT("Root"));
+	RootComponent = Root;
 }
 
 // Called when the game starts or when spawned

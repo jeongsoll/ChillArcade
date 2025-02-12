@@ -9,7 +9,8 @@ ATurtleRide::ATurtleRide()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	
+	
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(RootComponent);
 	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
@@ -27,7 +28,7 @@ ATurtleRide::ATurtleRide()
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> FastMeshAsset
 		(TEXT("/Game/Player/Item/Model/SM_Car_Fast.SM_Car_Fast"));
 	if (FastMeshAsset.Succeeded()) {
-		Mesh->SetStaticMesh(FastMeshAsset.Object);
+		FastMesh->SetStaticMesh(FastMeshAsset.Object);
 	}
 }
 

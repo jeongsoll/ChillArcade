@@ -24,7 +24,7 @@ ABaseCharacter::ABaseCharacter()
 	}
 
 	RidingComponent = CreateDefaultSubobject<UChildActorComponent>(TEXT("Riding"));
-	RidingComponent->SetupAttachment(GetRootComponent());
+	RidingComponent->SetupAttachment(GetMesh());
 	RidingComponent->SetRelativeLocation(FVector(0.f , 0.f , -45.f));
 
 	// static ConstructorHelpers::FClassFinder<UAnimInstance> AnimBP
