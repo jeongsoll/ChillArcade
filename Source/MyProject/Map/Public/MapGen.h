@@ -45,14 +45,21 @@ public:
 	void SetGrid(int8 gridX, int8 gridY);
 	
 	//1.플레이어 위치  업데이트 함수
-	int16 UpdateMapPlayer(struct FArrLocation Loc);
+	void UpdateMapPlayer(struct FArrLocation Loc);
 
 	//2.부셔지는 벽 업데이트 함수
-	int16 UpdateMapDestroyed(struct FArrLocation Loc);
+	void UpdateMapDestroyed(struct FArrLocation Loc);
 
 	//3.물풍선 설치 업데이트 함수
-	int16 UpdateMapBalloon(struct FArrLocation Loc);
+	void UpdateMapBalloon(struct FArrLocation Loc);
 
 	//4.밀리는 벽 업데이트 함수
 	void UpdateMapPushed(struct FArrLocation Loc, struct FArrLocation PlayerLoc);
+
+	//5. 맵 업데이트 함수
+	void UpdateMap(int8 value, int8 LocX, int8 LocY);
+
+	//6. 맵 스폰 함수
+	
+	
 };

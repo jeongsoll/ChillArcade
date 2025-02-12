@@ -73,18 +73,18 @@ void AMapGen::SetGrid(int8 gridX, int8 gridY)
 	}
 }
 
-int16 AMapGen::UpdateMapPlayer(FArrLocation Loc)
+void AMapGen::UpdateMapPlayer(FArrLocation Loc)
 {
 	// 플레이어 위치를 받음
 	int16 playerLoc = map[Loc.X][Loc.Y] % 100;
 	// 플레이어 위치 검증 어떻게? 플레이어가 그 위치에 있는지 없는지 검증
 	// 플레이어가 있을 수 있는 곳 타일 = 0, 풀숲 = 4, 물풍선 = 10
-	if (playerLoc == 0 || playerLoc == 4 || playerLoc == 10 || playerLoc == 14) return 0;
+	if (playerLoc == 0 || playerLoc == 4 || playerLoc == 10 || playerLoc == 14) return;
 	// 받은 x,y값에 100을 더 해서 맵을 업데이트
-	return map[Loc.X][Loc.Y];
+	map[Loc.X][Loc.Y] += 100;
 }
 
-int16 AMapGen::UpdateMapDestroyed(FArrLocation Loc)
+void AMapGen::UpdateMapDestroyed(FArrLocation Loc)
 {
 	// 파괴되는 엑터 = 풀숲(4), 부셔지는 벽(2)
 	// 배열로 파괴되는 엑터가 구조체 형식으로 옴
@@ -99,13 +99,12 @@ int16 AMapGen::UpdateMapDestroyed(FArrLocation Loc)
 		// 파괴된 엑터 위치 업데이트 맵 업데이트
 		map[loc.X][loc.Y] = 0;
 	}
-	return 0;
 }
 
-int16 AMapGen::UpdateMapBalloon(FArrLocation Loc)
+void AMapGen::UpdateMapBalloon(FArrLocation Loc)
 {
 	//플레이어가 설치한 위치에 물풍선(10)으로 변경
-	return map[Loc.X][Loc.Y] = 10;
+	map[Loc.X][Loc.Y] = 10;
 }
 
 void AMapGen::UpdateMapPushed(FArrLocation Loc, FArrLocation PlayerLoc)
@@ -136,4 +135,16 @@ void AMapGen::UpdateMapPushed(FArrLocation Loc, FArrLocation PlayerLoc)
 		//기존 위치는 다시 타일로 변경
 		map[Loc.X][Loc.Y] = 0;
 	}
+}
+
+void AMapGen::UpdateMap(int8 value, int8 LocX, int8 LocY)
+{
+	// 타일(0번)일 때
+	/*map[LocX][LocY] */
+	// 부셔지는 벽(2번)일 때
+	// 밀리는 벽(3번)일 때
+	// 4번일 때
+	// 플레이어일 때
+	// 물풍선일 때
+	
 }
