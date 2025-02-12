@@ -40,6 +40,26 @@ public:
 	TSubclassOf<class AStrongWall> StrongWallFactory;
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AWeakWall> WeakWallFactory;
-	
+
+	//그리드 타일 세팅
 	void SetGrid(int8 gridX, int8 gridY);
+	
+	//1.플레이어 위치  업데이트 함수
+	void UpdateMapPlayer(struct FArrLocation Loc);
+
+	//2.부셔지는 벽 업데이트 함수
+	void UpdateMapDestroyed(struct FArrLocation Loc);
+
+	//3.물풍선 설치 업데이트 함수
+	void UpdateMapBalloon(struct FArrLocation Loc);
+
+	//4.밀리는 벽 업데이트 함수
+	void UpdateMapPushed(struct FArrLocation Loc, struct FArrLocation PlayerLoc);
+
+	//5. 맵 업데이트 함수
+	void UpdateMap(int8 value, int8 LocX, int8 LocY);
+
+	//6. 맵 스폰 함수
+	
+	
 };
