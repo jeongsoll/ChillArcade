@@ -21,6 +21,7 @@ public class MyProject : ModuleRules
 			"MyProject/Player/WaterBalloon/Public",
 			"MyProject/Player/Item/Public",
 			"MyProject/Player/Item/Ride/Public",
+			"MyProject/Player/Animation/Public",
 			"MyProject/Widget/Lobby/Public",
 			"MyProject/Widget/WaitRoom/Public",
 			"MyProject/Computer/Public",

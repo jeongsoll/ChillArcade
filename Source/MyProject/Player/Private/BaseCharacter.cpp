@@ -24,11 +24,13 @@ ABaseCharacter::ABaseCharacter()
 
 	RidingComponent = CreateDefaultSubobject<UChildActorComponent>(TEXT("Riding"));
 	RidingComponent->SetupAttachment(GetRootComponent());
-	// static ConstructorHelpers::FClassFinder<UAnimationAsset> AnimBP
-	// (TEXT("/Game/Player/BP_AppleAnimation.BP_AppleAnimation_C"));
-	// if (AnimBP.Succeeded()) {
-	// 	GetMesh()->SetAnimInstanceClass(AnimBP.Class);
-	// }
+	RidingComponent->SetRelativeLocation(FVector(0.f , 0.f , -45.f));
+	
+	static ConstructorHelpers::FClassFinder<UAnimInstance> AnimBP
+	(TEXT("/Game/Player/Animation/ABP_AppleAnimation.ABP_AppleAnimation_C"));
+	if (AnimBP.Succeeded()) {
+		GetMesh()->SetAnimInstanceClass(AnimBP.Class);
+	}
 	
 	SendArrComponent = CreateDefaultSubobject<USendArrInfoManagerComponent>(
 		TEXT("SendArrManager")
@@ -114,9 +116,10 @@ void ABaseCharacter::UseEquipItem()
 void ABaseCharacter::SetRide(TSubclassOf<class ABaseRide> Ride)
 {
 	EquippedRideClass = Ride;
-	GetMesh()->AddLocalOffset(FVector(0, 0, 100.f));
 
-	
+	// 올리기
+	GetMesh()->AddLocalOffset(FVector(0, 0, 90.f));
+	RidingComponent->SetChildActorClass(Ride);
 }
 
 bool ABaseCharacter::CheckRide()
@@ -127,4 +130,8 @@ bool ABaseCharacter::CheckRide()
 void ABaseCharacter::RemoveRide()
 {
 	EquippedRideClass = nullptr;
+
+	// 내리기
+	GetMesh()->AddLocalOffset(FVector(0, 0, -90.f));
+	RidingComponent->SetChildActorClass(nullptr);
 }
