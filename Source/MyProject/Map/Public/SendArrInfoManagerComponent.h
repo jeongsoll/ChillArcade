@@ -24,7 +24,7 @@ public:
 	                           FActorComponentTickFunction* ThisTickFunction) override;
 
 	UPROPERTY(EditAnywhere)
-	class AMapGen* map;
+	class AMapGen* Map;
 	
 	UFUNCTION(BlueprintCallable)
 	void SendPlayerLocation(struct FArrLocation Loc);

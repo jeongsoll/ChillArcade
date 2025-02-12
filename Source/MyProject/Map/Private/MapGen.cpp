@@ -2,7 +2,10 @@
 
 
 #include "MapGen.h"
+
 #include "ArrLocation.h"
+#include "BaseCharacter.h"
+#include "BaseWaterBalloon.h"
 #include "Bush.h"
 #include "LogUtils.h"
 #include "MovingWall.h"
@@ -10,6 +13,7 @@
 #include "Tile.h"
 #include "WeakWall.h"
 
+class ABaseWaterBalloon;
 // Sets default values
 AMapGen::AMapGen()
 {
@@ -21,6 +25,8 @@ AMapGen::AMapGen()
 void AMapGen::BeginPlay()
 {
 	Super::BeginPlay();
+
+	Player = Cast<ABaseCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	
 	LogUtils::Log("2 == map", map[5][4]);
 	LogUtils::Log();
@@ -73,7 +79,7 @@ void AMapGen::SetGrid(int8 gridX, int8 gridY)
 	}
 }
 
-void AMapGen::UpdateMapPlayer(FArrLocation Loc)
+void AMapGen::UpdateMapPlayer(struct FArrLocation Loc)
 {
 	// 플레이어 위치를 받음
 	int16 playerLoc = map[Loc.X][Loc.Y] % 100;
@@ -82,9 +88,11 @@ void AMapGen::UpdateMapPlayer(FArrLocation Loc)
 	if (playerLoc == 0 || playerLoc == 4 || playerLoc == 10 || playerLoc == 14) return;
 	// 받은 x,y값에 100을 더 해서 맵을 업데이트
 	map[Loc.X][Loc.Y] += 100;
+
+	//LogUtils
 }
 
-void AMapGen::UpdateMapDestroyed(FArrLocation Loc)
+void AMapGen::UpdateMapDestroyed(struct FArrLocation Loc)
 {
 	// 파괴되는 엑터 = 풀숲(4), 부셔지는 벽(2)
 	// 배열로 파괴되는 엑터가 구조체 형식으로 옴
@@ -93,21 +101,43 @@ void AMapGen::UpdateMapDestroyed(FArrLocation Loc)
 	// 3. 다음 파괴되는 엑터에 위치[x][y]를 받는다.
 	// 4. 3번과 동일하다.
 	// 배열로 받기 때문에 풀어서 업데이트 해야함
-	for (auto loc : Loc)
-	{
+
+	// for (auto& loc : Loc)
+	// {
 		// 물풍선 위치 저장
 		// 파괴된 엑터 위치 업데이트 맵 업데이트
-		map[loc.X][loc.Y] = 0;
-	}
+		map[Loc.X][Loc.Y] = 0;
+	//}
+	LogUtils::Log("Destroyed", map[Loc.X][Loc.Y]);
 }
 
-void AMapGen::UpdateMapBalloon(FArrLocation Loc)
+void AMapGen::UpdateMapBalloon(struct FArrLocation Loc)
 {
 	//플레이어가 설치한 위치에 물풍선(10)으로 변경
-	map[Loc.X][Loc.Y] = 10;
+	//map[Loc.X][Loc.Y] = 10;
+	LogUtils::Log("Updated Balloon", map[Loc.X][Loc.Y]);
+
+	// 스폰 예시
+	// FActorSpawnParameters SpawnParams;
+	// SpawnParams.SpawnCollisionHandlingOverride =
+	// 	ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	// if (Player) {
+	// 	ABaseWaterBalloon* NewBalloon{GetWorld()->SpawnActor<ABaseWaterBalloon>(
+	// 		ABaseWaterBalloon::StaticClass() ,
+	// 		Player->GetActorTransform()
+	// 	)};
+	// 	if (NewBalloon) {
+	// 		NewBalloon->Initialize(Loc);
+	// 	}
+	// }
+	// else {
+	// 	LogUtils::Log("no player");
+	// }
+	
+	
 }
 
-void AMapGen::UpdateMapPushed(FArrLocation Loc, FArrLocation PlayerLoc)
+void AMapGen::UpdateMapPushed(struct FArrLocation Loc, struct FArrLocation PlayerLoc)
 {
 	//1초동안 플레이어의 입력이 들어오면
 	//밀리는 벽을 플레이어가 바라보는 방향으로 1칸 옮긴다.

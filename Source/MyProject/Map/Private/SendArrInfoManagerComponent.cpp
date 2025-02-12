@@ -23,7 +23,7 @@ void USendArrInfoManagerComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-
+	Map = Cast<AMapGen>(AMapGen::StaticClass());
 	// ...
 }
 
@@ -40,21 +40,24 @@ void USendArrInfoManagerComponent::TickComponent(float DeltaTime , ELevelTick Ti
 void USendArrInfoManagerComponent::SendPlayerLocation(struct FArrLocation Loc)
 {
 	LogUtils::Log("Location Array : " , Loc.X , Loc.Y);
+	Map->UpdateMapPlayer(Loc);
 }
 
 void USendArrInfoManagerComponent::SendBalloonLocation(struct FArrLocation Loc)
 {
-	LogUtils::Log("Balloon Array : " , Loc.X , Loc.Y);
+	//LogUtils::Log("Balloon Array : " , Loc.X , Loc.Y);
+	Map->UpdateMapBalloon(Loc);
 }
 
 void USendArrInfoManagerComponent::SendBalloonExplodeLocation(TArray<struct FArrLocation> Loc)
 {
-	for (const auto& [X, Y] : Loc) {
-		LogUtils::Log("Explode Location : " , X , Y);
-	}
+	//for (const auto& [X, Y] : Loc) {
+		//LogUtils::Log("Explode Location : " , X , Y);
+	//}
 }
 
 void USendArrInfoManagerComponent::SendRemoveLocation(struct FArrLocation Loc)
 {
 	//LogUtils::Log("Remove Location : " , Loc.X , Loc.Y);
+	Map->UpdateMapDestroyed(Loc);
 }

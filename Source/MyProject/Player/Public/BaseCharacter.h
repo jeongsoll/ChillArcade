@@ -54,4 +54,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UChildActorComponent* RidingComponent;
+
+
 };

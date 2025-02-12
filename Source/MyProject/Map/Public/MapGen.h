@@ -7,8 +7,7 @@
 #include "MapGen.generated.h"
 
 UCLASS()
-class MYPROJECT_API AMapGen : public AActor
-{
+class MYPROJECT_API AMapGen : public AActor {
 	GENERATED_BODY()
 
 public:
@@ -41,9 +40,11 @@ public:
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AWeakWall> WeakWallFactory;
 
-	//그리드 타일 세팅
-	void SetGrid(int8 gridX, int8 gridY);
+	class ABaseCharacter* Player;
 	
+	//그리드 타일 세팅
+	void SetGrid(int8 gridX , int8 gridY);
+
 	//1.플레이어 위치  업데이트 함수
 	void UpdateMapPlayer(struct FArrLocation Loc);
 
@@ -54,12 +55,10 @@ public:
 	void UpdateMapBalloon(struct FArrLocation Loc);
 
 	//4.밀리는 벽 업데이트 함수
-	void UpdateMapPushed(struct FArrLocation Loc, struct FArrLocation PlayerLoc);
+	void UpdateMapPushed(struct FArrLocation Loc , struct FArrLocation PlayerLoc);
 
 	//5. 맵 업데이트 함수
-	void UpdateMap(int8 value, int8 LocX, int8 LocY);
+	void UpdateMap(int8 value , int8 LocX , int8 LocY);
 
 	//6. 맵 스폰 함수
-	
-	
 };

@@ -25,13 +25,13 @@ ABaseCharacter::ABaseCharacter()
 	RidingComponent = CreateDefaultSubobject<UChildActorComponent>(TEXT("Riding"));
 	RidingComponent->SetupAttachment(GetRootComponent());
 	RidingComponent->SetRelativeLocation(FVector(0.f , 0.f , -45.f));
-	
+
 	static ConstructorHelpers::FClassFinder<UAnimInstance> AnimBP
-	(TEXT("/Game/Player/Animation/ABP_AppleAnimation.ABP_AppleAnimation_C"));
+		(TEXT("/Game/Player/Animation/ABP_AppleAnimation.ABP_AppleAnimation_C"));
 	if (AnimBP.Succeeded()) {
 		GetMesh()->SetAnimInstanceClass(AnimBP.Class);
 	}
-	
+
 	SendArrComponent = CreateDefaultSubobject<USendArrInfoManagerComponent>(
 		TEXT("SendArrManager")
 	);
@@ -73,22 +73,6 @@ void ABaseCharacter::SetBalloon()
 	if (SendArrComponent) {
 		SendArrComponent->SendBalloonLocation(BalloonLoc);
 	}
-
-	
-	// 스폰 예시
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.SpawnCollisionHandlingOverride =
-		ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	
-	ABaseWaterBalloon* NewBalloon{GetWorld()->SpawnActor<ABaseWaterBalloon>(
-		ABaseWaterBalloon::StaticClass() ,
-		GetActorTransform() ,
-		SpawnParams
-	)};
-	
-	if (NewBalloon) {
-		NewBalloon->Initialize(BalloonLoc);
-	}
 }
 
 // 캐릭터 위치 확인
@@ -118,7 +102,7 @@ void ABaseCharacter::SetRide(TSubclassOf<class ABaseRide> Ride)
 	EquippedRideClass = Ride;
 
 	// 올리기
-	GetMesh()->AddLocalOffset(FVector(0, 0, 90.f));
+	GetMesh()->AddLocalOffset(FVector(0 , 0 , 90.f));
 	RidingComponent->SetChildActorClass(Ride);
 }
 
@@ -132,6 +116,6 @@ void ABaseCharacter::RemoveRide()
 	EquippedRideClass = nullptr;
 
 	// 내리기
-	GetMesh()->AddLocalOffset(FVector(0, 0, -90.f));
+	GetMesh()->AddLocalOffset(FVector(0 , 0 , -90.f));
 	RidingComponent->SetChildActorClass(nullptr);
 }
