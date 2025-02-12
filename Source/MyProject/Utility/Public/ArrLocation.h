@@ -3,8 +3,8 @@
 #include "CoreMinimal.h"
 #include "ArrLocation.generated.h"
 
-#define MAP_ROW_MAX 17
-#define MAP_COLUMN_MAX 15
+#define MAP_ROW_MAX 15
+#define MAP_COLUMN_MAX 17
 #define MAP_MIN -1
 
 USTRUCT(BlueprintType)
@@ -15,9 +15,17 @@ struct FArrLocation {
 	int32 X{};
 	UPROPERTY()
 	int32 Y{};
-
-	
 };
+
+UENUM(BlueprintType)
+enum EMapType : uint8 {
+	Movable = 0,
+	Blocking = 1,
+	Destroyable = 2,
+	Pushable = 3,
+	Bush = 4,
+};
+
 
 inline int8 map[15][17] = {
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,

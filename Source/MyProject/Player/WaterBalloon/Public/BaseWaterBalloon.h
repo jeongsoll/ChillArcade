@@ -36,7 +36,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void CheckExplodeLocations(struct FArrLocation Loc);
 	UFUNCTION(BlueprintCallable)
-	void CheckRemoveLocations(struct FArrLocation Loc);
+	bool CheckRemoveLocations(struct FArrLocation Loc);
 	// UFUNCTION(BlueprintCallable)
 	// void CheckIsInMap(struct FArrLocation Loc);
 	FArrLocation BalloonLocation;

@@ -44,7 +44,9 @@ void ABaseWaterBalloon::Initialize(const struct FArrLocation& NewLocation)
 void ABaseWaterBalloon::ExplodeTime()
 {
 	CheckExplodeLocations(BalloonLocation);
-	CheckRemoveLocations(BalloonLocation);
+	//CheckRemoveLocations(BalloonLocation);
+	
+	SendArrComponent->SendRemoveLocation(BalloonLocation);
 
 	Destroy();
 }
@@ -54,9 +56,9 @@ void ABaseWaterBalloon::CheckExplodeLocations(FArrLocation Loc)
 	TArray<FArrLocation> Locations;
 	// 설치된 위치 추가
 	Locations.Add(Loc);
-	
+
 	int32 ExplodeRange{2};
-	
+
 	// 위쪽 검사
 	for (int32 i{1}; i <= ExplodeRange; ++i) {
 		//FArrLocation InitialLocation{Loc};
@@ -69,7 +71,32 @@ void ABaseWaterBalloon::CheckExplodeLocations(FArrLocation Loc)
 
 		UpLocation.X = Loc.X + i;
 		UpLocation.Y = Loc.Y;
-		Locations.Add(UpLocation);
+
+		if (CheckRemoveLocations(UpLocation)) {
+			Locations.Add(UpLocation);
+		}
+		else {
+			break;
+		}
+		// if (EMapType::Blocking == map[Loc.X + i][Loc.Y]) {
+		// 	break;
+		// }
+		// if (EMapType::Pushable == map[Loc.X + i][Loc.Y]) {
+		// 	break;
+		// }
+		// if (EMapType::Bush == map[Loc.X + i][Loc.Y]) {
+		// 	UpLocation.X = Loc.X + i;
+		// 	UpLocation.Y = Loc.Y;
+		// 	Locations.Add(UpLocation);
+		// }
+		// if (EMapType::Destroyable == map[Loc.X + i][Loc.Y]) {
+		// 	break;
+		// }
+		// if (EMapType::Movable == map[Loc.X + i][Loc.Y]) {
+		// 	UpLocation.X = Loc.X + i;
+		// 	UpLocation.Y = Loc.Y;
+		// 	Locations.Add(UpLocation);
+		// }
 	}
 	for (int32 i{1}; i <= ExplodeRange; ++i) {
 		FArrLocation DownLocation;
@@ -80,7 +107,13 @@ void ABaseWaterBalloon::CheckExplodeLocations(FArrLocation Loc)
 
 		DownLocation.X = Loc.X - i;
 		DownLocation.Y = Loc.Y;
-		Locations.Add(DownLocation);
+
+		if (CheckRemoveLocations(DownLocation)) {
+			Locations.Add(DownLocation);
+		}
+		else {
+			break;
+		}
 	}
 	for (int32 i{1}; i <= ExplodeRange; ++i) {
 		FArrLocation RightLocation;
@@ -91,7 +124,13 @@ void ABaseWaterBalloon::CheckExplodeLocations(FArrLocation Loc)
 
 		RightLocation.X = Loc.X;
 		RightLocation.Y = Loc.Y + i;
-		Locations.Add(RightLocation);
+
+		if (CheckRemoveLocations(RightLocation)) {
+			Locations.Add(RightLocation);
+		}
+		else {
+			break;
+		}
 	}
 	for (int32 i{1}; i <= ExplodeRange; ++i) {
 		FArrLocation LeftLocation;
@@ -102,15 +141,44 @@ void ABaseWaterBalloon::CheckExplodeLocations(FArrLocation Loc)
 
 		LeftLocation.X = Loc.X;
 		LeftLocation.Y = Loc.Y - i;
-		Locations.Add(LeftLocation);
+
+		if (CheckRemoveLocations(LeftLocation)) {
+			Locations.Add(LeftLocation);
+		}
+		else {
+			break;
+		}
 	}
 
 	SendArrComponent->SendBalloonExplodeLocation(Locations);
 }
 
-void ABaseWaterBalloon::CheckRemoveLocations(FArrLocation Loc)
+bool ABaseWaterBalloon::CheckRemoveLocations(FArrLocation Loc)
 {
-	TArray<FArrLocation> Locations;
+	int32 Input{map[Loc.X][Loc.Y]};
+	
+	if (EMapType::Blocking == Input) {
+		return false;
+	}
+	if (EMapType::Pushable == Input) {
+		LogUtils::Log("Pushable : " , Loc.X , Loc.Y);
 
-	SendArrComponent->SendRemoveLocation(Locations);
+		SendArrComponent->SendRemoveLocation(Loc);
+		return false;
+	}
+	if (EMapType::Bush == Input) {
+		LogUtils::Log("Bush : " , Loc.X , Loc.Y);
+		SendArrComponent->SendRemoveLocation(Loc);
+		return true;
+	}
+	if (EMapType::Destroyable == Input) {
+		LogUtils::Log("Destroyable : " , Loc.X , Loc.Y);
+		SendArrComponent->SendRemoveLocation(Loc);
+		return false;
+	}
+	if (EMapType::Movable == Input) {
+		return true;
+	}
+
+	return false;
 }

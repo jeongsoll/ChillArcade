@@ -23,7 +23,8 @@ void USendArrInfoManagerComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	
+
+	// ...
 }
 
 
@@ -38,26 +39,22 @@ void USendArrInfoManagerComponent::TickComponent(float DeltaTime , ELevelTick Ti
 
 void USendArrInfoManagerComponent::SendPlayerLocation(struct FArrLocation Loc)
 {
-	LogUtils::Log("Location Array : ", Loc.X, Loc.Y);
+	LogUtils::Log("Location Array : " , Loc.X , Loc.Y);
 }
 
 void USendArrInfoManagerComponent::SendBalloonLocation(struct FArrLocation Loc)
 {
-	LogUtils::Log("Balloon Array : ", Loc.X, Loc.Y);
+	LogUtils::Log("Balloon Array : " , Loc.X , Loc.Y);
 }
 
 void USendArrInfoManagerComponent::SendBalloonExplodeLocation(TArray<struct FArrLocation> Loc)
 {
 	for (const auto& [X, Y] : Loc) {
-		LogUtils::Log("Explode Location : ", X, Y);
+		LogUtils::Log("Explode Location : " , X , Y);
 	}
 }
 
-void USendArrInfoManagerComponent::SendRemoveLocation(TArray<struct FArrLocation> Loc)
+void USendArrInfoManagerComponent::SendRemoveLocation(struct FArrLocation Loc)
 {
-	for (const auto& [X, Y] : Loc) {
-		LogUtils::Log("Remove Location : ", X, Y);
-	}
+	//LogUtils::Log("Remove Location : " , Loc.X , Loc.Y);
 }
-
-
