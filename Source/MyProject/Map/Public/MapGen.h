@@ -2,8 +2,6 @@
 
 #pragma once
 
-#include <map>
-
 #include "CoreMinimal.h"
 #include "ArrLocation.h"
 #include "GameFramework/Actor.h"
@@ -24,7 +22,8 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	
+
+
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class ATile> TileFactory;
 	UPROPERTY(EditAnywhere)
@@ -37,6 +36,8 @@ public:
 	TSubclassOf<class AWeakWall> WeakWallFactory;
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class ABaseWaterBalloon> BalloonFactory;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class ABaseBalloonRange> BalloonStreamFactory;
 	
 
 	// 그리드 x축, y축 지정할 변수
@@ -77,7 +78,9 @@ public:
 
 	//7. 배열 값으로 타일 중앙값 구하는 함수
 	FVector ArrayToWorldLocation(struct FArrLocation Loc); 
-	
+
+	//8. 물풍선 범위 스폰 함수
+	void UpdateMapBalloonStream(TArray<struct FArrLocation> Loc);
 	//4.밀리는 벽 업데이트 함수
 	/*void UpdateMapPushed(struct FArrLocation Loc , struct FArrLocation PlayerLoc);*/
 };

@@ -4,6 +4,7 @@
 #include "MapGen.h"
 
 #include "ArrLocation.h"
+#include "BaseBalloonRange.h"
 #include "BaseCharacter.h"
 #include "BaseWaterBalloon.h"
 #include "Bush.h"
@@ -109,7 +110,7 @@ void AMapGen::UpdateMapDestroyed(struct FArrLocation Loc)
 	GameMap[Loc.X][Loc.Y] = 0;
 	UpdateMap(Movable, Loc.X, Loc.Y);
 	
-	LogUtils::Log("Destroyed", map[Loc.X][Loc.Y]);
+	LogUtils::Log("Destroyed", GameMap[Loc.X][Loc.Y]);
 }
 
 void AMapGen::UpdateMapBalloon(struct FArrLocation Loc)
@@ -184,6 +185,26 @@ void AMapGen::InitializeMap()
 FVector AMapGen::ArrayToWorldLocation(struct FArrLocation Loc)
 {
 	return FVector((MAP_ROW_MAX - Loc.X) * 100.f - 50.f , (Loc.Y+ 1) * 100.f - 50.f, 10.0f);
+}
+
+void AMapGen::UpdateMapBalloonStream(TArray<struct FArrLocation> Loc)
+{
+	for (const auto& Location : Loc) {
+		// 스폰 예시
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.SpawnCollisionHandlingOverride =
+			ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		if (Player) {
+			ABaseBalloonRange* NewBalloon{GetWorld()->SpawnActor<ABaseBalloonRange>(
+				BalloonStreamFactory,
+				ArrayToWorldLocation(Location), FRotator::ZeroRotator
+			)};
+			if (NewBalloon) {
+				NewBalloon->Initialize(Location);
+			}
+		}
+	}
+	
 }
 
 //보류

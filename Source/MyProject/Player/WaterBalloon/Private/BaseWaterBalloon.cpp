@@ -5,7 +5,8 @@
 #include "ArrLocation.h"
 #include "LogUtils.h"
 #include "SendArrInfoManagerComponent.h"
-
+#include "MapGen.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ABaseWaterBalloon::ABaseWaterBalloon()
@@ -28,12 +29,19 @@ ABaseWaterBalloon::ABaseWaterBalloon()
 	SendArrComponent = CreateDefaultSubobject<USendArrInfoManagerComponent>(
 		TEXT("SendArrManager")
 	);
+
+	// static ConstructorHelpers::FClassFinder<AMapGen> MapClass
+	// (TEXT("/Game/Map/Blueprints/BP_Map.BP_Map_C"));
+	// if (MapClass.Succeeded()) {
+	// 	MapGenClass = MapClass.Class;
+	// }
 }
 
 // Called when the game starts or when spawned
 void ABaseWaterBalloon::BeginPlay()
 {
 	Super::BeginPlay();
+	MapGen = Cast<AMapGen>(UGameplayStatics::GetActorOfClass(GetWorld(), AMapGen::StaticClass()));
 
 	// 3초 후 폭발
 	GetWorldTimerManager().SetTimer(ExplodeTimerHandle , this , &ABaseWaterBalloon::ExplodeTime ,
@@ -146,7 +154,7 @@ void ABaseWaterBalloon::CheckExplodeLocations(FArrLocation Loc)
 
 bool ABaseWaterBalloon::CheckRemoveLocations(FArrLocation Loc)
 {
-	int32 Input{map[Loc.X][Loc.Y]};
+	int32 Input{MapGen->GameMap[Loc.X][Loc.Y]};
 	
 	if (EMapType::Blocking == Input) {
 		return false;

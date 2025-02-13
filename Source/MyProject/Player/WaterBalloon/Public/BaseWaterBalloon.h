@@ -45,4 +45,9 @@ public:
 	class USceneComponent* Root;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	class UStaticMeshComponent* Mesh;
+
+	UPROPERTY(EditAnywhere , BlueprintReadOnly)
+	TSubclassOf<class AMapGen> MapGenClass;
+	UPROPERTY(EditAnywhere , BlueprintReadOnly)
+	class AMapGen* MapGen;
 };

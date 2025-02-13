@@ -66,4 +66,9 @@ public:
 	bool bDownPressed = false;
 	bool bRightPressed = false;
 	bool bLeftPressed = false;
+
+	UPROPERTY(EditAnywhere , BlueprintReadOnly)
+	TSubclassOf<class AMapGen> MapGenClass;
+	UPROPERTY(EditAnywhere , BlueprintReadOnly)
+	class AMapGen* MapGen;
 };

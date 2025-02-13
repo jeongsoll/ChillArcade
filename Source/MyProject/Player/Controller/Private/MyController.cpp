@@ -8,7 +8,9 @@
 #include "InputMappingContext.h" /*UInputMappingContext*/
 #include "EnhancedInputSubsystems.h" /*UEnhancedInputLocalPlayerSubsystem*/
 #include "EnhancedInputComponent.h" /*UEnhancedInputComponent*/
+#include "MapGen.h"
 #include "LogUtils.h"
+#include "Kismet/GameplayStatics.h"
 
 AMyController::AMyController()
 {
@@ -49,11 +51,20 @@ AMyController::AMyController()
 	if (InputActionEatItem.Succeeded()) {
 		EatItemAction = InputActionEatItem.Object;
 	}
+
+	// static ConstructorHelpers::FClassFinder<AMapGen> MapClass
+	// 	(TEXT("/Game/Map/Blueprints/BP_Map.BP_Map_C"));
+	// if (MapClass.Succeeded()) {
+	// 	MapGenClass = MapClass.Class;
+	// }
 }
 
 void AMyController::BeginPlay()
 {
 	Super::BeginPlay();
+
+	MapGen = Cast<AMapGen>(UGameplayStatics::GetActorOfClass(GetWorld(), AMapGen::StaticClass()));
+	
 	if (UEnhancedInputLocalPlayerSubsystem* subsystem{
 		ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer())
 	}) {
@@ -225,7 +236,7 @@ bool AMyController::CheckCollision()
 	//LogUtils::Log("Wall Location" , WallLocation.X , WallLocation.Y);
 	//LogUtils::Log("Wall Location" , CollisionCheckWallArray.X , CollisionCheckWallArray.Y);
 
-	if (map[CollisionCheckWallArray.X][CollisionCheckWallArray.Y] == EMapType::Blocking) {
+	if (MapGen->GameMap[CollisionCheckWallArray.X][CollisionCheckWallArray.Y] == EMapType::Blocking) {
 		if (FMath::Abs(Direction.X) == 1 && FMath::Abs(WallLocation.X - PlayerLocation.X) < PlayerLength) {
 			return false;
 		}
