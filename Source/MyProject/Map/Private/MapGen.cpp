@@ -7,11 +7,13 @@
 #include "BaseCharacter.h"
 #include "BaseWaterBalloon.h"
 #include "Bush.h"
+#include "IContentBrowserSingleton.h"
 #include "LogUtils.h"
 #include "MovingWall.h"
 #include "StrongWall.h"
 #include "Tile.h"
 #include "WeakWall.h"
+#include "DSP/AudioDebuggingUtilities.h"
 
 class ABaseWaterBalloon;
 // Sets default values
@@ -27,9 +29,10 @@ void AMapGen::BeginPlay()
 	Super::BeginPlay();
 
 	Player = Cast<ABaseCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+
+	//맵 초기화;
+	InitializeMap();
 	
-	LogUtils::Log("2 == map", map[5][4]);
-	LogUtils::Log();
 	SetGrid(gridSizeX, gridSizeY);
 }
 
@@ -41,36 +44,40 @@ void AMapGen::Tick(float DeltaTime)
 void AMapGen::SetGrid(int8 gridX, int8 gridY)
 {
 	UWorld* world = GetWorld();
+	
 	//그리드 반복문으로 생성
 	for (int x = 0; x < gridX; ++x)
 	{
 		for (int y = 0; y < gridY; ++y)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("map[%d][%d] = %d"), y, x, map[y][x]);
+			UE_LOG(LogTemp, Warning, TEXT("map[%d][%d] = %d"), x, y, GameMap[x][y]);
 		
 			//x,y값이 증가할 때 landSpacing을 곱해서 landSpacing만큼 떨어트리는 변수
 			FVector location = GetActorLocation() + FVector(landSpacing * (gridX - 1) - (x * landSpacing), y * landSpacing, 0.0f);
-			switch(map[x][y])
+
+			TileLocation[x][y] = location;
+			switch(GameMap[x][y])
 			{
 				case 0:
 					// 바닥 타일
-				world->SpawnActor<ATile>(TileFactory, location, FRotator::ZeroRotator);
+					if (auto* spawntile = world->SpawnActor<ATile>(TileFactory, location, FRotator::ZeroRotator))
+					{
+						baseWalls[x][y] = Cast<ABaseWall>(spawntile);
+					}
 					break;
 				case 1:
 					// 안사라지는 벽(이동 불가)
-					world->SpawnActor<AStrongWall>(StrongWallFactory, location, FRotator::ZeroRotator);
+					if (auto* spawnStrongWall = world->SpawnActor<AStrongWall>(StrongWallFactory, location, FRotator::ZeroRotator))
+					{
+						baseWalls[x][y] = Cast<ABaseWall>(spawnStrongWall);
+					}
 					break;
 				case 2:
 					// 사라지는 벽
-					world->SpawnActor<AWeakWall>(WeakWallFactory, location, FRotator::ZeroRotator);
-					break;
-				case 3:
-					// 밀리는 벽
-					world->SpawnActor<AMovingWall>(MovingWallFactory, location, FRotator::ZeroRotator);
-					break;
-				case 4:
-					// 풀숲
-					world->SpawnActor<ABush>(BushFactory, location, FRotator::ZeroRotator);
+					if (auto* spawnWeakWall = world->SpawnActor<AWeakWall>(WeakWallFactory, location, FRotator::ZeroRotator))
+					{
+						baseWalls[x][y] = Cast<ABaseWall>(spawnWeakWall);
+					}
 					break;
 				default:
 					break;		
@@ -82,63 +89,109 @@ void AMapGen::SetGrid(int8 gridX, int8 gridY)
 void AMapGen::UpdateMapPlayer(struct FArrLocation Loc)
 {
 	// 플레이어 위치를 받음
-	int16 playerLoc = map[Loc.X][Loc.Y] % 100;
-	// 플레이어 위치 검증 어떻게? 플레이어가 그 위치에 있는지 없는지 검증
-	// 플레이어가 있을 수 있는 곳 타일 = 0, 풀숲 = 4, 물풍선 = 10
-	if (playerLoc == 0 || playerLoc == 4 || playerLoc == 10 || playerLoc == 14) return;
-	// 받은 x,y값에 100을 더 해서 맵을 업데이트
-	map[Loc.X][Loc.Y] += 100;
-
-	//LogUtils
+	int16 playerLoc = GameMap[Loc.X][Loc.Y] % 100;
+	
+	// 플레이어가 있을 수 있는 곳 타일 = 0, 물풍선 = 10 / 플레이어가 이미 있는지 체크
+	if ((playerLoc == 0 || playerLoc == 10) && GameMap[Loc.X][Loc.Y] < 100) GameMap[Loc.X][Loc.Y] += 100;
 }
 
 void AMapGen::UpdateMapDestroyed(struct FArrLocation Loc)
 {
-	// 파괴되는 엑터 = 풀숲(4), 부셔지는 벽(2)
+	// 파괴되는 엑터 = 부셔지는 벽(2)
 	// 배열로 파괴되는 엑터가 구조체 형식으로 옴
 	// 1. 물풍선 위치[x][y]를 받는다.
 	// 2. 파괴되는 엑터에 위치[x][y]를 받는다.
 	// 3. 다음 파괴되는 엑터에 위치[x][y]를 받는다.
 	// 4. 3번과 동일하다.
-	// 배열로 받기 때문에 풀어서 업데이트 해야함
-
-	// for (auto& loc : Loc)
-	// {
-		// 물풍선 위치 저장
-		// 파괴된 엑터 위치 업데이트 맵 업데이트
-		map[Loc.X][Loc.Y] = 0;
-	//}
+	
+	// 물풍선 위치 저장
+	// 파괴된 엑터 위치 업데이트 맵 업데이트
+	GameMap[Loc.X][Loc.Y] = 0;
+	UpdateMap(Movable, Loc.X, Loc.Y);
+	
 	LogUtils::Log("Destroyed", map[Loc.X][Loc.Y]);
 }
 
 void AMapGen::UpdateMapBalloon(struct FArrLocation Loc)
 {
+	if (GameMap[Loc.X][Loc.Y] == 10) return;
+	
 	//플레이어가 설치한 위치에 물풍선(10)으로 변경
-	//map[Loc.X][Loc.Y] = 10;
-	LogUtils::Log("Updated Balloon", map[Loc.X][Loc.Y]);
-
+	//그 위치 위에 물풍선 스폰
+	GameMap[Loc.X][Loc.Y] = 10;
+	
 	// 스폰 예시
-	// FActorSpawnParameters SpawnParams;
-	// SpawnParams.SpawnCollisionHandlingOverride =
-	// 	ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	// if (Player) {
-	// 	ABaseWaterBalloon* NewBalloon{GetWorld()->SpawnActor<ABaseWaterBalloon>(
-	// 		ABaseWaterBalloon::StaticClass() ,
-	// 		Player->GetActorTransform()
-	// 	)};
-	// 	if (NewBalloon) {
-	// 		NewBalloon->Initialize(Loc);
-	// 	}
-	// }
-	// else {
-	// 	LogUtils::Log("no player");
-	// }
-	
-	
+	FActorSpawnParameters SpawnParams;
+	SpawnParams.SpawnCollisionHandlingOverride =
+		ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	if (Player) {
+		ABaseWaterBalloon* NewBalloon{GetWorld()->SpawnActor<ABaseWaterBalloon>(
+			BalloonFactory,
+			ArrayToWorldLocation(Loc), FRotator::ZeroRotator
+		)};
+		if (NewBalloon) {
+			NewBalloon->Initialize(Loc);
+		}
+	}
+	else
+	{
+		LogUtils::Log("no player");
+	}
+}
+void AMapGen::UpdateMap(EMapType Type, int8 LocX, int8 LocY)
+{
+	//스폰 시키는 함수
+	switch (Type)
+	{
+	case Movable: // 0
+		// 스폰하기전에 위치에 있는 엑터를 destroy하고 스폰한다.
+			baseWalls[LocX][LocY]->Destroy();
+		if (auto* respawnTile = GetWorld()->SpawnActor<ATile>(TileFactory, TileLocation[LocX][LocY], FRotator::ZeroRotator))
+		{
+			baseWalls[LocX][LocY] = Cast<ABaseWall>(respawnTile);
+		}
+		break;
+	case Blocking: // 1
+		baseWalls[LocX][LocY]->Destroy();
+		if (auto* respawnStrongWall = GetWorld()->SpawnActor<AStrongWall>(StrongWallFactory, TileLocation[LocX][LocY], FRotator::ZeroRotator))
+		{
+			baseWalls[LocX][LocY] = Cast<ABaseWall>(respawnStrongWall);
+		}
+		break;
+	case Destroyable: // 2
+		baseWalls[LocX][LocY]->Destroy();
+		if (auto* respawnWeakWall = GetWorld()->SpawnActor<AWeakWall>(WeakWallFactory, TileLocation[LocX][LocY], FRotator::ZeroRotator))
+		{
+			baseWalls[LocX][LocY] = Cast<ABaseWall>(respawnWeakWall);
+		}
+		break;
+	default:
+		break;
+	}
 }
 
-void AMapGen::UpdateMapPushed(struct FArrLocation Loc, struct FArrLocation PlayerLoc)
+void AMapGen::InitializeMap()
 {
+	for (int i = 0; i < MAP_ROW_MAX; ++i)
+	{
+		for (int j = 0; j < MAP_COLUMN_MAX; ++j)
+		{
+			GameMap[i][j] = map[i][j];
+		}
+	}
+}
+
+FVector AMapGen::ArrayToWorldLocation(struct FArrLocation Loc)
+{
+	return FVector((MAP_ROW_MAX - Loc.X) * 100.f - 50.f , (Loc.Y+ 1) * 100.f - 50.f, 10.0f);
+}
+
+//보류
+/*void AMapGen::UpdateMapPushed(struct FArrLocation Loc, struct FArrLocation PlayerLoc)
+{
+	// 예외처리
+	if (Loc.X < 0 || Loc.Y < 0 || Loc.X >= gridSizeX || Loc.Y >= gridSizeY) return;
+	
 	//1초동안 플레이어의 입력이 들어오면
 	//밀리는 벽을 플레이어가 바라보는 방향으로 1칸 옮긴다.
 	//원래 있던 곳은 0으로 바꾼다.
@@ -151,30 +204,19 @@ void AMapGen::UpdateMapPushed(struct FArrLocation Loc, struct FArrLocation Playe
 	if (dx == 0 && dy == 0) return;
 
 	// 현재 위치의 블록이 밀리는 벽(2)인지 확인
-	if (map[Loc.X][Loc.Y] != 2) return;
+	if (GameMap[Loc.X][Loc.Y] != 2) return;
 
 	// 벽이 이동할 위치 계산
 	int8 NewX = Loc.X + dx;
 	int8 NewY = Loc.Y + dy;
 
 	//이동할 위치가 비어 있는지 확인
-	if (map[NewX][NewY] == 0)
+	if (GameMap[NewX][NewY] == 0)
 	{
 		//밀리는 쪽으로 벽 이동
-		map[NewX][NewY] = 2;
+		GameMap[NewX][NewY] = 2;
 		//기존 위치는 다시 타일로 변경
-		map[Loc.X][Loc.Y] = 0;
+		GameMap[Loc.X][Loc.Y] = 0;
 	}
-}
+}*/
 
-void AMapGen::UpdateMap(int8 value, int8 LocX, int8 LocY)
-{
-	// 타일(0번)일 때
-	/*map[LocX][LocY] */
-	// 부셔지는 벽(2번)일 때
-	// 밀리는 벽(3번)일 때
-	// 4번일 때
-	// 플레이어일 때
-	// 물풍선일 때
-	
-}

@@ -3,11 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BaseWall.h"
 #include "GameFramework/Actor.h"
 #include "Tile.generated.h"
 
 UCLASS()
-class MYPROJECT_API ATile : public AActor
+class MYPROJECT_API ATile : public ABaseWall
 {
 	GENERATED_BODY()
 
@@ -22,9 +23,5 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tile")
-	class UBoxComponent* boxComp;
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tile")
-	class UStaticMeshComponent* tileMesh;
+	
 };
