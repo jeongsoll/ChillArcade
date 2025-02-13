@@ -5,6 +5,7 @@
 #include "ArrLocation.h"
 #include "LogUtils.h"
 #include "MapGen.h"
+#include "Kismet/GameplayStatics.h"
 
 
 // Sets default values for this component's properties
@@ -23,7 +24,7 @@ void USendArrInfoManagerComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Map = Cast<AMapGen>(AMapGen::StaticClass());
+	Map = Cast<AMapGen>(UGameplayStatics::GetActorOfClass(GetWorld(), AMapGen::StaticClass()));
 	// ...
 }
 

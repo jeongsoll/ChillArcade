@@ -2,7 +2,10 @@
 
 #pragma once
 
+#include <map>
+
 #include "CoreMinimal.h"
+#include "ArrLocation.h"
 #include "GameFramework/Actor.h"
 #include "MapGen.generated.h"
 
@@ -21,14 +24,7 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	// 그리드 x축, y축 지정할 변수
-	int8 gridSizeX = 15;
-	int8 gridSizeY = 17;
-
-	// 얼마나 떨어질지 정하는 변수
-	int8 landSpacing = 100;
-
+	
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class ATile> TileFactory;
 	UPROPERTY(EditAnywhere)
@@ -39,10 +35,29 @@ public:
 	TSubclassOf<class AStrongWall> StrongWallFactory;
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class AWeakWall> WeakWallFactory;
-
-	class ABaseCharacter* Player;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class ABaseWaterBalloon> BalloonFactory;
 	
-	//그리드 타일 세팅
+
+	// 그리드 x축, y축 지정할 변수
+	int8 gridSizeX = 15;
+	int8 gridSizeY = 17;
+
+	// 얼마나 떨어질지 정하는 변수
+	int8 landSpacing = 100;
+
+	// 맵 변수
+	int8 GameMap[15][17] = {};
+
+	// 캐릭터 변수
+	class ABaseCharacter* Player;
+
+	//맵 위치 정보를 담을 배열 변수
+	FVector TileLocation[15][17];
+
+	class ABaseWall* baseWalls[15][17] = {};
+	
+	// 그리드 타일 세팅
 	void SetGrid(int8 gridX , int8 gridY);
 
 	//1.플레이어 위치  업데이트 함수
@@ -53,12 +68,16 @@ public:
 
 	//3.물풍선 설치 업데이트 함수
 	void UpdateMapBalloon(struct FArrLocation Loc);
-
-	//4.밀리는 벽 업데이트 함수
-	void UpdateMapPushed(struct FArrLocation Loc , struct FArrLocation PlayerLoc);
-
+	
 	//5. 맵 업데이트 함수
-	void UpdateMap(int8 value , int8 LocX , int8 LocY);
+	void UpdateMap(EMapType Type , int8 LocX , int8 LocY);
 
 	//6. 맵 스폰 함수
+	void InitializeMap();
+
+	//7. 배열 값으로 타일 중앙값 구하는 함수
+	FVector ArrayToWorldLocation(struct FArrLocation Loc); 
+	
+	//4.밀리는 벽 업데이트 함수
+	/*void UpdateMapPushed(struct FArrLocation Loc , struct FArrLocation PlayerLoc);*/
 };
