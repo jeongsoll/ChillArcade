@@ -19,7 +19,8 @@ ABaseWaterBalloon::ABaseWaterBalloon()
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(RootComponent);
-
+	Mesh->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+	
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> BaseMeshObject
 		(TEXT("/Game/Player/Balloon/Model/sm_balloon.sm_balloon"));
 	if (BaseMeshObject.Succeeded()) {

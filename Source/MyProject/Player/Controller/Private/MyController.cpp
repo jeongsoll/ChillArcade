@@ -236,8 +236,8 @@ bool AMyController::CheckCollision()
 	};
 	//LogUtils::Log("Wall Location" , WallLocation.X , WallLocation.Y);
 	//LogUtils::Log("Wall Location" , CollisionCheckWallArray.X , CollisionCheckWallArray.Y);
-
-	if (MapGen->GameMap[CollisionCheckWallArray.X][CollisionCheckWallArray.Y] == EMapType::Blocking) {
+	uint8 WallType{static_cast<uint8>(MapGen->GameMap[CollisionCheckWallArray.X][CollisionCheckWallArray.Y])};
+	if (WallType == EMapType::Blocking || WallType == EMapType::Destroyable) {
 		if (FMath::Abs(Direction.X) == 1 && FMath::Abs(WallLocation.X - PlayerLocation.X) < PlayerLength) {
 			return false;
 		}
