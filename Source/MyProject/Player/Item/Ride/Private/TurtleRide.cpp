@@ -14,7 +14,7 @@ ATurtleRide::ATurtleRide()
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(RootComponent);
 	Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
+	
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> MeshAsset
 		(TEXT("/Game/Player/Item/Model/SM_Car.SM_Car"));
 	if (MeshAsset.Succeeded()) {

@@ -85,13 +85,10 @@ void AMyController::Tick(float DeltaTime)
 		
 		if (CheckCollision()) {
 			//ControlledPlayer->AddMovementInput(Direction);
-			ControlledPlayer->Speed = 600.f;
-
-			ControlledPlayer->AddActorLocalOffset(Direction * 5.f);
+			ControlledPlayer->AddActorLocalOffset(Direction * ControlledPlayer->Speed);
 			ControlledPlayer->CheckLocation();
 		}
 	}
-	ControlledPlayer->Speed = 0.f;
 }
 
 void AMyController::SetupInputComponent()

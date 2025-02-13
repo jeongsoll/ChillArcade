@@ -13,6 +13,18 @@ ABaseWaterBalloon::ABaseWaterBalloon()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	RootComponent = Root;
+
+	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	Mesh->SetupAttachment(RootComponent);
+
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> BaseMeshObject
+		(TEXT("/Game/Player/Balloon/Model/sm_balloon.sm_balloon"));
+	if (BaseMeshObject.Succeeded()) {
+		Mesh->SetStaticMesh(BaseMeshObject.Object);
+	}
+	
 	SendArrComponent = CreateDefaultSubobject<USendArrInfoManagerComponent>(
 		TEXT("SendArrManager")
 	);
@@ -61,8 +73,6 @@ void ABaseWaterBalloon::CheckExplodeLocations(FArrLocation Loc)
 
 	// 위쪽 검사
 	for (int32 i{1}; i <= ExplodeRange; ++i) {
-		//FArrLocation InitialLocation{Loc};
-		//if (CheckWall(InitialLocation)) {}
 		FArrLocation UpLocation;
 
 		if (Loc.X + i == MAP_ROW_MAX) {
@@ -78,25 +88,6 @@ void ABaseWaterBalloon::CheckExplodeLocations(FArrLocation Loc)
 		else {
 			break;
 		}
-		// if (EMapType::Blocking == map[Loc.X + i][Loc.Y]) {
-		// 	break;
-		// }
-		// if (EMapType::Pushable == map[Loc.X + i][Loc.Y]) {
-		// 	break;
-		// }
-		// if (EMapType::Bush == map[Loc.X + i][Loc.Y]) {
-		// 	UpLocation.X = Loc.X + i;
-		// 	UpLocation.Y = Loc.Y;
-		// 	Locations.Add(UpLocation);
-		// }
-		// if (EMapType::Destroyable == map[Loc.X + i][Loc.Y]) {
-		// 	break;
-		// }
-		// if (EMapType::Movable == map[Loc.X + i][Loc.Y]) {
-		// 	UpLocation.X = Loc.X + i;
-		// 	UpLocation.Y = Loc.Y;
-		// 	Locations.Add(UpLocation);
-		// }
 	}
 	for (int32 i{1}; i <= ExplodeRange; ++i) {
 		FArrLocation DownLocation;
