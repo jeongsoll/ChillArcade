@@ -231,7 +231,8 @@ bool AMyController::CheckCollision()
 		PlayerArray.X - FMath::FloorToInt(Direction.X) , PlayerArray.Y + FMath::FloorToInt(Direction.Y)
 	};
 	FVector WallLocation{
-		FVector((MAP_ROW_MAX - CollisionCheckWallArray.X) * 100.f - 50.f , (CollisionCheckWallArray.Y+ 1) * 100.f - 50.f, 0.f)
+		MapGen->ArrayToWorldLocation(CollisionCheckWallArray)
+		//FVector((MAP_ROW_MAX - CollisionCheckWallArray.X) * 100.f - 50.f , (CollisionCheckWallArray.Y+ 1) * 100.f - 50.f, 0.f)
 	};
 	//LogUtils::Log("Wall Location" , WallLocation.X , WallLocation.Y);
 	//LogUtils::Log("Wall Location" , CollisionCheckWallArray.X , CollisionCheckWallArray.Y);

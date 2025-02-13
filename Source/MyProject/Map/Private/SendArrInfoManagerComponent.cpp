@@ -52,9 +52,9 @@ void USendArrInfoManagerComponent::SendBalloonLocation(struct FArrLocation Loc)
 
 void USendArrInfoManagerComponent::SendBalloonExplodeLocation(TArray<struct FArrLocation> Loc)
 {
-	//for (const auto& [X, Y] : Loc) {
-		//LogUtils::Log("Explode Location : " , X , Y);
-	//}
+	for (const auto& [X, Y] : Loc) {
+		LogUtils::Log("Explode Location : " , X , Y);
+	}
 	Map->UpdateMapBalloonStream(Loc);
 }
 

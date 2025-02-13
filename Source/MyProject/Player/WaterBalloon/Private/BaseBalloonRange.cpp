@@ -4,6 +4,7 @@
 #include "BaseBalloonRange.h"
 
 #include "BaseCharacter.h"
+#include "LogUtils.h"
 
 
 // Sets default values
@@ -30,7 +31,7 @@ ABaseBalloonRange::ABaseBalloonRange()
 void ABaseBalloonRange::BeginPlay()
 {
 	Super::BeginPlay();
-
+	
 	// 1초 후 물줄기 제거
 	GetWorldTimerManager().SetTimer(RangeTimerHandle , this , &ABaseBalloonRange::RangeTime ,
 									1.f , false);
@@ -40,11 +41,15 @@ void ABaseBalloonRange::BeginPlay()
 void ABaseBalloonRange::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+	CapturePLayer();
 }
 
 void ABaseBalloonRange::Initialize(const struct FArrLocation& NewLocation)
 {
 	RangeLocation = NewLocation;
+	//LogUtils::Log("RangeLocation" , RangeLocation.X , RangeLocation.Y);
+
 }
 
 void ABaseBalloonRange::CapturePLayer()
@@ -58,7 +63,6 @@ void ABaseBalloonRange::CapturePLayer()
 
 void ABaseBalloonRange::RangeTime()
 {
-	CapturePLayer();
 	
 	Destroy();
 }
