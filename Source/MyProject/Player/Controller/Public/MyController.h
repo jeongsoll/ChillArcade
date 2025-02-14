@@ -28,10 +28,11 @@ protected:
 	void MovePlayerDown(const struct FInputActionValue& Value);
 	void MovePlayerRight(const struct FInputActionValue& Value);
 	void MovePlayerLeft(const struct FInputActionValue& Value);
-	void OnMoveUpCompleted(const FInputActionValue& Value);
-	void OnMoveDownCompleted(const FInputActionValue& Value);
-	void OnMoveRightCompleted(const FInputActionValue& Value);
-	void OnMoveLeftCompleted(const FInputActionValue& Value);
+	void MoveUpCompleted(const FInputActionValue& Value);
+	void MoveDownCompleted(const FInputActionValue& Value);
+	void MoveRightCompleted(const FInputActionValue& Value);
+	void MoveLeftCompleted(const FInputActionValue& Value);
+	void UseEquippedItem(const FInputActionValue& Value);
 	void UpdateDirection();
 	bool CheckCollision();
 
@@ -51,7 +52,9 @@ public:
 	class UInputAction* BalloonAction;
 	UPROPERTY(EditAnywhere , BlueprintReadOnly , Category = "Input")
 	class UInputAction* EatItemAction;
-
+	UPROPERTY(EditAnywhere , BlueprintReadOnly , Category = "Input")
+	class UInputAction* UseEquippedItemAction;
+	
 	UPROPERTY(EditAnywhere , BlueprintReadOnly)
 	class ABaseCharacter* ControlledPlayer;
 

@@ -36,7 +36,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void UseEatItem();
 	UFUNCTION(BlueprintCallable)
-	void UseEquipItem();
+	void UseEquipItem(int32 Input);
 	UFUNCTION(BlueprintCallable)
 	void SetRide(TSubclassOf<class ABaseRide> Ride);
 	UFUNCTION(BlueprintCallable)
@@ -95,5 +95,8 @@ public:
 	TSubclassOf<class ATrappedBalloon> TrapBalloonClass;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<class ASpawnableShield> ShieldClass;
-	
+	// UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	// class ATurtleRide* Turtle;
+	// UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	// class ASpaceShipRide* SpaceShip;
 };

@@ -17,11 +17,13 @@
 #include "SendArrInfoManagerComponent.h"
 #include "ShieldItem.h"
 #include "SpaceShipItem.h"
+#include "SpaceShipRide.h"
 #include "SpannerItem.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "TrappedBalloon.h"
 #include "SpawnableShield.h"
 #include "TurtleItem.h"
+#include "TurtleRide.h"
 
 // Sets default values
 ABaseCharacter::ABaseCharacter()
@@ -141,9 +143,38 @@ void ABaseCharacter::UseEatItem()
 	}
 }
 
-void ABaseCharacter::UseEquipItem()
+void ABaseCharacter::UseEquipItem(int32 Input)
 {
-	//
+	ATurtleRide* Turtle{Cast<ATurtleRide>(RidingComponent->GetChildActor())};
+	ASpaceShipRide* SpaceShip{Cast<ASpaceShipRide>(RidingComponent->GetChildActor())};
+	
+	switch (Input) {
+	case EItemType::Can:
+		if (CheckRide() && Turtle) {
+			Turtle->ChangeFast();
+		}
+		break;
+	case EItemType::Needle:
+		Escaped();
+		break;
+	case EItemType::Shield:
+		SetShield();
+		break;
+	case EItemType::Spanner:
+		if (CheckRide() && SpaceShip) {
+			SpaceShip->ChangeFast();
+		}
+		break;
+	case EItemType::Five:
+		LogUtils::Log("Input 5 !");
+		break;
+	case EItemType::Six:
+		LogUtils::Log("Input 6 !");
+		break;
+	default:
+		LogUtils::Log("Input Error ! ! ! ! !");
+		break;
+	}
 }
 
 void ABaseCharacter::SetRide(TSubclassOf<class ABaseRide> Ride)
@@ -174,7 +205,7 @@ void ABaseCharacter::Trapped()
 	if (bIsTrapped || bIsShield) {
 		return;
 	}
-	
+
 	bIsTrapped = true;
 	TrappedComponent->SetChildActorClass(TrapBalloonClass);
 	GetWorldTimerManager().SetTimer(TrappedTimerHandle , this , &ABaseCharacter::Die ,

@@ -33,6 +33,17 @@ enum EMapType : uint8 {
 	PlayerLoc = 100
 };
 
+UENUM(BlueprintType)
+enum EItemType : uint8 {
+	None = 0,
+	Can = 1,
+	Needle = 2,
+	Shield = 3,
+	Spanner = 4,
+	Five = 5,
+	Six = 6
+};
+
 //타일 유형
 UENUM(BlueprintType)
 enum class ETileType : uint8

@@ -51,6 +51,11 @@ AMyController::AMyController()
 	if (InputActionEatItem.Succeeded()) {
 		EatItemAction = InputActionEatItem.Object;
 	}
+	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionEquippedItem
+	(TEXT("/Game/Player/Input/IA_Item.IA_Item"));
+	if (InputActionEquippedItem.Succeeded()) {
+		UseEquippedItemAction = InputActionEquippedItem.Object;
+	}
 
 	// static ConstructorHelpers::FClassFinder<AMapGen> MapClass
 	// 	(TEXT("/Game/Map/Blueprints/BP_Map.BP_Map_C"));
@@ -116,13 +121,16 @@ void AMyController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(MoveLeft , ETriggerEvent::Started , this , &AMyController::MovePlayerLeft);
 
 		EnhancedInputComponent->BindAction(MoveUp , ETriggerEvent::Completed , this ,
-		                                   &AMyController::OnMoveUpCompleted);
+		                                   &AMyController::MoveUpCompleted);
 		EnhancedInputComponent->BindAction(MoveDown , ETriggerEvent::Completed , this ,
-		                                   &AMyController::OnMoveDownCompleted);
+		                                   &AMyController::MoveDownCompleted);
 		EnhancedInputComponent->BindAction(MoveRight , ETriggerEvent::Completed , this ,
-		                                   &AMyController::OnMoveRightCompleted);
+		                                   &AMyController::MoveRightCompleted);
 		EnhancedInputComponent->BindAction(MoveLeft , ETriggerEvent::Completed , this ,
-		                                   &AMyController::OnMoveLeftCompleted);
+		                                   &AMyController::MoveLeftCompleted);
+
+		EnhancedInputComponent->BindAction(UseEquippedItemAction , ETriggerEvent::Triggered , this ,
+								   &AMyController::UseEquippedItem);
 	}
 }
 
@@ -168,28 +176,36 @@ void AMyController::MovePlayerLeft(const struct FInputActionValue& Value)
 	UpdateDirection();
 }
 
-void AMyController::OnMoveUpCompleted(const FInputActionValue& Value)
+void AMyController::MoveUpCompleted(const FInputActionValue& Value)
 {
 	bUpPressed = false;
 	UpdateDirection();
 }
 
-void AMyController::OnMoveDownCompleted(const FInputActionValue& Value)
+void AMyController::MoveDownCompleted(const FInputActionValue& Value)
 {
 	bDownPressed = false;
 	UpdateDirection();
 }
 
-void AMyController::OnMoveRightCompleted(const FInputActionValue& Value)
+void AMyController::MoveRightCompleted(const FInputActionValue& Value)
 {
 	bRightPressed = false;
 	UpdateDirection();
 }
 
-void AMyController::OnMoveLeftCompleted(const FInputActionValue& Value)
+void AMyController::MoveLeftCompleted(const FInputActionValue& Value)
 {
 	bLeftPressed = false;
 	UpdateDirection();
+}
+
+void AMyController::UseEquippedItem(const FInputActionValue& Value)
+{
+	float Input{Value.Get<float>()};
+	//int32 Input{FMath::FloorToInt32(Value.Get<FVector>().X)};
+
+	ControlledPlayer->UseEquipItem(FMath::FloorToInt32(Input));
 }
 
 void AMyController::UpdateDirection()

@@ -32,7 +32,7 @@ ABaseWaterBalloon::ABaseWaterBalloon()
 	);
 	
 	// static ConstructorHelpers::FClassFinder<AMapGen> MapClass
-	// (TEXT("/Game/Map/Blueprints/BP_Map.BP_Map_C"));
+	// (TEXT("/Script/Engine.Blueprint'/Game/Map/Blueprints/BP_Map.BP_Map_C'"));
 	// if (MapClass.Succeeded()) {
 	// 	MapGenClass = MapClass.Class;
 	// }
