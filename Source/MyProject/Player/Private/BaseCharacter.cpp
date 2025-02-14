@@ -4,10 +4,22 @@
 #include "BaseCharacter.h"
 #include "ArrLocation.h"
 #include "BaseRide.h"
+#include "BubbleItem.h"
+#include "CanItem.h"
+#include "DevilItem.h"
+#include "FluidItem.h"
 #include "LogUtils.h"
+#include "Needle.h"
+#include "RangeItem.h"
+#include "RollerItem.h"
 #include "SendArrInfoManagerComponent.h"
+#include "ShieldItem.h"
+#include "SpaceShipItem.h"
+#include "SpannerItem.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "TrappedBalloon.h"
+#include "SpawnableShield.h"
+#include "TurtleItem.h"
 
 // Sets default values
 ABaseCharacter::ABaseCharacter()
@@ -28,13 +40,22 @@ ABaseCharacter::ABaseCharacter()
 
 	TrappedComponent = CreateDefaultSubobject<UChildActorComponent>(TEXT("TrappedComponent"));
 	TrappedComponent->SetupAttachment(GetMesh());
+	
+	ShieldComponent = CreateDefaultSubobject<UChildActorComponent>(TEXT("ShieldComponent"));
+	ShieldComponent->SetupAttachment(GetMesh());
 
 	ConstructorHelpers::FClassFinder<ATrappedBalloon> TempTrappedBalloon
-	(TEXT("/Game/Player/Balloon/BP_TrappedBalloon.BP_TrappedBalloon_C"));
+	 	(TEXT("/Game/Player/Balloon/BP_TrappedBalloon.BP_TrappedBalloon_C"));
 	if (TempTrappedBalloon.Succeeded()) {
 		TrapBalloonClass = TempTrappedBalloon.Class;
 	}
-	
+
+	 ConstructorHelpers::FClassFinder<ASpawnableShield> TempShield
+		(TEXT("/Game/Player/Item/BP_SpawnableShield.BP_SpawnableShield_C"));
+	if (TempShield.Succeeded()) {
+		ShieldClass = TempShield.Class;
+	}
+
 	// static ConstructorHelpers::FClassFinder<UAnimInstance> AnimBP
 	// 	(TEXT("/Game/Player/Animation/ABP_AppleAnimation.ABP_AppleAnimation_C"));
 	// if (AnimBP.Succeeded()) {
@@ -102,7 +123,22 @@ struct FArrLocation ABaseCharacter::CheckLocation()
 
 void ABaseCharacter::UseEatItem()
 {
-	//
+	if (bHasNeedle) {
+		Escaped();
+		bHasNeedle = false;
+	}
+	if (bHasShield && !bIsTrapped) {
+		SetShield();
+		bHasShield = false;
+	}
+	if (bHasCan && !bIsTrapped) {
+		
+		bHasCan = false;	
+	}
+	if (bHasSpanner && !bIsTrapped) {
+		
+		bHasSpanner = false;
+	}
 }
 
 void ABaseCharacter::UseEquipItem()
@@ -138,9 +174,8 @@ void ABaseCharacter::Trapped()
 	bIsTrapped = true;
 	TrappedComponent->SetChildActorClass(TrapBalloonClass);
 	GetWorldTimerManager().SetTimer(TrappedTimerHandle , this , &ABaseCharacter::Die ,
-								5.f , false);
+	                                5.f , false);
 	Speed = 1.f;
-	
 }
 
 void ABaseCharacter::Escaped()
@@ -163,13 +198,58 @@ void ABaseCharacter::Die()
 void ABaseCharacter::SetShield()
 {
 	bIsShield = true;
-	
+	ShieldComponent->SetChildActorClass(ShieldClass);
+
 	GetWorldTimerManager().SetTimer(ShieldTimerHandle , this , &ABaseCharacter::RemoveShield ,
-							2.f , false);
+	                                2.f , false);
 }
 
 void ABaseCharacter::RemoveShield()
 {
 	bIsShield = false;
+	ShieldComponent->SetChildActorClass(nullptr);
+
 	GetWorldTimerManager().ClearTimer(ShieldTimerHandle);
+}
+
+bool ABaseCharacter::HasItem()
+{
+	return bHasNeedle || bHasShield || bHasCan || bHasSpanner;
+}
+
+void ABaseCharacter::GetItem(ABaseItem* BaseItem)
+{
+	if (BaseItem->IsA<ABubbleItem>()) {
+		
+	}
+	if (BaseItem->IsA<ACanItem>()) {
+		bHasCan = true;
+	}
+	if (BaseItem->IsA<ADevilItem>()) {
+		
+	}
+	if (BaseItem->IsA<AFluidItem>()) {
+		
+	}
+	if (BaseItem->IsA<ANeedle>()) {
+		bHasNeedle = true;
+	}
+	if (BaseItem->IsA<ARangeItem>()) {
+		
+	}
+	if (BaseItem->IsA<ARollerItem>()) {
+		
+	}
+	if (BaseItem->IsA<AShieldItem>()) {
+		bHasShield = true;
+	}
+	if (BaseItem->IsA<ASpaceShipItem>()) {
+		
+	}
+	if (BaseItem->IsA<ASpannerItem>()) {
+		bHasSpanner = true;
+	}
+	if (BaseItem->IsA<ATurtleItem>()) {
+		
+	}
 }

@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BaseItem.h"
 #include "GameFramework/Character.h"
 #include "BaseCharacter.generated.h"
 
@@ -52,25 +53,47 @@ public:
 	void SetShield();
 	UFUNCTION(BlueprintCallable)
 	void RemoveShield();
+	UFUNCTION(BlueprintCallable)
+	bool HasItem();
+	UFUNCTION(BlueprintCallable)
+	void GetItem(ABaseItem* BaseItem);
 	
-	UPROPERTY(BlueprintReadWrite)
-	TSubclassOf<ABaseRide> EquippedRideClass;
 	UPROPERTY(BlueprintReadWrite)
 	float Speed;
 	UPROPERTY(BlueprintReadWrite)
 	bool bHasRiding{false};
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class UChildActorComponent* RidingComponent;
 	UPROPERTY(BlueprintReadWrite)
 	bool bIsTrapped{false};
+	UPROPERTY(BlueprintReadWrite)
+	bool bIsShield{false};
+	UPROPERTY(BlueprintReadWrite)
+	bool bHasNeedle{false};
+	UPROPERTY(BlueprintReadWrite)
+	bool bHasShield{false};
+	UPROPERTY(BlueprintReadWrite)
+	bool bHasCan{false};
+	UPROPERTY(BlueprintReadWrite)
+	bool bHasSpanner{false};
+	
+	UPROPERTY(BlueprintReadWrite)
+	int32 BalloonRange{2};
+	
 	UPROPERTY()
 	FTimerHandle TrappedTimerHandle;
 	UPROPERTY()
 	FTimerHandle ShieldTimerHandle;
+	
 	UPROPERTY(BlueprintReadWrite)
-	bool bIsShield{false};
+	TSubclassOf<ABaseRide> EquippedRideClass;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UChildActorComponent* RidingComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UChildActorComponent* TrappedComponent;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UChildActorComponent* ShieldComponent;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<class ATrappedBalloon> TrapBalloonClass;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class UChildActorComponent* TrappedComponent;
+	TSubclassOf<class ASpawnableShield> ShieldClass;
+	
 };

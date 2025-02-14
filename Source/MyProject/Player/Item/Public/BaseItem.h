@@ -21,6 +21,18 @@ protected:
 public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
+	UFUNCTION(BlueprintCallable)
+	void EquipItem();
 	void DestroyItem();
+
+	UPROPERTY(EditAnywhere , BlueprintReadWrite)
+	class USceneComponent* Root;
+	UPROPERTY(EditAnywhere , BlueprintReadWrite)
+	class UPaperSpriteComponent* ItemSprite;
+	UPROPERTY(EditAnywhere , BlueprintReadWrite)
+	class UPaperSpriteComponent* ShadowSprite;
+
+	FVector ItemLocation;
+	UPROPERTY()
+	class ABaseCharacter* Player;
 };

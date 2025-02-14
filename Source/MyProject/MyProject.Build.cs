@@ -8,7 +8,7 @@ public class MyProject : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 	
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput" });
+		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput", "Paper2D" });
 
 		PrivateDependencyModuleNames.AddRange(new string[] {  });
 
@@ -21,6 +21,7 @@ public class MyProject : ModuleRules
 			"MyProject/Player/WaterBalloon/Public",
 			"MyProject/Player/Item/Public",
 			"MyProject/Player/Item/Ride/Public",
+			"MyProject/Player/Item/SpawnableItem/Public",
 			"MyProject/Player/Animation/Public",
 			"MyProject/Widget/Lobby/Public",
 			"MyProject/Widget/WaitRoom/Public",

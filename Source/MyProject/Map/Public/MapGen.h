@@ -71,6 +71,7 @@ public:
 	void UpdateMapBalloon(struct FArrLocation Loc);
 	
 	//5. 맵 업데이트 함수
+	
 	void UpdateMap(EMapType Type , int8 LocX , int8 LocY);
 
 	//6. 맵 스폰 함수
