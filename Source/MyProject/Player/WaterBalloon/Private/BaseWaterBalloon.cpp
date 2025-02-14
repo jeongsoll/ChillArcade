@@ -181,5 +181,5 @@ bool ABaseWaterBalloon::CheckRemoveLocations(FArrLocation Loc)
 		return true;
 	}
 
-	return true;
+	return false;
 }

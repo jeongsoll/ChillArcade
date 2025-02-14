@@ -51,7 +51,7 @@ void AMapGen::SetGrid(int8 gridX, int8 gridY)
 	{
 		for (int y = 0; y < gridY; ++y)
 		{
-			UE_LOG(LogTemp, Warning, TEXT("map[%d][%d] = %d"), x, y, GameMap[x][y]);
+			/*UE_LOG(LogTemp, Warning, TEXT("map[%d][%d] = %d"), x, y, GameMap[x][y]);*/
 		
 			//x,y값이 증가할 때 landSpacing을 곱해서 landSpacing만큼 떨어트리는 변수
 			FVector location = GetActorLocation() + FVector(landSpacing * (gridX - 1) - (x * landSpacing), y * landSpacing, 0.0f);
@@ -90,11 +90,26 @@ void AMapGen::SetGrid(int8 gridX, int8 gridY)
 void AMapGen::UpdateMapPlayer(struct FArrLocation Loc)
 {
 	// 플레이어 위치를 받음
-	int16 playerLoc = GameMap[Loc.X][Loc.Y] % 100;
+	int16 playerLoc = GameMap[Loc.X][Loc.Y] - 100;
 	
-	// 플레이어가 있을 수 있는 곳 타일 = 0, 물풍선 = 10 / 플레이어가 이미 있는지 체크
-	if ((playerLoc == 0 || playerLoc == 10) && GameMap[Loc.X][Loc.Y] < 100)
+	// 플레이어가 있을 수 있는 곳 타일 = 0, 물풍선 = 10
+	if (playerLoc == -100 || playerLoc == -90)
+	{
+		// 이전 플레이어 위치를 기억할 맵 변수
+		// 이전 위치 배열 위치와 현재 위치를 비교해서 다를 때만 업데이트 
+		if (beforePlayerLocX != -1 && beforePlayerLocY != -1 && (beforePlayerLocX != Loc.X || beforePlayerLocY != Loc.Y))
+		{
+			if (GameMap[beforePlayerLocX][beforePlayerLocY] >= 100)
+			{
+				GameMap[beforePlayerLocX][beforePlayerLocY] -= 100; // 원래 상태로 복구 (0 또는 10)
+				/*UE_LOG(LogTemp, Warning, TEXT("if문 In GameMap[%d][%d] = %d beforeGameMap[%d][%d] = %d beforePlayerLocX = %d, Loc.X = %d, beforePlayerLocY = %d, Loc.Y = %d"), Loc.X, Loc.Y, GameMap[Loc.X][Loc.Y], beforePlayerLocX, beforePlayerLocY, GameMap[beforePlayerLocX][beforePlayerLocY], beforePlayerLocX, Loc.X, beforePlayerLocY, Loc.Y);*/
+			}
+		}
+		beforePlayerLocX = Loc.X;
+		beforePlayerLocY = Loc.Y;
 		GameMap[Loc.X][Loc.Y] += 100;
+	}
+			
 }
 
 void AMapGen::UpdateMapDestroyed(struct FArrLocation Loc)
@@ -116,21 +131,18 @@ void AMapGen::UpdateMapDestroyed(struct FArrLocation Loc)
 
 void AMapGen::UpdateMapBalloon(struct FArrLocation Loc)
 {
-	if (GameMap[Loc.X][Loc.Y] == 10) return;
+	if (GameMap[Loc.X][Loc.Y] % 100 == 10) return;
 	
 	//플레이어가 설치한 위치에 물풍선(10)으로 변경
 	//그 위치 위에 물풍선 스폰
 	GameMap[Loc.X][Loc.Y] = 10;
-	
 	// 스폰 예시
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride =
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 	if (Player) {
-		ABaseWaterBalloon* NewBalloon{GetWorld()->SpawnActor<ABaseWaterBalloon>(
-			BalloonFactory,
-			ArrayToWorldLocation(Loc), FRotator::ZeroRotator
-		)};
+		ABaseWaterBalloon* NewBalloon = GetWorld()->SpawnActor<ABaseWaterBalloon>(BalloonFactory, ArrayToWorldLocation(Loc), FRotator::ZeroRotator);
+		returnWaterBalloonLoc(NewBalloon, Loc);
 		if (NewBalloon) {
 			NewBalloon->Initialize(Loc);
 		}
@@ -206,6 +218,14 @@ void AMapGen::UpdateMapBalloonStream(TArray<struct FArrLocation> Loc)
 		}
 	}
 	
+}
+
+ABaseWaterBalloon* AMapGen::returnWaterBalloonLoc(ABaseWaterBalloon* balloon, struct FArrLocation Loc)
+{
+	//오브젝트 저장 맵 위치에 객체 저장
+	waterBalloonMap[Loc.X][Loc.Y] = balloon;
+	//객체 리턴
+	return waterBalloonMap[Loc.X][Loc.Y];
 }
 
 //보류

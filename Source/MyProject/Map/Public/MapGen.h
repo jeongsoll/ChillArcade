@@ -49,14 +49,19 @@ public:
 
 	// 맵 변수
 	int8 GameMap[15][17] = {};
+	// 이전 플레이어 위치를 담을 배열 변수
+	int8 beforePlayerLocX = -1;
+	int8 beforePlayerLocY = -1;
 
 	// 캐릭터 변수
 	class ABaseCharacter* Player;
 
-	//맵 위치 정보를 담을 배열 변수
+	//객체에 대한 맵 위치 정보를 담을 배열 변수
 	FVector TileLocation[15][17];
-
+	//객체 정보를 담을 배열 변수
 	class ABaseWall* baseWalls[15][17] = {};
+	//물풍선 객체 정보를 담을 배열 변수
+	class ABaseWaterBalloon* waterBalloonMap[15][17] = {};
 	
 	// 그리드 타일 세팅
 	void SetGrid(int8 gridX , int8 gridY);
@@ -81,6 +86,11 @@ public:
 
 	//8. 물풍선 범위 스폰 함수
 	void UpdateMapBalloonStream(TArray<struct FArrLocation> Loc);
+
+	//9. 물풍선 객체 반환 하는 함수
+	ABaseWaterBalloon* returnWaterBalloonLoc(ABaseWaterBalloon* balloon, struct FArrLocation Loc);
 	//4.밀리는 벽 업데이트 함수
 	/*void UpdateMapPushed(struct FArrLocation Loc , struct FArrLocation PlayerLoc);*/
+	
 };
+
