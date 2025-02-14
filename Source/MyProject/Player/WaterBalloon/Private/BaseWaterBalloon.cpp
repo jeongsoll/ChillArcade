@@ -19,13 +19,14 @@ ABaseWaterBalloon::ABaseWaterBalloon()
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(RootComponent);
-
+	Mesh->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
+	
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> BaseMeshObject
 		(TEXT("/Game/Player/Balloon/Model/sm_balloon.sm_balloon"));
 	if (BaseMeshObject.Succeeded()) {
 		Mesh->SetStaticMesh(BaseMeshObject.Object);
 	}
-	
+
 	SendArrComponent = CreateDefaultSubobject<USendArrInfoManagerComponent>(
 		TEXT("SendArrManager")
 	);
@@ -41,7 +42,7 @@ ABaseWaterBalloon::ABaseWaterBalloon()
 void ABaseWaterBalloon::BeginPlay()
 {
 	Super::BeginPlay();
-	MapGen = Cast<AMapGen>(UGameplayStatics::GetActorOfClass(GetWorld(), AMapGen::StaticClass()));
+	MapGen = Cast<AMapGen>(UGameplayStatics::GetActorOfClass(GetWorld() , AMapGen::StaticClass()));
 
 	// 3초 후 폭발
 	GetWorldTimerManager().SetTimer(ExplodeTimerHandle , this , &ABaseWaterBalloon::ExplodeTime ,
@@ -65,7 +66,7 @@ void ABaseWaterBalloon::ExplodeTime()
 {
 	CheckExplodeLocations(BalloonLocation);
 	//CheckRemoveLocations(BalloonLocation);
-	
+
 	SendArrComponent->SendRemoveLocation(BalloonLocation);
 
 	Destroy();
@@ -155,29 +156,30 @@ void ABaseWaterBalloon::CheckExplodeLocations(FArrLocation Loc)
 bool ABaseWaterBalloon::CheckRemoveLocations(FArrLocation Loc)
 {
 	int32 Input{MapGen->GameMap[Loc.X][Loc.Y]};
-	
+
 	if (EMapType::Blocking == Input) {
+		//LogUtils::Log("Blocking" , Loc.X , Loc.Y);
 		return false;
 	}
 	if (EMapType::Pushable == Input) {
-		LogUtils::Log("Pushable : " , Loc.X , Loc.Y);
-
+		//LogUtils::Log("Pushable : " , Loc.X , Loc.Y);
 		SendArrComponent->SendRemoveLocation(Loc);
 		return false;
 	}
 	if (EMapType::Bush == Input) {
-		LogUtils::Log("Bush : " , Loc.X , Loc.Y);
+		//LogUtils::Log("Bush : " , Loc.X , Loc.Y);
 		SendArrComponent->SendRemoveLocation(Loc);
 		return true;
 	}
 	if (EMapType::Destroyable == Input) {
-		LogUtils::Log("Destroyable : " , Loc.X , Loc.Y);
+		//LogUtils::Log("Destroyable : " , Loc.X , Loc.Y);
 		SendArrComponent->SendRemoveLocation(Loc);
 		return false;
 	}
 	if (EMapType::Movable == Input) {
+		//LogUtils::Log("Movable : " , Loc.X , Loc.Y);
 		return true;
 	}
 
-	return false;
+	return true;
 }

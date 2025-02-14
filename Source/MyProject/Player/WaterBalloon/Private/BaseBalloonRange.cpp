@@ -4,6 +4,9 @@
 #include "BaseBalloonRange.h"
 
 #include "BaseCharacter.h"
+#include "LogUtils.h"
+#include "MapGen.h"
+#include "Kismet/GameplayStatics.h"
 
 
 // Sets default values
@@ -18,6 +21,7 @@ ABaseBalloonRange::ABaseBalloonRange()
 
 	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
 	Mesh->SetupAttachment(RootComponent);
+	Mesh->SetCollisionEnabled(ECollisionEnabled::Type::NoCollision);
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> BaseMeshObject
 		(TEXT("/Game/Player/Balloon/Model/sm_balloonStream.sm_balloonStream"));
@@ -30,6 +34,7 @@ ABaseBalloonRange::ABaseBalloonRange()
 void ABaseBalloonRange::BeginPlay()
 {
 	Super::BeginPlay();
+	MapGen = Cast<AMapGen>(UGameplayStatics::GetActorOfClass(GetWorld() , AMapGen::StaticClass()));
 
 	// 1초 후 물줄기 제거
 	GetWorldTimerManager().SetTimer(RangeTimerHandle , this , &ABaseBalloonRange::RangeTime ,
@@ -40,11 +45,15 @@ void ABaseBalloonRange::BeginPlay()
 void ABaseBalloonRange::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+	CapturePLayer();
 }
 
 void ABaseBalloonRange::Initialize(const struct FArrLocation& NewLocation)
 {
 	RangeLocation = NewLocation;
+	//LogUtils::Log("RangeLocation" , RangeLocation.X , RangeLocation.Y);
+
 }
 
 void ABaseBalloonRange::CapturePLayer()
@@ -54,11 +63,15 @@ void ABaseBalloonRange::CapturePLayer()
 	if (Character->CheckLocation() == RangeLocation && !Character->bIsTrapped && !Character->bIsShield) {
 		Character->Trapped();
 	}
+
+	if (MapGen->GameMap[RangeLocation.X][RangeLocation.Y] == 10) {
+		// 이 위치 물풍선 터뜨리기
+		LogUtils::Log("Has Balloon" , RangeLocation.X , RangeLocation.Y);
+	}
 }
 
 void ABaseBalloonRange::RangeTime()
 {
-	CapturePLayer();
 	
 	Destroy();
 }

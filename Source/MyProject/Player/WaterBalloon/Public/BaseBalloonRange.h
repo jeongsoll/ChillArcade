@@ -38,4 +38,9 @@ public:
 	void RangeTime();
 	
 	FArrLocation RangeLocation;
+
+	UPROPERTY(EditAnywhere , BlueprintReadOnly)
+	TSubclassOf<class AMapGen> MapGenClass;
+	UPROPERTY(EditAnywhere , BlueprintReadOnly)
+	class AMapGen* MapGen;
 };

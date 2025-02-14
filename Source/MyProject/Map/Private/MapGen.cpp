@@ -93,7 +93,8 @@ void AMapGen::UpdateMapPlayer(struct FArrLocation Loc)
 	int16 playerLoc = GameMap[Loc.X][Loc.Y] % 100;
 	
 	// 플레이어가 있을 수 있는 곳 타일 = 0, 물풍선 = 10 / 플레이어가 이미 있는지 체크
-	if ((playerLoc == 0 || playerLoc == 10) && GameMap[Loc.X][Loc.Y] < 100) GameMap[Loc.X][Loc.Y] += 100;
+	if ((playerLoc == 0 || playerLoc == 10) && GameMap[Loc.X][Loc.Y] < 100)
+		GameMap[Loc.X][Loc.Y] += 100;
 }
 
 void AMapGen::UpdateMapDestroyed(struct FArrLocation Loc)
@@ -110,7 +111,7 @@ void AMapGen::UpdateMapDestroyed(struct FArrLocation Loc)
 	GameMap[Loc.X][Loc.Y] = 0;
 	UpdateMap(Movable, Loc.X, Loc.Y);
 	
-	LogUtils::Log("Destroyed", GameMap[Loc.X][Loc.Y]);
+	//LogUtils::Log("Destroyed", GameMap[Loc.X][Loc.Y]);
 }
 
 void AMapGen::UpdateMapBalloon(struct FArrLocation Loc)
@@ -195,12 +196,12 @@ void AMapGen::UpdateMapBalloonStream(TArray<struct FArrLocation> Loc)
 		SpawnParams.SpawnCollisionHandlingOverride =
 			ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 		if (Player) {
-			ABaseBalloonRange* NewBalloon{GetWorld()->SpawnActor<ABaseBalloonRange>(
+			ABaseBalloonRange* NewBalloonRange{GetWorld()->SpawnActor<ABaseBalloonRange>(
 				BalloonStreamFactory,
 				ArrayToWorldLocation(Location), FRotator::ZeroRotator
 			)};
-			if (NewBalloon) {
-				NewBalloon->Initialize(Location);
+			if (NewBalloonRange) {
+				NewBalloonRange->Initialize(Location);
 			}
 		}
 	}
