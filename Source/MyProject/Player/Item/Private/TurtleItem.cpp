@@ -4,6 +4,7 @@
 #include "TurtleItem.h"
 
 #include "BaseCharacter.h"
+#include "LogUtils.h"
 #include "TurtleRide.h"
 
 

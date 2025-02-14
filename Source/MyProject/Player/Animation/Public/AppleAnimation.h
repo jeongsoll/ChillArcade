@@ -12,4 +12,8 @@
 UCLASS()
 class MYPROJECT_API UAppleAnimation : public UAnimInstance {
 	GENERATED_BODY()
+
+public:
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	//float Speed;
 };

@@ -24,14 +24,14 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-	
+
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	class USendArrInfoManagerComponent* SendArrComponent;
 	
 	UFUNCTION(BlueprintCallable)
 	void SetBalloon();
 	UFUNCTION(BlueprintCallable)
-	void CheckLocation();
+	struct FArrLocation CheckLocation();
 	UFUNCTION(BlueprintCallable)
 	void UseEatItem();
 	UFUNCTION(BlueprintCallable)
@@ -42,18 +42,35 @@ public:
 	bool CheckRide();
 	UFUNCTION(BlueprintCallable)
 	void RemoveRide();
+	UFUNCTION(BlueprintCallable)
+	void Trapped();
+	UFUNCTION(BlueprintCallable)
+	void Escaped();
+	UFUNCTION(BlueprintCallable)
+	void Die();
+	UFUNCTION(BlueprintCallable)
+	void SetShield();
+	UFUNCTION(BlueprintCallable)
+	void RemoveShield();
 	
 	UPROPERTY(BlueprintReadWrite)
 	TSubclassOf<ABaseRide> EquippedRideClass;
-
 	UPROPERTY(BlueprintReadWrite)
 	float Speed;
-	
 	UPROPERTY(BlueprintReadWrite)
 	bool bHasRiding{false};
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UChildActorComponent* RidingComponent;
-
-
+	UPROPERTY(BlueprintReadWrite)
+	bool bIsTrapped{false};
+	UPROPERTY()
+	FTimerHandle TrappedTimerHandle;
+	UPROPERTY()
+	FTimerHandle ShieldTimerHandle;
+	UPROPERTY(BlueprintReadWrite)
+	bool bIsShield{false};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<class ATrappedBalloon> TrapBalloonClass;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UChildActorComponent* TrappedComponent;
 };

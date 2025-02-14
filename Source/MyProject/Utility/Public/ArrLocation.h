@@ -15,6 +15,11 @@ struct FArrLocation {
 	int32 X{};
 	UPROPERTY()
 	int32 Y{};
+
+	bool operator==(const FArrLocation& Other) const
+	{
+		return X == Other.X && Y == Other.Y;
+	}
 };
 
 UENUM(BlueprintType)
@@ -64,6 +69,7 @@ inline int8 map[15][17] = {
 	1, 1, 0, 1, 2, 1, 0, 0, 0, 0, 0, 2, 2, 2, 0, 0, 1,
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1
 	};
+
 
 /*inline int8 map[15][17] = {
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,

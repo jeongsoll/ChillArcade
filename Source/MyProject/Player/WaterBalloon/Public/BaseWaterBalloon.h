@@ -40,4 +40,14 @@ public:
 	// UFUNCTION(BlueprintCallable)
 	// void CheckIsInMap(struct FArrLocation Loc);
 	FArrLocation BalloonLocation;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	class USceneComponent* Root;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	class UStaticMeshComponent* Mesh;
+
+	UPROPERTY(EditAnywhere , BlueprintReadOnly)
+	TSubclassOf<class AMapGen> MapGenClass;
+	UPROPERTY(EditAnywhere , BlueprintReadOnly)
+	class AMapGen* MapGen;
 };

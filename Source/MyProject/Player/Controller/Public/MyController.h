@@ -33,6 +33,7 @@ protected:
 	void OnMoveRightCompleted(const FInputActionValue& Value);
 	void OnMoveLeftCompleted(const FInputActionValue& Value);
 	void UpdateDirection();
+	bool CheckCollision();
 
 public:
 	UPROPERTY(EditAnywhere , BlueprintReadOnly , Category = "Input")
@@ -65,4 +66,9 @@ public:
 	bool bDownPressed = false;
 	bool bRightPressed = false;
 	bool bLeftPressed = false;
+
+	UPROPERTY(EditAnywhere , BlueprintReadOnly)
+	TSubclassOf<class AMapGen> MapGenClass;
+	UPROPERTY(EditAnywhere , BlueprintReadOnly)
+	class AMapGen* MapGen;
 };

@@ -5,7 +5,8 @@
 #include "ArrLocation.h"
 #include "LogUtils.h"
 #include "SendArrInfoManagerComponent.h"
-
+#include "MapGen.h"
+#include "Kismet/GameplayStatics.h"
 
 // Sets default values
 ABaseWaterBalloon::ABaseWaterBalloon()
@@ -13,15 +14,34 @@ ABaseWaterBalloon::ABaseWaterBalloon()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	RootComponent = Root;
+
+	Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Mesh"));
+	Mesh->SetupAttachment(RootComponent);
+
+	static ConstructorHelpers::FObjectFinder<UStaticMesh> BaseMeshObject
+		(TEXT("/Game/Player/Balloon/Model/sm_balloon.sm_balloon"));
+	if (BaseMeshObject.Succeeded()) {
+		Mesh->SetStaticMesh(BaseMeshObject.Object);
+	}
+	
 	SendArrComponent = CreateDefaultSubobject<USendArrInfoManagerComponent>(
 		TEXT("SendArrManager")
 	);
+
+	// static ConstructorHelpers::FClassFinder<AMapGen> MapClass
+	// (TEXT("/Game/Map/Blueprints/BP_Map.BP_Map_C"));
+	// if (MapClass.Succeeded()) {
+	// 	MapGenClass = MapClass.Class;
+	// }
 }
 
 // Called when the game starts or when spawned
 void ABaseWaterBalloon::BeginPlay()
 {
 	Super::BeginPlay();
+	MapGen = Cast<AMapGen>(UGameplayStatics::GetActorOfClass(GetWorld(), AMapGen::StaticClass()));
 
 	// 3초 후 폭발
 	GetWorldTimerManager().SetTimer(ExplodeTimerHandle , this , &ABaseWaterBalloon::ExplodeTime ,
@@ -61,8 +81,6 @@ void ABaseWaterBalloon::CheckExplodeLocations(FArrLocation Loc)
 
 	// 위쪽 검사
 	for (int32 i{1}; i <= ExplodeRange; ++i) {
-		//FArrLocation InitialLocation{Loc};
-		//if (CheckWall(InitialLocation)) {}
 		FArrLocation UpLocation;
 
 		if (Loc.X + i == MAP_ROW_MAX) {
@@ -78,25 +96,6 @@ void ABaseWaterBalloon::CheckExplodeLocations(FArrLocation Loc)
 		else {
 			break;
 		}
-		// if (EMapType::Blocking == map[Loc.X + i][Loc.Y]) {
-		// 	break;
-		// }
-		// if (EMapType::Pushable == map[Loc.X + i][Loc.Y]) {
-		// 	break;
-		// }
-		// if (EMapType::Bush == map[Loc.X + i][Loc.Y]) {
-		// 	UpLocation.X = Loc.X + i;
-		// 	UpLocation.Y = Loc.Y;
-		// 	Locations.Add(UpLocation);
-		// }
-		// if (EMapType::Destroyable == map[Loc.X + i][Loc.Y]) {
-		// 	break;
-		// }
-		// if (EMapType::Movable == map[Loc.X + i][Loc.Y]) {
-		// 	UpLocation.X = Loc.X + i;
-		// 	UpLocation.Y = Loc.Y;
-		// 	Locations.Add(UpLocation);
-		// }
 	}
 	for (int32 i{1}; i <= ExplodeRange; ++i) {
 		FArrLocation DownLocation;
@@ -155,7 +154,7 @@ void ABaseWaterBalloon::CheckExplodeLocations(FArrLocation Loc)
 
 bool ABaseWaterBalloon::CheckRemoveLocations(FArrLocation Loc)
 {
-	int32 Input{map[Loc.X][Loc.Y]};
+	int32 Input{MapGen->GameMap[Loc.X][Loc.Y]};
 	
 	if (EMapType::Blocking == Input) {
 		return false;

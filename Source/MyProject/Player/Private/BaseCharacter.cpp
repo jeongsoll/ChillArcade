@@ -4,10 +4,10 @@
 #include "BaseCharacter.h"
 #include "ArrLocation.h"
 #include "BaseRide.h"
-#include "BaseWaterBalloon.h"
 #include "LogUtils.h"
 #include "SendArrInfoManagerComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "TrappedBalloon.h"
 
 // Sets default values
 ABaseCharacter::ABaseCharacter()
@@ -23,14 +23,23 @@ ABaseCharacter::ABaseCharacter()
 	}
 
 	RidingComponent = CreateDefaultSubobject<UChildActorComponent>(TEXT("Riding"));
-	RidingComponent->SetupAttachment(GetRootComponent());
+	RidingComponent->SetupAttachment(GetMesh());
 	RidingComponent->SetRelativeLocation(FVector(0.f , 0.f , -45.f));
 
-	static ConstructorHelpers::FClassFinder<UAnimInstance> AnimBP
-		(TEXT("/Game/Player/Animation/ABP_AppleAnimation.ABP_AppleAnimation_C"));
-	if (AnimBP.Succeeded()) {
-		GetMesh()->SetAnimInstanceClass(AnimBP.Class);
+	TrappedComponent = CreateDefaultSubobject<UChildActorComponent>(TEXT("TrappedComponent"));
+	TrappedComponent->SetupAttachment(GetMesh());
+
+	ConstructorHelpers::FClassFinder<ATrappedBalloon> TempTrappedBalloon
+	(TEXT("/Game/Player/Balloon/BP_TrappedBalloon.BP_TrappedBalloon_C"));
+	if (TempTrappedBalloon.Succeeded()) {
+		TrapBalloonClass = TempTrappedBalloon.Class;
 	}
+	
+	// static ConstructorHelpers::FClassFinder<UAnimInstance> AnimBP
+	// 	(TEXT("/Game/Player/Animation/ABP_AppleAnimation.ABP_AppleAnimation_C"));
+	// if (AnimBP.Succeeded()) {
+	// 	GetMesh()->SetAnimInstanceClass(AnimBP.Class);
+	// }
 
 	SendArrComponent = CreateDefaultSubobject<USendArrInfoManagerComponent>(
 		TEXT("SendArrManager")
@@ -46,6 +55,8 @@ ABaseCharacter::ABaseCharacter()
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+
+	Speed = 5.f;
 }
 
 // Called every frame
@@ -53,7 +64,7 @@ void ABaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	Speed = GetVelocity().Length();
+	//Speed = GetVelocity().Length();
 }
 
 // Called to bind functionality to input
@@ -76,7 +87,7 @@ void ABaseCharacter::SetBalloon()
 }
 
 // 캐릭터 위치 확인
-void ABaseCharacter::CheckLocation()
+struct FArrLocation ABaseCharacter::CheckLocation()
 {
 	FArrLocation PlayerLoc;
 	PlayerLoc.X = FMath::FloorToInt(MAP_ROW_MAX - GetActorLocation().X / 100);
@@ -85,6 +96,8 @@ void ABaseCharacter::CheckLocation()
 	if (SendArrComponent) {
 		SendArrComponent->SendPlayerLocation(PlayerLoc);
 	}
+
+	return PlayerLoc;
 }
 
 void ABaseCharacter::UseEatItem()
@@ -118,4 +131,45 @@ void ABaseCharacter::RemoveRide()
 	// 내리기
 	GetMesh()->AddLocalOffset(FVector(0 , 0 , -90.f));
 	RidingComponent->SetChildActorClass(nullptr);
+}
+
+void ABaseCharacter::Trapped()
+{
+	bIsTrapped = true;
+	TrappedComponent->SetChildActorClass(TrapBalloonClass);
+	GetWorldTimerManager().SetTimer(TrappedTimerHandle , this , &ABaseCharacter::Die ,
+								5.f , false);
+	Speed = 1.f;
+	
+}
+
+void ABaseCharacter::Escaped()
+{
+	bIsTrapped = false;
+	TrappedComponent->SetChildActorClass(nullptr);
+
+	GetWorldTimerManager().ClearTimer(TrappedTimerHandle);
+	Speed = 5.f;
+}
+
+void ABaseCharacter::Die()
+{
+	// 죽음
+	TrappedComponent->SetChildActorClass(nullptr);
+	//LogUtils::Log("Die!!!!!");
+	GetWorldTimerManager().ClearTimer(TrappedTimerHandle);
+}
+
+void ABaseCharacter::SetShield()
+{
+	bIsShield = true;
+	
+	GetWorldTimerManager().SetTimer(ShieldTimerHandle , this , &ABaseCharacter::RemoveShield ,
+							2.f , false);
+}
+
+void ABaseCharacter::RemoveShield()
+{
+	bIsShield = false;
+	GetWorldTimerManager().ClearTimer(ShieldTimerHandle);
 }
