@@ -33,10 +33,10 @@ void ATurtleItem::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void ATurtleItem::EquipPlayerTurtle(class ABaseCharacter* Player)
+void ATurtleItem::EquipPlayerTurtle(class ABaseCharacter* Character)
 {
-	if (!Player->CheckRide()) {
-		Player->SetRide(TurtleRideFactory);
+	if (!Character->CheckRide()) {
+		Character->SetRide(TurtleRideFactory);
 	}
 }
 

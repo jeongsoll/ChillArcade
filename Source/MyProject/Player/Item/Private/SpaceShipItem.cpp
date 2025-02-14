@@ -32,10 +32,10 @@ void ASpaceShipItem::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void ASpaceShipItem::EquipPlayerSpaceShip(class ABaseCharacter* Player)
+void ASpaceShipItem::EquipPlayerSpaceShip(class ABaseCharacter* Character)
 {
-	if (!Player->CheckRide()) {
-		Player->SetRide(SpaceShipRideFactory);
+	if (!Character->CheckRide()) {
+		Character->SetRide(SpaceShipRideFactory);
 	}
 }
 

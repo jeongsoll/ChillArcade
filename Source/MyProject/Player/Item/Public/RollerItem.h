@@ -23,5 +23,5 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION(BlueprintCallable)
-	void AddPlayerSpeed(class ABaseCharacter* Player);
+	void AddPlayerSpeed(class ABaseCharacter* Character);
 };

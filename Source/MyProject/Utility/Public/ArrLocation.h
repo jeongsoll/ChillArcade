@@ -29,6 +29,8 @@ enum EMapType : uint8 {
 	Destroyable = 2,
 	Pushable = 3,
 	Bush = 4,
+	BalloonLoc = 10,
+	PlayerLoc = 100
 };
 
 //타일 유형

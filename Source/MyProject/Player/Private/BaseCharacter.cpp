@@ -2,6 +2,8 @@
 
 
 #include "BaseCharacter.h"
+
+#include "AppleAnimation.h"
 #include "ArrLocation.h"
 #include "BaseRide.h"
 #include "BubbleItem.h"
@@ -40,23 +42,23 @@ ABaseCharacter::ABaseCharacter()
 
 	TrappedComponent = CreateDefaultSubobject<UChildActorComponent>(TEXT("TrappedComponent"));
 	TrappedComponent->SetupAttachment(GetMesh());
-	
+
 	ShieldComponent = CreateDefaultSubobject<UChildActorComponent>(TEXT("ShieldComponent"));
 	ShieldComponent->SetupAttachment(GetMesh());
 
 	ConstructorHelpers::FClassFinder<ATrappedBalloon> TempTrappedBalloon
-	 	(TEXT("/Game/Player/Balloon/BP_TrappedBalloon.BP_TrappedBalloon_C"));
+		(TEXT("/Game/Player/Balloon/BP_TrappedBalloon.BP_TrappedBalloon_C"));
 	if (TempTrappedBalloon.Succeeded()) {
 		TrapBalloonClass = TempTrappedBalloon.Class;
 	}
 
-	 ConstructorHelpers::FClassFinder<ASpawnableShield> TempShield
+	ConstructorHelpers::FClassFinder<ASpawnableShield> TempShield
 		(TEXT("/Game/Player/Item/BP_SpawnableShield.BP_SpawnableShield_C"));
 	if (TempShield.Succeeded()) {
 		ShieldClass = TempShield.Class;
 	}
 
-	// static ConstructorHelpers::FClassFinder<UAnimInstance> AnimBP
+	// static ConstructorHelpers::FClassFinder<UAppleAnimation> AnimBP
 	// 	(TEXT("/Game/Player/Animation/ABP_AppleAnimation.ABP_AppleAnimation_C"));
 	// if (AnimBP.Succeeded()) {
 	// 	GetMesh()->SetAnimInstanceClass(AnimBP.Class);
@@ -132,11 +134,9 @@ void ABaseCharacter::UseEatItem()
 		bHasShield = false;
 	}
 	if (bHasCan && !bIsTrapped) {
-		
-		bHasCan = false;	
+		bHasCan = false;
 	}
 	if (bHasSpanner && !bIsTrapped) {
-		
 		bHasSpanner = false;
 	}
 }
@@ -171,6 +171,10 @@ void ABaseCharacter::RemoveRide()
 
 void ABaseCharacter::Trapped()
 {
+	if (bIsTrapped || bIsShield) {
+		return;
+	}
+	
 	bIsTrapped = true;
 	TrappedComponent->SetChildActorClass(TrapBalloonClass);
 	GetWorldTimerManager().SetTimer(TrappedTimerHandle , this , &ABaseCharacter::Die ,
@@ -219,37 +223,23 @@ bool ABaseCharacter::HasItem()
 
 void ABaseCharacter::GetItem(ABaseItem* BaseItem)
 {
-	if (BaseItem->IsA<ABubbleItem>()) {
-		
-	}
+	if (BaseItem->IsA<ABubbleItem>()) {}
 	if (BaseItem->IsA<ACanItem>()) {
 		bHasCan = true;
 	}
-	if (BaseItem->IsA<ADevilItem>()) {
-		
-	}
-	if (BaseItem->IsA<AFluidItem>()) {
-		
-	}
+	if (BaseItem->IsA<ADevilItem>()) {}
+	if (BaseItem->IsA<AFluidItem>()) {}
 	if (BaseItem->IsA<ANeedle>()) {
 		bHasNeedle = true;
 	}
-	if (BaseItem->IsA<ARangeItem>()) {
-		
-	}
-	if (BaseItem->IsA<ARollerItem>()) {
-		
-	}
+	if (BaseItem->IsA<ARangeItem>()) {}
+	if (BaseItem->IsA<ARollerItem>()) {}
 	if (BaseItem->IsA<AShieldItem>()) {
 		bHasShield = true;
 	}
-	if (BaseItem->IsA<ASpaceShipItem>()) {
-		
-	}
+	if (BaseItem->IsA<ASpaceShipItem>()) {}
 	if (BaseItem->IsA<ASpannerItem>()) {
 		bHasSpanner = true;
 	}
-	if (BaseItem->IsA<ATurtleItem>()) {
-		
-	}
+	if (BaseItem->IsA<ATurtleItem>()) {}
 }

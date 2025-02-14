@@ -4,6 +4,7 @@
 #include "BaseBalloonRange.h"
 
 #include "BaseCharacter.h"
+#include "BaseWaterBalloon.h"
 #include "LogUtils.h"
 #include "MapGen.h"
 #include "Kismet/GameplayStatics.h"
@@ -60,12 +61,15 @@ void ABaseBalloonRange::CapturePLayer()
 {
 	// basecharacter 상속 받은 녀석을 전부 검사하는걸로 수정 필요
 	ABaseCharacter* Character = Cast<ABaseCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
-	if (Character->CheckLocation() == RangeLocation && !Character->bIsTrapped && !Character->bIsShield) {
+	if (Character->CheckLocation() == RangeLocation) {
 		Character->Trapped();
 	}
 
-	if (MapGen->GameMap[RangeLocation.X][RangeLocation.Y] == 10) {
+	if (MapGen->GameMap[RangeLocation.X][RangeLocation.Y] % 100 ==  10) {
 		// 이 위치 물풍선 터뜨리기
+		ABaseWaterBalloon* ExtraBalloon{MapGen->waterBalloonMap[RangeLocation.X][RangeLocation.Y]};
+		ExtraBalloon->ExplodeTime();
+		
 		LogUtils::Log("Has Balloon" , RangeLocation.X , RangeLocation.Y);
 	}
 }

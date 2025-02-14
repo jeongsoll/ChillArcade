@@ -27,10 +27,10 @@ void ARollerItem::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void ARollerItem::AddPlayerSpeed(class ABaseCharacter* Player)
+void ARollerItem::AddPlayerSpeed(class ABaseCharacter* Character)
 {
-	if (Player) {
-		Player->GetCharacterMovement()->MaxWalkSpeed *= 1.5;
+	if (Character) {
+		Character->GetCharacterMovement()->MaxWalkSpeed *= 1.5;
 	}
 
 	DestroyItem();

@@ -23,7 +23,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UFUNCTION(BlueprintCallable)
-	void EquipPlayerSpaceShip(class ABaseCharacter* Player);
+	void EquipPlayerSpaceShip(class ABaseCharacter* Character);
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<class ASpaceShipRide> SpaceShipRideFactory;

@@ -30,7 +30,7 @@ ABaseWaterBalloon::ABaseWaterBalloon()
 	SendArrComponent = CreateDefaultSubobject<USendArrInfoManagerComponent>(
 		TEXT("SendArrManager")
 	);
-
+	
 	// static ConstructorHelpers::FClassFinder<AMapGen> MapClass
 	// (TEXT("/Game/Map/Blueprints/BP_Map.BP_Map_C"));
 	// if (MapClass.Succeeded()) {
@@ -180,6 +180,18 @@ bool ABaseWaterBalloon::CheckRemoveLocations(FArrLocation Loc)
 		//LogUtils::Log("Movable : " , Loc.X , Loc.Y);
 		return true;
 	}
-
+	if (EMapType::PlayerLoc == Input) {
+		
+		return true;
+	}
+	if (EMapType::BalloonLoc == Input) {
+		
+		return true;
+	}
+	if (EMapType::BalloonLoc + EMapType::PlayerLoc == Input) {
+		
+		return true;
+	}
+	
 	return false;
 }
