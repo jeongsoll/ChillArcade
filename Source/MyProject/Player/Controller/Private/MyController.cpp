@@ -10,6 +10,7 @@
 #include "EnhancedInputComponent.h" /*UEnhancedInputComponent*/
 #include "MapGen.h"
 #include "LogUtils.h"
+#include "SpawnItem.h"
 #include "Kismet/GameplayStatics.h"
 
 AMyController::AMyController()
@@ -100,10 +101,11 @@ void AMyController::Tick(float DeltaTime)
 		ControlledPlayer->GetMesh()->SetRelativeRotation(FRotator(0 , RotateValue , 0));
 		
 		if (CheckCollision()) {
-			//ControlledPlayer->AddMovementInput(Direction);
-			ControlledPlayer->AddActorLocalOffset(Direction * ControlledPlayer->Speed);
+			ControlledPlayer->AddActorLocalOffset(Direction * ControlledPlayer->CurrentSpeed);
 			ControlledPlayer->CheckLocation();
 		}
+
+		CheckItem();
 	}
 }
 
@@ -240,7 +242,7 @@ bool AMyController::CheckCollision()
 {
 	FArrLocation PlayerArray{ControlledPlayer->CheckLocation().X , ControlledPlayer->CheckLocation().Y};
 	FVector PlayerLocation{ControlledPlayer->GetActorLocation()};
-	float PlayerLength{70.f};
+	float PlayerLength{PLAYER_SIZE};
 	//LogUtils::Log("Player Location" , PlayerLocation.X , PlayerLocation.Y);
 
 	FArrLocation CollisionCheckWallArray{
@@ -248,12 +250,10 @@ bool AMyController::CheckCollision()
 	};
 	FVector WallLocation{
 		MapGen->ArrayToWorldLocation(CollisionCheckWallArray)
-		//FVector((MAP_ROW_MAX - CollisionCheckWallArray.X) * 100.f - 50.f , (CollisionCheckWallArray.Y+ 1) * 100.f - 50.f, 0.f)
 	};
-	//LogUtils::Log("Wall Location" , WallLocation.X , WallLocation.Y);
-	//LogUtils::Log("Wall Location" , CollisionCheckWallArray.X , CollisionCheckWallArray.Y);
+
 	uint8 WallType{static_cast<uint8>(MapGen->GameMap[CollisionCheckWallArray.X][CollisionCheckWallArray.Y])};
-	if (WallType == EMapType::Blocking || WallType == EMapType::Destroyable) {
+	if (WallType == EMapType::Blocking || WallType == EMapType::Destroyable || WallType == EMapType::BalloonLoc) {
 		if (FMath::Abs(Direction.X) == 1 && FMath::Abs(WallLocation.X - PlayerLocation.X) < PlayerLength) {
 			return false;
 		}
@@ -261,6 +261,16 @@ bool AMyController::CheckCollision()
 			return false;
 		}
 	}
-
+	
 	return true;
+}
+
+void AMyController::CheckItem()
+{
+	FArrLocation PlayerArray{ControlledPlayer->CheckLocation().X , ControlledPlayer->CheckLocation().Y};
+	if (EMapType::BubbleItem <= MapGen->GameMap[PlayerArray.X][PlayerArray.Y] && MapGen->GameMap[PlayerArray.X][PlayerArray.Y] <= EMapType::TurtleItem) {
+		ControlledPlayer->GetItem(MapGen->ItemMap[PlayerArray.X][PlayerArray.Y]);
+		
+		MapGen->UpdateMapDestroyed(PlayerArray);
+	}
 }

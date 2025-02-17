@@ -5,6 +5,8 @@
 
 #include "BaseCharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "PaperSpriteComponent.h"
+#include "PaperSprite.h"
 
 
 // Sets default values
@@ -12,6 +14,12 @@ ARollerItem::ARollerItem()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	static ConstructorHelpers::FObjectFinder<UPaperSprite> RollerSpriteObject
+	(TEXT("/Script/Paper2D.PaperSprite'/Game/Texture/roller_Sprite.roller_Sprite'"));
+	if (RollerSpriteObject.Succeeded()) {
+		ItemSprite->SetSprite(RollerSpriteObject.Object);
+	}
 }
 
 // Called when the game starts or when spawned

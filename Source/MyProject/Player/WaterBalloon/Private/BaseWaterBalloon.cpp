@@ -3,6 +3,7 @@
 
 #include "BaseWaterBalloon.h"
 #include "ArrLocation.h"
+#include "BaseCharacter.h"
 #include "LogUtils.h"
 #include "SendArrInfoManagerComponent.h"
 #include "MapGen.h"
@@ -44,6 +45,10 @@ void ABaseWaterBalloon::BeginPlay()
 	Super::BeginPlay();
 	MapGen = Cast<AMapGen>(UGameplayStatics::GetActorOfClass(GetWorld() , AMapGen::StaticClass()));
 
+	Player = Cast<ABaseCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	
+	ExplodeRange = Player->BalloonRange;
+
 	// 3초 후 폭발
 	GetWorldTimerManager().SetTimer(ExplodeTimerHandle , this , &ABaseWaterBalloon::ExplodeTime ,
 	                                3.f , false);
@@ -64,6 +69,8 @@ void ABaseWaterBalloon::Initialize(const struct FArrLocation& NewLocation)
 
 void ABaseWaterBalloon::ExplodeTime()
 {
+	Player->RecoverBalloon();
+	
 	CheckExplodeLocations(BalloonLocation);
 	//CheckRemoveLocations(BalloonLocation);
 
@@ -77,9 +84,7 @@ void ABaseWaterBalloon::CheckExplodeLocations(FArrLocation Loc)
 	TArray<FArrLocation> Locations;
 	// 설치된 위치 추가
 	Locations.Add(Loc);
-
-	int32 ExplodeRange{2};
-
+	
 	// 위쪽 검사
 	for (int32 i{1}; i <= ExplodeRange; ++i) {
 		FArrLocation UpLocation;
@@ -181,15 +186,16 @@ bool ABaseWaterBalloon::CheckRemoveLocations(FArrLocation Loc)
 		return true;
 	}
 	if (EMapType::PlayerLoc == Input) {
-		
 		return true;
 	}
 	if (EMapType::BalloonLoc == Input) {
-		
 		return true;
 	}
 	if (EMapType::BalloonLoc + EMapType::PlayerLoc == Input) {
-		
+		return true;
+	}
+	if (EMapType::BubbleItem <= Input && Input <= EMapType::TurtleItem) {
+		SendArrComponent->SendRemoveLocation(Loc);
 		return true;
 	}
 	

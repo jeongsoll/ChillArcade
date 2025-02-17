@@ -62,6 +62,9 @@ public:
 	class ABaseWall* baseWalls[15][17] = {};
 	//물풍선 객체 정보를 담을 배열 변수
 	class ABaseWaterBalloon* waterBalloonMap[15][17] = {};
+	// 아이템 정보를 담을 배열 변수
+	class ABaseItem* ItemMap[15][17] = {};
+	
 	
 	// 그리드 타일 세팅
 	void SetGrid(int8 gridX , int8 gridY);
@@ -92,6 +95,18 @@ public:
 	ABaseWaterBalloon* returnWaterBalloonLoc(ABaseWaterBalloon* balloon, struct FArrLocation Loc);
 	//4.밀리는 벽 업데이트 함수
 	/*void UpdateMapPushed(struct FArrLocation Loc , struct FArrLocation PlayerLoc);*/
+
+	// 아이템 스폰 함수
+	UFUNCTION()
+	void SpawningItem(struct FArrLocation Loc);
 	
+	UPROPERTY(EditAnywhere , BlueprintReadOnly)
+	TSubclassOf<class ASpawnItem> SpawnItemClass;
+	UPROPERTY(EditAnywhere , BlueprintReadOnly)
+	class ASpawnItem* SpawnItem;
+
+	// Wall tag 함수
+	UFUNCTION()
+	void TaggingWall(int32 X, int32 Y);
 };
 

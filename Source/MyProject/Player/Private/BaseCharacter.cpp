@@ -11,6 +11,7 @@
 #include "DevilItem.h"
 #include "FluidItem.h"
 #include "LogUtils.h"
+#include "MapGen.h"
 #include "Needle.h"
 #include "RangeItem.h"
 #include "RollerItem.h"
@@ -81,15 +82,13 @@ void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Speed = 5.f;
+	InitPlayer();
 }
 
 // Called every frame
 void ABaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	//Speed = GetVelocity().Length();
 }
 
 // Called to bind functionality to input
@@ -98,16 +97,25 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 }
 
+void ABaseCharacter::InitPlayer()
+{
+	Speed = 5.f;
+	CurrentSpeed = Speed;
+}
+
 void ABaseCharacter::SetBalloon()
 {
-	// 설지할 수 있는지 확인
-
 	FArrLocation BalloonLoc;
 	BalloonLoc.X = FMath::FloorToInt(MAP_ROW_MAX - GetActorLocation().X / 100);
 	BalloonLoc.Y = FMath::FloorToInt(GetActorLocation().Y / 100);
-
-	if (SendArrComponent) {
-		SendArrComponent->SendBalloonLocation(BalloonLoc);
+	
+	// 설지할 수 있는지 확인
+	if (BalloonCount > 0 && SendArrComponent->Map->GameMap[BalloonLoc.X][BalloonLoc.Y] % 100 != 10) {
+		--BalloonCount;
+		
+		if (SendArrComponent) {
+			SendArrComponent->SendBalloonLocation(BalloonLoc);
+		}
 	}
 }
 
@@ -147,7 +155,7 @@ void ABaseCharacter::UseEquipItem(int32 Input)
 {
 	ATurtleRide* Turtle{Cast<ATurtleRide>(RidingComponent->GetChildActor())};
 	ASpaceShipRide* SpaceShip{Cast<ASpaceShipRide>(RidingComponent->GetChildActor())};
-	
+
 	switch (Input) {
 	case EItemType::Can:
 		if (CheckRide() && Turtle) {
@@ -181,7 +189,7 @@ void ABaseCharacter::SetRide(TSubclassOf<class ABaseRide> Ride)
 {
 	EquippedRideClass = Ride;
 
-	// 올리기
+	// 캐릭터 올리기
 	GetMesh()->AddLocalOffset(FVector(0 , 0 , 90.f));
 	RidingComponent->SetChildActorClass(Ride);
 }
@@ -210,7 +218,7 @@ void ABaseCharacter::Trapped()
 	TrappedComponent->SetChildActorClass(TrapBalloonClass);
 	GetWorldTimerManager().SetTimer(TrappedTimerHandle , this , &ABaseCharacter::Die ,
 	                                5.f , false);
-	Speed = 1.f;
+	CurrentSpeed = TrappedSpeed;
 }
 
 void ABaseCharacter::Escaped()
@@ -219,7 +227,8 @@ void ABaseCharacter::Escaped()
 	TrappedComponent->SetChildActorClass(nullptr);
 
 	GetWorldTimerManager().ClearTimer(TrappedTimerHandle);
-	Speed = 5.f;
+
+	CurrentSpeed = Speed;
 }
 
 void ABaseCharacter::Die()
@@ -254,23 +263,61 @@ bool ABaseCharacter::HasItem()
 
 void ABaseCharacter::GetItem(ABaseItem* BaseItem)
 {
-	if (BaseItem->IsA<ABubbleItem>()) {}
+	if (BaseItem->IsA<ABubbleItem>()) {
+		if (BalloonCount < MAX_BALLOON_COUNT) {
+			++BalloonCount;
+		}
+	}
 	if (BaseItem->IsA<ACanItem>()) {
 		bHasCan = true;
 	}
-	if (BaseItem->IsA<ADevilItem>()) {}
-	if (BaseItem->IsA<AFluidItem>()) {}
+	if (BaseItem->IsA<ADevilItem>()) {
+		Speed = PLAYER_MAX_SPEED;
+		if (!bIsTrapped) {
+			CurrentSpeed = Speed;
+		}
+	}
+	if (BaseItem->IsA<AFluidItem>()) {
+		if (BalloonRange <= MAX_BALLOON_RANGE) {
+			++BalloonRange;
+		}
+	}
 	if (BaseItem->IsA<ANeedle>()) {
 		bHasNeedle = true;
 	}
-	if (BaseItem->IsA<ARangeItem>()) {}
-	if (BaseItem->IsA<ARollerItem>()) {}
+	if (BaseItem->IsA<ARangeItem>()) {
+		BalloonRange = MAX_BALLOON_RANGE;
+	}
+	if (BaseItem->IsA<ARollerItem>()) {
+		if (Speed <= PLAYER_MAX_SPEED) {
+			++Speed;
+		}
+		if (!bIsTrapped) {
+			CurrentSpeed = Speed;
+		}
+	}
 	if (BaseItem->IsA<AShieldItem>()) {
 		bHasShield = true;
 	}
-	if (BaseItem->IsA<ASpaceShipItem>()) {}
+	if (BaseItem->IsA<ASpaceShipItem>()) {
+		if (!CheckRide()) {
+			auto SpaceShip{Cast<ASpaceShipItem>(BaseItem)};
+			SpaceShip->EquipPlayerSpaceShip(this);
+		}
+	}
 	if (BaseItem->IsA<ASpannerItem>()) {
 		bHasSpanner = true;
 	}
-	if (BaseItem->IsA<ATurtleItem>()) {}
+	if (BaseItem->IsA<ATurtleItem>()) {
+		if (!CheckRide()) {
+			auto Turtle{Cast<ATurtleItem>(BaseItem)};
+			Turtle->EquipPlayerTurtle(this);
+		}
+	}
+}
+
+
+void ABaseCharacter::RecoverBalloon()
+{
+	++BalloonCount;
 }

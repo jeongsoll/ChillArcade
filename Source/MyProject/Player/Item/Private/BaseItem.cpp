@@ -30,11 +30,11 @@ ABaseItem::ABaseItem()
 	ShadowSprite->SetRelativeScale3D(FVector(0.7475f , 1.f , 0.7825f));
 	ShadowSprite->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
-	// static ConstructorHelpers::FObjectFinder<UPaperSprite> ShadowSpriteObject
-	// (TEXT("/Script/Paper2D.PaperSprite'/Game/Texture/shadow_Sprite.shadow_Sprite'"));
-	// if (ShadowSpriteObject.Succeeded()) {
-	// 	ShadowSprite = ShadowSpriteObject.Object;
-	// }
+	static ConstructorHelpers::FObjectFinder<UPaperSprite> ShadowSpriteObject
+	(TEXT("/Script/Paper2D.PaperSprite'/Game/Texture/shadow_Sprite.shadow_Sprite'"));
+	if (ShadowSpriteObject.Succeeded()) {
+		ShadowSprite->SetSprite(ShadowSpriteObject.Object);
+	}
 }
 
 // Called when the game starts or when spawned

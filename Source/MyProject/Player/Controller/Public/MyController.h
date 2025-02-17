@@ -35,6 +35,7 @@ protected:
 	void UseEquippedItem(const FInputActionValue& Value);
 	void UpdateDirection();
 	bool CheckCollision();
+	void CheckItem();
 
 public:
 	UPROPERTY(EditAnywhere , BlueprintReadOnly , Category = "Input")
@@ -74,4 +75,5 @@ public:
 	TSubclassOf<class AMapGen> MapGenClass;
 	UPROPERTY(EditAnywhere , BlueprintReadOnly)
 	class AMapGen* MapGen;
+	
 };

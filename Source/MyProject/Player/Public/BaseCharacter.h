@@ -28,7 +28,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	class USendArrInfoManagerComponent* SendArrComponent;
-	
+
+	UFUNCTION(BlueprintCallable)
+	void InitPlayer();
 	UFUNCTION(BlueprintCallable)
 	void SetBalloon();
 	UFUNCTION(BlueprintCallable)
@@ -57,9 +59,15 @@ public:
 	bool HasItem();
 	UFUNCTION(BlueprintCallable)
 	void GetItem(ABaseItem* BaseItem);
+	UFUNCTION(BlueprintCallable)
+	void RecoverBalloon();
 	
 	UPROPERTY(BlueprintReadWrite)
-	float Speed;
+	float Speed{5.f};
+	UPROPERTY(BlueprintReadWrite)
+	float CurrentSpeed{5.f};
+	UPROPERTY(BlueprintReadWrite)
+	float TrappedSpeed{1.f};
 	UPROPERTY(BlueprintReadWrite)
 	bool bHasRiding{false};
 	UPROPERTY(BlueprintReadWrite)
@@ -76,7 +84,9 @@ public:
 	bool bHasSpanner{false};
 	
 	UPROPERTY(BlueprintReadWrite)
-	int32 BalloonRange{2};
+	int32 BalloonRange{1};
+	UPROPERTY(BlueprintReadWrite)
+	int32 BalloonCount{1};
 	
 	UPROPERTY()
 	FTimerHandle TrappedTimerHandle;

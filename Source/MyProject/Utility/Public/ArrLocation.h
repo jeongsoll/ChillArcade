@@ -7,6 +7,11 @@
 #define MAP_COLUMN_MAX 17
 #define MAP_MIN -1
 
+#define PLAYER_SIZE 80
+#define PLAYER_MAX_SPEED 10
+#define MAX_BALLOON_COUNT 6
+#define MAX_BALLOON_RANGE 7
+
 USTRUCT(BlueprintType)
 struct FArrLocation {
 	GENERATED_BODY()
@@ -30,7 +35,21 @@ enum EMapType : uint8 {
 	Pushable = 3,
 	Bush = 4,
 	BalloonLoc = 10,
-	PlayerLoc = 100
+
+	BubbleItem = 20,
+	CanItem = 21,
+	DevilItem = 22,
+	FluidItem = 23,
+	NeedleItem = 24,
+	RangeItem = 25,
+	RollerItem = 26,
+	ShieldItem = 27,
+	SpaceShipItem = 28,
+	SpannerItem = 29,
+	TurtleItem = 30,
+	
+	PlayerLoc = 100,
+	PlayerBalloonLoc = 110
 };
 
 UENUM(BlueprintType)

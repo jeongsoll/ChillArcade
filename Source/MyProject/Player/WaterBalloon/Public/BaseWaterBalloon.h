@@ -50,4 +50,10 @@ public:
 	TSubclassOf<class AMapGen> MapGenClass;
 	UPROPERTY(EditAnywhere , BlueprintReadOnly)
 	class AMapGen* MapGen;
+
+	UPROPERTY(EditAnywhere , BlueprintReadOnly)
+	class ABaseCharacter* Player;
+
+	UPROPERTY(EditAnywhere , BlueprintReadOnly)
+	int32 ExplodeRange;
 };

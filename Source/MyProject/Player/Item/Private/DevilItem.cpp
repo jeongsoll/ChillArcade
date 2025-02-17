@@ -2,13 +2,20 @@
 
 
 #include "DevilItem.h"
-
+#include "PaperSprite.h"
+#include "PaperSpriteComponent.h"
 
 // Sets default values
 ADevilItem::ADevilItem()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	static ConstructorHelpers::FObjectFinder<UPaperSprite> DevilSpriteObject
+	(TEXT("/Script/Paper2D.PaperSprite'/Game/Texture/devil_Sprite.devil_Sprite'"));
+	if (DevilSpriteObject.Succeeded()) {
+		ItemSprite->SetSprite(DevilSpriteObject.Object);
+	}
 }
 
 // Called when the game starts or when spawned

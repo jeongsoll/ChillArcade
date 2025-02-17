@@ -2,6 +2,8 @@
 
 
 #include "ShieldItem.h"
+#include "PaperSpriteComponent.h"
+#include "PaperSprite.h"
 
 
 // Sets default values
@@ -9,6 +11,12 @@ AShieldItem::AShieldItem()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+
+	static ConstructorHelpers::FObjectFinder<UPaperSprite> ShieldSpriteObject
+	(TEXT("/Script/Paper2D.PaperSprite'/Game/Texture/shield_Sprite.shield_Sprite'"));
+	if (ShieldSpriteObject.Succeeded()) {
+		ItemSprite->SetSprite(ShieldSpriteObject.Object);
+	}
 }
 
 // Called when the game starts or when spawned

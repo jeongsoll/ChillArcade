@@ -8,13 +8,12 @@
 #include "BaseCharacter.h"
 #include "BaseWaterBalloon.h"
 #include "Bush.h"
-#include "IContentBrowserSingleton.h"
 #include "LogUtils.h"
 #include "MovingWall.h"
+#include "SpawnItem.h"
 #include "StrongWall.h"
 #include "Tile.h"
 #include "WeakWall.h"
-#include "DSP/AudioDebuggingUtilities.h"
 
 class ABaseWaterBalloon;
 // Sets default values
@@ -22,12 +21,15 @@ AMapGen::AMapGen()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	
 }
 
 // Called when the game starts or when spawned
 void AMapGen::BeginPlay()
 {
 	Super::BeginPlay();
+		
+	SpawnItem = GetWorld()->SpawnActor<ASpawnItem>(ASpawnItem::StaticClass());
 
 	Player = Cast<ABaseCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
 
@@ -42,6 +44,7 @@ void AMapGen::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
+
 void AMapGen::SetGrid(int8 gridX, int8 gridY)
 {
 	UWorld* world = GetWorld();
@@ -78,6 +81,7 @@ void AMapGen::SetGrid(int8 gridX, int8 gridY)
 					if (auto* spawnWeakWall = world->SpawnActor<AWeakWall>(WeakWallFactory, location, FRotator::ZeroRotator))
 					{
 						baseWalls[x][y] = Cast<ABaseWall>(spawnWeakWall);
+						TaggingWall(x, y);
 					}
 					break;
 				default:
@@ -123,9 +127,13 @@ void AMapGen::UpdateMapDestroyed(struct FArrLocation Loc)
 	
 	// 물풍선 위치 저장
 	// 파괴된 엑터 위치 업데이트 맵 업데이트
+	if (EMapType::BubbleItem <= GameMap[Loc.X][Loc.Y] && GameMap[Loc.X][Loc.Y] <= EMapType::TurtleItem) {
+		ItemMap[Loc.X][Loc.Y]->Destroy();
+	}
+	
 	GameMap[Loc.X][Loc.Y] = 0;
 	UpdateMap(Movable, Loc.X, Loc.Y);
-	
+
 	//LogUtils::Log("Destroyed", GameMap[Loc.X][Loc.Y]);
 }
 
@@ -135,8 +143,9 @@ void AMapGen::UpdateMapBalloon(struct FArrLocation Loc)
 	
 	//플레이어가 설치한 위치에 물풍선(10)으로 변경
 	//그 위치 위에 물풍선 스폰
-	GameMap[Loc.X][Loc.Y] = 10;
-	// 스폰 예시
+	GameMap[Loc.X][Loc.Y] += 10;
+
+	// 물풍선 스폰
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride =
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
@@ -158,8 +167,13 @@ void AMapGen::UpdateMap(EMapType Type, int8 LocX, int8 LocY)
 	switch (Type)
 	{
 	case Movable: // 0
+		// tag가 있으면 아이템 스폰
+		if (baseWalls[LocX][LocY]->Tags.Num() > 0) {
+			SpawningItem({LocX, LocY});
+		}
+		
 		// 스폰하기전에 위치에 있는 엑터를 destroy하고 스폰한다.
-			baseWalls[LocX][LocY]->Destroy();
+		baseWalls[LocX][LocY]->Destroy();
 		if (auto* respawnTile = GetWorld()->SpawnActor<ATile>(TileFactory, TileLocation[LocX][LocY], FRotator::ZeroRotator))
 		{
 			baseWalls[LocX][LocY] = Cast<ABaseWall>(respawnTile);
@@ -226,6 +240,51 @@ ABaseWaterBalloon* AMapGen::returnWaterBalloonLoc(ABaseWaterBalloon* balloon, st
 	waterBalloonMap[Loc.X][Loc.Y] = balloon;
 	//객체 리턴
 	return waterBalloonMap[Loc.X][Loc.Y];
+}
+
+void AMapGen::SpawningItem(struct FArrLocation Loc)
+{
+	SpawnItem->SpawnItem(Loc);	
+}
+
+void AMapGen::TaggingWall(int32 X, int32 Y)
+{
+	int32 ChooseTag{FMath::RandRange(1, 30)};
+
+	switch (ChooseTag) {
+		case 1:
+			baseWalls[X][Y]->Tags.Add(FName("Bubble"));
+			break;
+		case 2:
+			baseWalls[X][Y]->Tags.Add(FName("Can"));
+			break;
+		case 3:
+			baseWalls[X][Y]->Tags.Add(FName("Devil"));
+			break;
+		case 4:
+			baseWalls[X][Y]->Tags.Add(FName("Fluid"));
+			break;
+		case 5:
+			baseWalls[X][Y]->Tags.Add(FName("Needle"));
+			break;
+		case 6:
+			baseWalls[X][Y]->Tags.Add(FName("Roller"));
+			break;
+		case 7:
+			baseWalls[X][Y]->Tags.Add(FName("Shield"));
+			break;
+		case 8:
+			baseWalls[X][Y]->Tags.Add(FName("SpaceShip"));
+			break;
+		case 9:
+			baseWalls[X][Y]->Tags.Add(FName("Spanner"));
+			break;
+		case 10:
+			baseWalls[X][Y]->Tags.Add(FName("Turtle"));
+			break;
+		default:
+			break;
+	}
 }
 
 //보류
