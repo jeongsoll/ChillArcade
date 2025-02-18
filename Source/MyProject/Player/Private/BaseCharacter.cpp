@@ -110,7 +110,10 @@ void ABaseCharacter::SetBalloon()
 	BalloonLoc.Y = FMath::FloorToInt(GetActorLocation().Y / 100);
 
 	// 설지할 수 있는지 확인
-	if (BalloonCount > 0 && SendArrComponent->Map->GameMap[BalloonLoc.X][BalloonLoc.Y] % 100 != 10) {
+	int32 MapInfo{SendArrComponent->Map->GameMap[BalloonLoc.X][BalloonLoc.Y]};
+	if (BalloonCount > 0 && MapInfo % 100 != EMapType::BalloonLoc
+		&& MapInfo != EMapType::Destroyable
+		&& MapInfo != EMapType::Pushable) {
 		--BalloonCount;
 
 		if (SendArrComponent) {
@@ -152,7 +155,7 @@ void ABaseCharacter::UseEatItem()
 			Turtle->ChangeFast();
 			bHasCan = false;
 			GetWorldTimerManager().SetTimer(UpgradeTimerHandle , this , &ABaseCharacter::UpgradeRide ,
-					0.5f , false);
+			                                0.5f , false);
 		}
 	}
 	if (bHasSpanner && !bIsTrapped) {
@@ -162,7 +165,7 @@ void ABaseCharacter::UseEatItem()
 			SpaceShip->ChangeFast();
 			bHasSpanner = false;
 			GetWorldTimerManager().SetTimer(UpgradeTimerHandle , this , &ABaseCharacter::UpgradeRide ,
-					0.5f , false);
+			                                0.5f , false);
 		}
 	}
 }
@@ -171,14 +174,14 @@ void ABaseCharacter::UseEquipItem(int32 Input)
 {
 	ATurtleRide* Turtle{Cast<ATurtleRide>(RidingComponent->GetChildActor())};
 	ASpaceShipRide* SpaceShip{Cast<ASpaceShipRide>(RidingComponent->GetChildActor())};
-	
+
 	switch (Input) {
 	case EItemType::Can:
 		if (CheckRide() && Turtle && !bIsTrapped) {
 			CurrentSpeed = 0.f;
 			Turtle->ChangeFast();
 			GetWorldTimerManager().SetTimer(UpgradeTimerHandle , this , &ABaseCharacter::UpgradeRide ,
-								0.5f , false);
+			                                0.5f , false);
 		}
 		break;
 	case EItemType::Needle:
@@ -196,7 +199,7 @@ void ABaseCharacter::UseEquipItem(int32 Input)
 			CurrentSpeed = 0.f;
 			SpaceShip->ChangeFast();
 			GetWorldTimerManager().SetTimer(UpgradeTimerHandle , this , &ABaseCharacter::UpgradeRide ,
-					0.5f , false);
+			                                0.5f , false);
 		}
 		break;
 	case EItemType::Five:
@@ -216,7 +219,7 @@ void ABaseCharacter::SetRide(TSubclassOf<class ABaseRide> Ride)
 	EquippedRideClass = Ride;
 
 	CurrentSpeed = SLOW_RIDE_SPEED;
-	
+
 	// 캐릭터 올리기
 	GetMesh()->AddLocalOffset(FVector(0 , 0 , 90.f));
 	RidingComponent->SetChildActorClass(Ride);
@@ -232,7 +235,7 @@ void ABaseCharacter::RemoveRide()
 	EquippedRideClass = nullptr;
 
 	CurrentSpeed = Speed;
-	
+
 	// 내리기
 	GetMesh()->AddLocalOffset(FVector(0 , 0 , -90.f));
 	RidingComponent->SetChildActorClass(nullptr);
@@ -240,15 +243,15 @@ void ABaseCharacter::RemoveRide()
 
 void ABaseCharacter::Trapped()
 {
+	if (bIsTrapped || bIsShield || bIsGod) {
+		return;
+	}
+
 	if (CheckRide()) {
 		RemoveRide();
 		StopMovement();
 		GodMode();
-		
-		return;
-	}
-	
-	if (bIsTrapped || bIsShield || bIsGod) {
+
 		return;
 	}
 
@@ -262,7 +265,7 @@ void ABaseCharacter::Trapped()
 void ABaseCharacter::Escaped()
 {
 	GodMode();
-	
+
 	bIsTrapped = false;
 	TrappedComponent->SetChildActorClass(nullptr);
 
@@ -401,9 +404,9 @@ void ABaseCharacter::GodMode()
 	bIsGod = true;
 
 	// 캐릭터 반짝반짝
-	
+
 	GetWorldTimerManager().SetTimer(GodTimerHandle , this , &ABaseCharacter::DisableGodMode ,
-							0.55f , false);
+	                                0.55f , false);
 }
 
 void ABaseCharacter::StopMovement()
@@ -411,7 +414,7 @@ void ABaseCharacter::StopMovement()
 	CurrentSpeed = 0.f;
 
 	GetWorldTimerManager().SetTimer(StopTimerHandle , this , &ABaseCharacter::StartMovement ,
-						0.8f , false);
+	                                0.8f , false);
 }
 
 void ABaseCharacter::StartMovement()
@@ -424,4 +427,15 @@ void ABaseCharacter::UpgradeRide()
 	CurrentSpeed = FAST_RIDE_SPEED;
 
 	GetWorldTimerManager().ClearTimer(UpgradeTimerHandle);
+}
+
+bool ABaseCharacter::CheckIfSpaceShip()
+{
+	if (CheckRide()) {
+		if (RidingComponent->GetChildActor()->IsA<ASpaceShipRide>()) {
+			return true;
+		}
+	}
+
+	return false;
 }

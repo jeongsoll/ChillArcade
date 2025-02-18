@@ -53,7 +53,7 @@ AMyController::AMyController()
 		EatItemAction = InputActionEatItem.Object;
 	}
 	static ConstructorHelpers::FObjectFinder<UInputAction> InputActionEquippedItem
-	(TEXT("/Game/Player/Input/IA_Item.IA_Item"));
+		(TEXT("/Game/Player/Input/IA_Item.IA_Item"));
 	if (InputActionEquippedItem.Succeeded()) {
 		UseEquippedItemAction = InputActionEquippedItem.Object;
 	}
@@ -69,8 +69,8 @@ void AMyController::BeginPlay()
 {
 	Super::BeginPlay();
 
-	MapGen = Cast<AMapGen>(UGameplayStatics::GetActorOfClass(GetWorld(), AMapGen::StaticClass()));
-	
+	MapGen = Cast<AMapGen>(UGameplayStatics::GetActorOfClass(GetWorld() , AMapGen::StaticClass()));
+
 	if (UEnhancedInputLocalPlayerSubsystem* subsystem{
 		ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer())
 	}) {
@@ -99,7 +99,7 @@ void AMyController::Tick(float DeltaTime)
 			RotateValue = 180;
 		}
 		ControlledPlayer->GetMesh()->SetRelativeRotation(FRotator(0 , RotateValue , 0));
-		
+
 		if (CheckCollision()) {
 			ControlledPlayer->AddActorLocalOffset(Direction * ControlledPlayer->CurrentSpeed);
 			ControlledPlayer->CheckLocation();
@@ -132,7 +132,7 @@ void AMyController::SetupInputComponent()
 		                                   &AMyController::MoveLeftCompleted);
 
 		EnhancedInputComponent->BindAction(UseEquippedItemAction , ETriggerEvent::Triggered , this ,
-								   &AMyController::UseEquippedItem);
+		                                   &AMyController::UseEquippedItem);
 	}
 }
 
@@ -252,24 +252,41 @@ bool AMyController::CheckCollision()
 	};
 
 	uint8 WallType{static_cast<uint8>(MapGen->GameMap[CollisionCheckWallArray.X][CollisionCheckWallArray.Y])};
-	if (WallType == EMapType::Blocking || WallType == EMapType::Destroyable || WallType == EMapType::BalloonLoc) {
-		if (FMath::Abs(Direction.X) == 1 && FMath::Abs(WallLocation.X - PlayerLocation.X) < PlayerLength) {
-			return false;
-		}
-		if (FMath::Abs(Direction.Y) == 1 && FMath::Abs(WallLocation.Y - PlayerLocation.Y) < PlayerLength) {
-			return false;
+	if (ControlledPlayer->CheckIfSpaceShip()) {
+		if (WallType == EMapType::Blocking || WallType == EMapType::BalloonLoc) {
+			if (FMath::Abs(Direction.X) == 1 && FMath::Abs(WallLocation.X - PlayerLocation.X) < PlayerLength) {
+				return false;
+			}
+			if (FMath::Abs(Direction.Y) == 1 && FMath::Abs(WallLocation.Y - PlayerLocation.Y) < PlayerLength) {
+				return false;
+			}
 		}
 	}
-	
+	else {
+		if (WallType == EMapType::Blocking || WallType == EMapType::Destroyable || WallType == EMapType::BalloonLoc) {
+			if (FMath::Abs(Direction.X) == 1 && FMath::Abs(WallLocation.X - PlayerLocation.X) < PlayerLength) {
+				return false;
+			}
+			if (FMath::Abs(Direction.Y) == 1 && FMath::Abs(WallLocation.Y - PlayerLocation.Y) < PlayerLength) {
+				return false;
+			}
+		}
+	}
+
 	return true;
 }
 
 void AMyController::CheckItem()
 {
+	if (ControlledPlayer->CheckIfSpaceShip()) {
+		return;
+	}
+	
 	FArrLocation PlayerArray{ControlledPlayer->CheckLocation().X , ControlledPlayer->CheckLocation().Y};
-	if (EMapType::BubbleItem <= MapGen->GameMap[PlayerArray.X][PlayerArray.Y] && MapGen->GameMap[PlayerArray.X][PlayerArray.Y] <= EMapType::TurtleItem) {
+	if (EMapType::BubbleItem <= MapGen->GameMap[PlayerArray.X][PlayerArray.Y] && MapGen->GameMap[PlayerArray.X][
+		PlayerArray.Y] <= EMapType::TurtleItem) {
 		ControlledPlayer->GetItem(MapGen->ItemMap[PlayerArray.X][PlayerArray.Y]);
-		
+
 		MapGen->UpdateMapDestroyed(PlayerArray);
 	}
 }

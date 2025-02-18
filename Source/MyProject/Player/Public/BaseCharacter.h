@@ -73,6 +73,8 @@ public:
 	void StartMovement();
 	UFUNCTION(BlueprintCallable)
 	void UpgradeRide();
+	UFUNCTION(BlueprintCallable)
+	bool CheckIfSpaceShip();
 	
 	UPROPERTY(BlueprintReadWrite)
 	float Speed{3.f};
