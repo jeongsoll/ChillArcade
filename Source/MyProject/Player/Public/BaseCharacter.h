@@ -73,11 +73,11 @@ public:
 	void StartMovement();
 	
 	UPROPERTY(BlueprintReadWrite)
-	float Speed{5.f};
+	float Speed{3.f};
 	UPROPERTY(BlueprintReadWrite)
-	float CurrentSpeed{5.f};
+	float CurrentSpeed{3.f};
 	UPROPERTY(BlueprintReadWrite)
-	float TrappedSpeed{1.f};
+	float TrappedSpeed{0.6f};
 	UPROPERTY(BlueprintReadWrite)
 	bool bHasRiding{false};
 	UPROPERTY(BlueprintReadWrite)
@@ -96,9 +96,9 @@ public:
 	bool bIsGod{false};
 	
 	UPROPERTY(BlueprintReadWrite)
-	int32 BalloonRange{2};
+	int32 BalloonRange{1};
 	UPROPERTY(BlueprintReadWrite)
-	int32 BalloonCount{2};
+	int32 BalloonCount{1};
 	
 	UPROPERTY()
 	FTimerHandle TrappedTimerHandle;

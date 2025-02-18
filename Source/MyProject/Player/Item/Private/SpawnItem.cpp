@@ -13,6 +13,7 @@
 #include "LogUtils.h"
 #include "MapGen.h"
 #include "Needle.h"
+#include "RangeItem.h"
 #include "RollerItem.h"
 #include "SendArrInfoManagerComponent.h"
 #include "ShieldItem.h"
@@ -70,6 +71,11 @@ void ASpawnItem::SpawnItem(struct FArrLocation Loc)
 			auto NeedleActor{GetWorld()->SpawnActor<ANeedle>(ANeedle::StaticClass(), MapGen->ArrayToWorldLocation(Loc), FRotator::ZeroRotator)};
 			MapGen->ItemMap[Loc.X][Loc.Y] = NeedleActor;
 			MapGen->GameMap[Loc.X][Loc.Y] = EMapType::NeedleItem;
+		}
+		if (MapGen->baseWalls[Loc.X][Loc.Y]->ActorHasTag("Range")) {
+			auto RangeActor{GetWorld()->SpawnActor<ARangeItem>(ARangeItem::StaticClass(), MapGen->ArrayToWorldLocation(Loc), FRotator::ZeroRotator)};
+			MapGen->ItemMap[Loc.X][Loc.Y] = RangeActor;
+			MapGen->GameMap[Loc.X][Loc.Y] = EMapType::RangeItem;
 		}
 		if (MapGen->baseWalls[Loc.X][Loc.Y]->ActorHasTag("Roller")) {
 			auto RollerActor{GetWorld()->SpawnActor<ARollerItem>(ARollerItem::StaticClass(), MapGen->ArrayToWorldLocation(Loc), FRotator::ZeroRotator)};

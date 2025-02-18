@@ -25,28 +25,28 @@ public:
 	UFUNCTION()
 	void SpawnItem(struct FArrLocation Loc);
 	
-	UPROPERTY(EditAnywhere)
-		TSubclassOf<class ABubbleItem> BubbleClass;
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<class ACanItem> CanClass;
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<class ADevilItem> DevilClass;
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<class AFluidItem> FluidClass;
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<class ANeedle> NeedleClass;
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<class ARangeItem> RangeClass;
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<class ARollerItem> RollerClass;
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<class AShieldItem> ShieldClass;
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<class ASpaceShipItem> SpaceShipClass;
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<class ASpannerItem> SpannerClass;
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<class ATurtleItem> TurtleClass;
+	// UPROPERTY(EditAnywhere)
+	// 	TSubclassOf<class ABubbleItem> BubbleClass;
+	// UPROPERTY(EditAnywhere)
+	// TSubclassOf<class ACanItem> CanClass;
+	// UPROPERTY(EditAnywhere)
+	// TSubclassOf<class ADevilItem> DevilClass;
+	// UPROPERTY(EditAnywhere)
+	// TSubclassOf<class AFluidItem> FluidClass;
+	// UPROPERTY(EditAnywhere)
+	// TSubclassOf<class ANeedle> NeedleClass;
+	// UPROPERTY(EditAnywhere)
+	// TSubclassOf<class ARangeItem> RangeClass;
+	// UPROPERTY(EditAnywhere)
+	// TSubclassOf<class ARollerItem> RollerClass;
+	// UPROPERTY(EditAnywhere)
+	// TSubclassOf<class AShieldItem> ShieldClass;
+	// UPROPERTY(EditAnywhere)
+	// TSubclassOf<class ASpaceShipItem> SpaceShipClass;
+	// UPROPERTY(EditAnywhere)
+	// TSubclassOf<class ASpannerItem> SpannerClass;
+	// UPROPERTY(EditAnywhere)
+	// TSubclassOf<class ATurtleItem> TurtleClass;
 
 	UPROPERTY(EditAnywhere , BlueprintReadOnly)
 	class ABubbleItem* BubbleItem;

@@ -53,6 +53,13 @@ public:
 	int8 beforePlayerLocX = -1;
 	int8 beforePlayerLocY = -1;
 
+	// 아이템이 나올 수 있는 벽 개수
+	int32 ItemBlockCount = 0;
+	
+	// 각 아이템 개수 저장
+	int32 ItemCounts[12];
+	bool ItemValid[11];
+	
 	// 캐릭터 변수
 	class ABaseCharacter* Player;
 
@@ -108,5 +115,9 @@ public:
 	// Wall tag 함수
 	UFUNCTION()
 	void TaggingWall(int32 X, int32 Y);
+
+	
+	UFUNCTION(BlueprintCallable)
+	void DestroyAllMap();
 };
 

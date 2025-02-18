@@ -99,7 +99,7 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 void ABaseCharacter::InitPlayer()
 {
-	Speed = 5.f;
+	Speed = PLAYER_INITIAL_SPEED;
 	CurrentSpeed = Speed;
 }
 
