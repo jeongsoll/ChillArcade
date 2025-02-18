@@ -37,9 +37,9 @@ void ABaseBalloonRange::BeginPlay()
 	Super::BeginPlay();
 	MapGen = Cast<AMapGen>(UGameplayStatics::GetActorOfClass(GetWorld() , AMapGen::StaticClass()));
 
-	// 1초 후 물줄기 제거
+	// 0.5초 후 물줄기 제거
 	GetWorldTimerManager().SetTimer(RangeTimerHandle , this , &ABaseBalloonRange::RangeTime ,
-									1.f , false);
+									0.5f , false);
 }
 
 // Called every frame

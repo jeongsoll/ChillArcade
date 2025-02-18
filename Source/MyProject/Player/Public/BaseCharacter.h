@@ -63,6 +63,14 @@ public:
 	void RecoverBalloon();
 	UFUNCTION(BlueprintCallable)
 	void ChangeItem(ABaseItem* BaseItem);
+	UFUNCTION(BlueprintCallable)
+	void DisableGodMode();
+	UFUNCTION(BlueprintCallable)
+	void GodMode();
+	UFUNCTION(BlueprintCallable)
+	void StopMovement();
+	UFUNCTION(BlueprintCallable)
+	void StartMovement();
 	
 	UPROPERTY(BlueprintReadWrite)
 	float Speed{5.f};
@@ -84,6 +92,8 @@ public:
 	bool bHasCan{false};
 	UPROPERTY(BlueprintReadWrite)
 	bool bHasSpanner{false};
+	UPROPERTY(BlueprintReadWrite)
+	bool bIsGod{false};
 	
 	UPROPERTY(BlueprintReadWrite)
 	int32 BalloonRange{2};
@@ -94,6 +104,10 @@ public:
 	FTimerHandle TrappedTimerHandle;
 	UPROPERTY()
 	FTimerHandle ShieldTimerHandle;
+	UPROPERTY()
+	FTimerHandle GodTimerHandle;
+	UPROPERTY()
+	FTimerHandle StopTimerHandle;
 	
 	UPROPERTY(BlueprintReadWrite)
 	TSubclassOf<ABaseRide> EquippedRideClass;
@@ -106,5 +120,5 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<class ATrappedBalloon> TrapBalloonClass;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<class ASpawnableShield> ShieldClass;f
+	TSubclassOf<class ASpawnableShield> ShieldClass;
 };

@@ -220,7 +220,15 @@ void ABaseCharacter::RemoveRide()
 
 void ABaseCharacter::Trapped()
 {
-	if (bIsTrapped || bIsShield) {
+	if (CheckRide()) {
+		RemoveRide();
+		StopMovement();
+		GodMode();
+		
+		return;
+	}
+	
+	if (bIsTrapped || bIsShield || bIsGod) {
 		return;
 	}
 
@@ -233,6 +241,8 @@ void ABaseCharacter::Trapped()
 
 void ABaseCharacter::Escaped()
 {
+	GodMode();
+	
 	bIsTrapped = false;
 	TrappedComponent->SetChildActorClass(nullptr);
 
@@ -358,4 +368,33 @@ void ABaseCharacter::ChangeItem(ABaseItem* BaseItem)
 		bHasShield = false;
 		bHasSpanner = true;
 	}
+}
+
+void ABaseCharacter::DisableGodMode()
+{
+	bIsGod = false;
+	GetWorldTimerManager().ClearTimer(GodTimerHandle);
+}
+
+void ABaseCharacter::GodMode()
+{
+	bIsGod = true;
+
+	// 캐릭터 반짝반짝
+	
+	GetWorldTimerManager().SetTimer(GodTimerHandle , this , &ABaseCharacter::DisableGodMode ,
+							0.55f , false);
+}
+
+void ABaseCharacter::StopMovement()
+{
+	CurrentSpeed = 0.f;
+
+	GetWorldTimerManager().SetTimer(StopTimerHandle , this , &ABaseCharacter::StartMovement ,
+						0.8f , false);
+}
+
+void ABaseCharacter::StartMovement()
+{
+	CurrentSpeed = Speed;
 }
