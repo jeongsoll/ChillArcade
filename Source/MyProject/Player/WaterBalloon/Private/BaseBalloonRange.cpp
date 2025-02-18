@@ -64,8 +64,8 @@ void ABaseBalloonRange::CapturePLayer()
 	if (Character->CheckLocation() == RangeLocation) {
 		Character->Trapped();
 	}
-
-	if (MapGen->GameMap[RangeLocation.X][RangeLocation.Y] % 100 ==  10) {
+	
+	if (MapGen->GameMap[RangeLocation.X][RangeLocation.Y] % 100 == 10) {
 		// 이 위치 물풍선 터뜨리기
 		ABaseWaterBalloon* ExtraBalloon{MapGen->waterBalloonMap[RangeLocation.X][RangeLocation.Y]};
 		ExtraBalloon->ExplodeTime();

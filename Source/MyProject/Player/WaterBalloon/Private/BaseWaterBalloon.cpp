@@ -198,6 +198,7 @@ bool ABaseWaterBalloon::CheckRemoveLocations(FArrLocation Loc)
 		SendArrComponent->SendRemoveLocation(Loc);
 		return true;
 	}
+
 	
 	return false;
 }
