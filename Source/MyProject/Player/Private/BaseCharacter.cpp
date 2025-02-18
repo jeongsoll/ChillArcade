@@ -108,11 +108,11 @@ void ABaseCharacter::SetBalloon()
 	FArrLocation BalloonLoc;
 	BalloonLoc.X = FMath::FloorToInt(MAP_ROW_MAX - GetActorLocation().X / 100);
 	BalloonLoc.Y = FMath::FloorToInt(GetActorLocation().Y / 100);
-	
+
 	// 설지할 수 있는지 확인
 	if (BalloonCount > 0 && SendArrComponent->Map->GameMap[BalloonLoc.X][BalloonLoc.Y] % 100 != 10) {
 		--BalloonCount;
-		
+
 		if (SendArrComponent) {
 			SendArrComponent->SendBalloonLocation(BalloonLoc);
 		}
@@ -135,7 +135,9 @@ struct FArrLocation ABaseCharacter::CheckLocation()
 
 void ABaseCharacter::UseEatItem()
 {
-	if (bHasNeedle) {
+	LogUtils::Log();
+
+	if (bHasNeedle && bIsTrapped) {
 		Escaped();
 		bHasNeedle = false;
 	}
@@ -144,10 +146,18 @@ void ABaseCharacter::UseEatItem()
 		bHasShield = false;
 	}
 	if (bHasCan && !bIsTrapped) {
-		bHasCan = false;
+		ATurtleRide* Turtle{Cast<ATurtleRide>(RidingComponent->GetChildActor())};
+		if (CheckRide() && Turtle) {
+			Turtle->ChangeFast();
+			bHasCan = false;
+		}
 	}
 	if (bHasSpanner && !bIsTrapped) {
-		bHasSpanner = false;
+		ASpaceShipRide* SpaceShip{Cast<ASpaceShipRide>(RidingComponent->GetChildActor())};
+		if (CheckRide() && SpaceShip) {
+			SpaceShip->ChangeFast();
+			bHasSpanner = false;
+		}
 	}
 }
 
@@ -155,7 +165,7 @@ void ABaseCharacter::UseEquipItem(int32 Input)
 {
 	ATurtleRide* Turtle{Cast<ATurtleRide>(RidingComponent->GetChildActor())};
 	ASpaceShipRide* SpaceShip{Cast<ASpaceShipRide>(RidingComponent->GetChildActor())};
-
+	
 	switch (Input) {
 	case EItemType::Can:
 		if (CheckRide() && Turtle) {
@@ -269,7 +279,7 @@ void ABaseCharacter::GetItem(ABaseItem* BaseItem)
 		}
 	}
 	if (BaseItem->IsA<ACanItem>()) {
-		bHasCan = true;
+		ChangeItem(BaseItem);
 	}
 	if (BaseItem->IsA<ADevilItem>()) {
 		Speed = PLAYER_MAX_SPEED;
@@ -283,7 +293,7 @@ void ABaseCharacter::GetItem(ABaseItem* BaseItem)
 		}
 	}
 	if (BaseItem->IsA<ANeedle>()) {
-		bHasNeedle = true;
+		ChangeItem(BaseItem);
 	}
 	if (BaseItem->IsA<ARangeItem>()) {
 		BalloonRange = MAX_BALLOON_RANGE;
@@ -297,7 +307,7 @@ void ABaseCharacter::GetItem(ABaseItem* BaseItem)
 		}
 	}
 	if (BaseItem->IsA<AShieldItem>()) {
-		bHasShield = true;
+		ChangeItem(BaseItem);
 	}
 	if (BaseItem->IsA<ASpaceShipItem>()) {
 		if (!CheckRide()) {
@@ -306,7 +316,7 @@ void ABaseCharacter::GetItem(ABaseItem* BaseItem)
 		}
 	}
 	if (BaseItem->IsA<ASpannerItem>()) {
-		bHasSpanner = true;
+		ChangeItem(BaseItem);
 	}
 	if (BaseItem->IsA<ATurtleItem>()) {
 		if (!CheckRide()) {
@@ -320,4 +330,32 @@ void ABaseCharacter::GetItem(ABaseItem* BaseItem)
 void ABaseCharacter::RecoverBalloon()
 {
 	++BalloonCount;
+}
+
+void ABaseCharacter::ChangeItem(ABaseItem* BaseItem)
+{
+	if (BaseItem->IsA<ACanItem>()) {
+		bHasCan = true;
+		bHasNeedle = false;
+		bHasShield = false;
+		bHasSpanner = false;
+	}
+	if (BaseItem->IsA<ANeedle>()) {
+		bHasCan = false;
+		bHasNeedle = true;
+		bHasShield = false;
+		bHasSpanner = false;
+	}
+	if (BaseItem->IsA<AShieldItem>()) {
+		bHasCan = false;
+		bHasNeedle = false;
+		bHasShield = true;
+		bHasSpanner = false;
+	}
+	if (BaseItem->IsA<ASpannerItem>()) {
+		bHasCan = false;
+		bHasNeedle = false;
+		bHasShield = false;
+		bHasSpanner = true;
+	}
 }

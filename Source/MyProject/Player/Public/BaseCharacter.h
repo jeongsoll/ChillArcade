@@ -61,6 +61,8 @@ public:
 	void GetItem(ABaseItem* BaseItem);
 	UFUNCTION(BlueprintCallable)
 	void RecoverBalloon();
+	UFUNCTION(BlueprintCallable)
+	void ChangeItem(ABaseItem* BaseItem);
 	
 	UPROPERTY(BlueprintReadWrite)
 	float Speed{5.f};
@@ -84,9 +86,9 @@ public:
 	bool bHasSpanner{false};
 	
 	UPROPERTY(BlueprintReadWrite)
-	int32 BalloonRange{1};
+	int32 BalloonRange{2};
 	UPROPERTY(BlueprintReadWrite)
-	int32 BalloonCount{1};
+	int32 BalloonCount{2};
 	
 	UPROPERTY()
 	FTimerHandle TrappedTimerHandle;
@@ -104,9 +106,5 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<class ATrappedBalloon> TrapBalloonClass;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	TSubclassOf<class ASpawnableShield> ShieldClass;
-	// UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	// class ATurtleRide* Turtle;
-	// UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	// class ASpaceShipRide* SpaceShip;
+	TSubclassOf<class ASpawnableShield> ShieldClass;f
 };
