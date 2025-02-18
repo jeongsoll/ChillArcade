@@ -71,6 +71,8 @@ public:
 	void StopMovement();
 	UFUNCTION(BlueprintCallable)
 	void StartMovement();
+	UFUNCTION(BlueprintCallable)
+	void UpgradeRide();
 	
 	UPROPERTY(BlueprintReadWrite)
 	float Speed{3.f};
@@ -108,6 +110,8 @@ public:
 	FTimerHandle GodTimerHandle;
 	UPROPERTY()
 	FTimerHandle StopTimerHandle;
+	UPROPERTY()
+	FTimerHandle UpgradeTimerHandle;
 	
 	UPROPERTY(BlueprintReadWrite)
 	TSubclassOf<ABaseRide> EquippedRideClass;

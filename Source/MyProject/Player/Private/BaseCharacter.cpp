@@ -148,15 +148,21 @@ void ABaseCharacter::UseEatItem()
 	if (bHasCan && !bIsTrapped) {
 		ATurtleRide* Turtle{Cast<ATurtleRide>(RidingComponent->GetChildActor())};
 		if (CheckRide() && Turtle) {
+			CurrentSpeed = 0.f;
 			Turtle->ChangeFast();
 			bHasCan = false;
+			GetWorldTimerManager().SetTimer(UpgradeTimerHandle , this , &ABaseCharacter::UpgradeRide ,
+					0.5f , false);
 		}
 	}
 	if (bHasSpanner && !bIsTrapped) {
 		ASpaceShipRide* SpaceShip{Cast<ASpaceShipRide>(RidingComponent->GetChildActor())};
 		if (CheckRide() && SpaceShip) {
+			CurrentSpeed = 0.f;
 			SpaceShip->ChangeFast();
 			bHasSpanner = false;
+			GetWorldTimerManager().SetTimer(UpgradeTimerHandle , this , &ABaseCharacter::UpgradeRide ,
+					0.5f , false);
 		}
 	}
 }
@@ -168,19 +174,29 @@ void ABaseCharacter::UseEquipItem(int32 Input)
 	
 	switch (Input) {
 	case EItemType::Can:
-		if (CheckRide() && Turtle) {
+		if (CheckRide() && Turtle && !bIsTrapped) {
+			CurrentSpeed = 0.f;
 			Turtle->ChangeFast();
+			GetWorldTimerManager().SetTimer(UpgradeTimerHandle , this , &ABaseCharacter::UpgradeRide ,
+								0.5f , false);
 		}
 		break;
 	case EItemType::Needle:
-		Escaped();
+		if (bIsTrapped) {
+			Escaped();
+		}
 		break;
 	case EItemType::Shield:
-		SetShield();
+		if (!bIsTrapped) {
+			SetShield();
+		}
 		break;
 	case EItemType::Spanner:
-		if (CheckRide() && SpaceShip) {
+		if (CheckRide() && SpaceShip && !bIsTrapped) {
+			CurrentSpeed = 0.f;
 			SpaceShip->ChangeFast();
+			GetWorldTimerManager().SetTimer(UpgradeTimerHandle , this , &ABaseCharacter::UpgradeRide ,
+					0.5f , false);
 		}
 		break;
 	case EItemType::Five:
@@ -199,6 +215,8 @@ void ABaseCharacter::SetRide(TSubclassOf<class ABaseRide> Ride)
 {
 	EquippedRideClass = Ride;
 
+	CurrentSpeed = SLOW_RIDE_SPEED;
+	
 	// 캐릭터 올리기
 	GetMesh()->AddLocalOffset(FVector(0 , 0 , 90.f));
 	RidingComponent->SetChildActorClass(Ride);
@@ -213,6 +231,8 @@ void ABaseCharacter::RemoveRide()
 {
 	EquippedRideClass = nullptr;
 
+	CurrentSpeed = Speed;
+	
 	// 내리기
 	GetMesh()->AddLocalOffset(FVector(0 , 0 , -90.f));
 	RidingComponent->SetChildActorClass(nullptr);
@@ -293,7 +313,7 @@ void ABaseCharacter::GetItem(ABaseItem* BaseItem)
 	}
 	if (BaseItem->IsA<ADevilItem>()) {
 		Speed = PLAYER_MAX_SPEED;
-		if (!bIsTrapped) {
+		if (!bIsTrapped && !CheckRide()) {
 			CurrentSpeed = Speed;
 		}
 	}
@@ -312,7 +332,7 @@ void ABaseCharacter::GetItem(ABaseItem* BaseItem)
 		if (Speed <= PLAYER_MAX_SPEED) {
 			++Speed;
 		}
-		if (!bIsTrapped) {
+		if (!bIsTrapped && !CheckRide()) {
 			CurrentSpeed = Speed;
 		}
 	}
@@ -397,4 +417,11 @@ void ABaseCharacter::StopMovement()
 void ABaseCharacter::StartMovement()
 {
 	CurrentSpeed = Speed;
+}
+
+void ABaseCharacter::UpgradeRide()
+{
+	CurrentSpeed = FAST_RIDE_SPEED;
+
+	GetWorldTimerManager().ClearTimer(UpgradeTimerHandle);
 }
