@@ -367,41 +367,6 @@ void AMapGen::TaggingWall(int32 X , int32 Y)
 			}
 		}
 	}
-
-	// switch (ChooseTag) {
-	// 	case 1:
-	// 		baseWalls[X][Y]->Tags.Add(FName("Bubble"));
-	// 		break;
-	// 	case 2:
-	// 		baseWalls[X][Y]->Tags.Add(FName("Can"));
-	// 		break;
-	// 	case 3:
-	// 		baseWalls[X][Y]->Tags.Add(FName("Devil"));
-	// 		break;
-	// 	case 4:
-	// 		baseWalls[X][Y]->Tags.Add(FName("Fluid"));
-	// 		break;
-	// 	case 5:
-	// 		baseWalls[X][Y]->Tags.Add(FName("Needle"));
-	// 		break;
-	// 	case 6:
-	// 		baseWalls[X][Y]->Tags.Add(FName("Roller"));
-	// 		break;
-	// 	case 7:
-	// 		baseWalls[X][Y]->Tags.Add(FName("Shield"));
-	// 		break;
-	// 	case 8:
-	// 		baseWalls[X][Y]->Tags.Add(FName("SpaceShip"));
-	// 		break;
-	// 	case 9:
-	// 		baseWalls[X][Y]->Tags.Add(FName("Spanner"));
-	// 		break;
-	// 	case 10:
-	// 		baseWalls[X][Y]->Tags.Add(FName("Turtle"));
-	// 		break;
-	// 	default:
-	// 		break;
-	// }
 }
 
 void AMapGen::DestroyAllMap()

@@ -166,16 +166,6 @@ bool ABaseWaterBalloon::CheckRemoveLocations(FArrLocation Loc)
 		//LogUtils::Log("Blocking" , Loc.X , Loc.Y);
 		return false;
 	}
-	if (EMapType::Pushable == Input) {
-		//LogUtils::Log("Pushable : " , Loc.X , Loc.Y);
-		SendArrComponent->SendRemoveLocation(Loc);
-		return false;
-	}
-	if (EMapType::Bush == Input) {
-		//LogUtils::Log("Bush : " , Loc.X , Loc.Y);
-		SendArrComponent->SendRemoveLocation(Loc);
-		return true;
-	}
 	if (EMapType::Destroyable == Input) {
 		//LogUtils::Log("Destroyable : " , Loc.X , Loc.Y);
 		SendArrComponent->SendRemoveLocation(Loc);
@@ -184,6 +174,16 @@ bool ABaseWaterBalloon::CheckRemoveLocations(FArrLocation Loc)
 	if (EMapType::Movable == Input) {
 		//LogUtils::Log("Movable : " , Loc.X , Loc.Y);
 		return true;
+	}
+	if (EMapType::Bush == Input) {
+		//LogUtils::Log("Bush : " , Loc.X , Loc.Y);
+		SendArrComponent->SendRemoveLocation(Loc);
+		return true;
+	}
+	if (EMapType::Pushable == Input) {
+		//LogUtils::Log("Pushable : " , Loc.X , Loc.Y);
+		SendArrComponent->SendRemoveLocation(Loc);
+		return false;
 	}
 	if (EMapType::PlayerLoc == Input) {
 		return true;
