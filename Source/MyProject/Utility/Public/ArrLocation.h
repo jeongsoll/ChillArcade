@@ -54,7 +54,7 @@ enum EMapType : uint8 {
 	SpaceShipItem = 28,
 	SpannerItem = 29,
 	TurtleItem = 30,
-	
+	// ~ 40 까지 사용 금지
 	PlayerLoc = 100,
 	PlayerBalloonLoc = 110
 };

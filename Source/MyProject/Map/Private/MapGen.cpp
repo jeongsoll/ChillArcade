@@ -135,6 +135,12 @@ void AMapGen::UpdateMapBalloon(struct FArrLocation Loc)
 	if (GameMap[Loc.X][Loc.Y] % 100 == 10)
 		return;
 
+	// 아이템 있는 곳에 스폰되면
+	if (EMapType::BubbleItem <= GameMap[Loc.X][Loc.Y] && GameMap[Loc.X][Loc.Y] <= EMapType::TurtleItem) {
+		GameMap[Loc.X][Loc.Y] = 0;
+		ItemMap[Loc.X][Loc.Y]->Destroy();
+	}
+	
 	//플레이어가 설치한 위치에 물풍선(10)으로 변경
 	//그 위치 위에 물풍선 스폰
 	GameMap[Loc.X][Loc.Y] += 10;
@@ -255,6 +261,7 @@ void AMapGen::TaggingWall(int32 X , int32 Y)
 				baseWalls[X][Y]->Tags.Add(FName("Bubble"));
 				break;
 			}
+
 			ItemValid[ChooseTag] = true;
 		}
 		else if (ChooseTag + ITEM_COUNT == EMapType::CanItem) {
@@ -263,6 +270,7 @@ void AMapGen::TaggingWall(int32 X , int32 Y)
 				baseWalls[X][Y]->Tags.Add(FName("Can"));
 				break;
 			}
+			
 			ItemValid[ChooseTag] = true;
 		}
 		else if (ChooseTag + ITEM_COUNT == EMapType::DevilItem) {
@@ -271,6 +279,7 @@ void AMapGen::TaggingWall(int32 X , int32 Y)
 				baseWalls[X][Y]->Tags.Add(FName("Devil"));
 				break;
 			}
+			
 			ItemValid[ChooseTag] = true;
 		}
 		else if (ChooseTag + ITEM_COUNT == EMapType::FluidItem) {
@@ -279,6 +288,7 @@ void AMapGen::TaggingWall(int32 X , int32 Y)
 				baseWalls[X][Y]->Tags.Add(FName("Fluid"));
 				break;
 			}
+			
 			ItemValid[ChooseTag] = true;
 		}
 		else if (ChooseTag + ITEM_COUNT == EMapType::NeedleItem) {
@@ -287,6 +297,7 @@ void AMapGen::TaggingWall(int32 X , int32 Y)
 				baseWalls[X][Y]->Tags.Add(FName("Needle"));
 				break;
 			}
+			
 			ItemValid[ChooseTag] = true;
 		}
 		else if (ChooseTag + ITEM_COUNT == EMapType::RangeItem) {
@@ -295,6 +306,7 @@ void AMapGen::TaggingWall(int32 X , int32 Y)
 				baseWalls[X][Y]->Tags.Add(FName("Range"));
 				break;
 			}
+			
 			ItemValid[ChooseTag] = true;
 		}
 		else if (ChooseTag + ITEM_COUNT == EMapType::RollerItem) {
@@ -303,6 +315,7 @@ void AMapGen::TaggingWall(int32 X , int32 Y)
 				baseWalls[X][Y]->Tags.Add(FName("Roller"));
 				break;
 			}
+			
 			ItemValid[ChooseTag] = true;
 		}
 		else if (ChooseTag + ITEM_COUNT == EMapType::ShieldItem) {
@@ -311,6 +324,7 @@ void AMapGen::TaggingWall(int32 X , int32 Y)
 				baseWalls[X][Y]->Tags.Add(FName("Shield"));
 				break;
 			}
+			
 			ItemValid[ChooseTag] = true;
 		}
 		else if (ChooseTag + ITEM_COUNT == EMapType::SpaceShipItem) {
@@ -319,6 +333,7 @@ void AMapGen::TaggingWall(int32 X , int32 Y)
 				baseWalls[X][Y]->Tags.Add(FName("SpaceShip"));
 				break;
 			}
+			
 			ItemValid[ChooseTag] = true;
 		}
 		else if (ChooseTag + ITEM_COUNT == EMapType::SpannerItem) {
@@ -327,6 +342,7 @@ void AMapGen::TaggingWall(int32 X , int32 Y)
 				baseWalls[X][Y]->Tags.Add(FName("Spanner"));
 				break;
 			}
+			
 			ItemValid[ChooseTag] = true;
 		}
 		else if (ChooseTag + ITEM_COUNT == EMapType::TurtleItem) {
@@ -335,6 +351,7 @@ void AMapGen::TaggingWall(int32 X , int32 Y)
 				baseWalls[X][Y]->Tags.Add(FName("Turtle"));
 				break;
 			}
+			
 			ItemValid[ChooseTag] = true;
 		}
 		else {
@@ -350,41 +367,6 @@ void AMapGen::TaggingWall(int32 X , int32 Y)
 			}
 		}
 	}
-
-	// switch (ChooseTag) {
-	// 	case 1:
-	// 		baseWalls[X][Y]->Tags.Add(FName("Bubble"));
-	// 		break;
-	// 	case 2:
-	// 		baseWalls[X][Y]->Tags.Add(FName("Can"));
-	// 		break;
-	// 	case 3:
-	// 		baseWalls[X][Y]->Tags.Add(FName("Devil"));
-	// 		break;
-	// 	case 4:
-	// 		baseWalls[X][Y]->Tags.Add(FName("Fluid"));
-	// 		break;
-	// 	case 5:
-	// 		baseWalls[X][Y]->Tags.Add(FName("Needle"));
-	// 		break;
-	// 	case 6:
-	// 		baseWalls[X][Y]->Tags.Add(FName("Roller"));
-	// 		break;
-	// 	case 7:
-	// 		baseWalls[X][Y]->Tags.Add(FName("Shield"));
-	// 		break;
-	// 	case 8:
-	// 		baseWalls[X][Y]->Tags.Add(FName("SpaceShip"));
-	// 		break;
-	// 	case 9:
-	// 		baseWalls[X][Y]->Tags.Add(FName("Spanner"));
-	// 		break;
-	// 	case 10:
-	// 		baseWalls[X][Y]->Tags.Add(FName("Turtle"));
-	// 		break;
-	// 	default:
-	// 		break;
-	// }
 }
 
 void AMapGen::DestroyAllMap()
@@ -392,7 +374,7 @@ void AMapGen::DestroyAllMap()
 	for (int i = 0; i < MAP_ROW_MAX; ++i) {
 		for (int j = 0; j < MAP_COLUMN_MAX; ++j) {
 			if (GameMap[i][j] == 2) {
-				UpdateMapDestroyed({i, j});
+				UpdateMapDestroyed({i , j});
 			}
 		}
 	}
