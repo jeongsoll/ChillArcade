@@ -205,7 +205,6 @@ void AMyController::MoveLeftCompleted(const FInputActionValue& Value)
 void AMyController::UseEquippedItem(const FInputActionValue& Value)
 {
 	float Input{Value.Get<float>()};
-
 	ControlledPlayer->UseEquipItem(FMath::FloorToInt32(Input));
 }
 
