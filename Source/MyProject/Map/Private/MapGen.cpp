@@ -8,12 +8,15 @@
 #include "BaseCharacter.h"
 #include "BaseWaterBalloon.h"
 #include "Bush.h"
+#include "ComputerOne.h"
 #include "LogUtils.h"
 #include "MovingWall.h"
 #include "SpawnItem.h"
 #include "StrongWall.h"
 #include "Tile.h"
 #include "WeakWall.h"
+#include "HLSLTree/HLSLTree.h"
+#include "Runtime/Datasmith/CADKernel/Base/Public/Mesh/Structure/ModelMesh.h"
 
 class ABaseWaterBalloon;
 // Sets default values
@@ -53,6 +56,10 @@ void AMapGen::SetGrid(int8 gridX , int8 gridY)
 		for (int y = 0; y < gridY; ++y) {
 			/*UE_LOG(LogTemp, Warning, TEXT("map[%d][%d] = %d"), x, y, GameMap[x][y]);*/
 
+			FArrLocation Loc;
+			Loc.X = x;
+			Loc.Y = y;
+			
 			//x,y값이 증가할 때 landSpacing을 곱해서 landSpacing만큼 떨어트리는 변수
 			FVector location = GetActorLocation() + FVector(landSpacing * (gridX - 1) - (x * landSpacing) ,
 			                                                y * landSpacing , 0.0f);
@@ -78,6 +85,14 @@ void AMapGen::SetGrid(int8 gridX , int8 gridY)
 				                                                       FRotator::ZeroRotator)) {
 					baseWalls[x][y] = Cast<ABaseWall>(spawnWeakWall);
 					TaggingWall(x , y);
+				}
+				break;
+			case PlayerLoc:
+				if (auto* spawntile = world->SpawnActor<ATile>(TileFactory , location , FRotator::ZeroRotator)) {
+					baseWalls[x][y] = Cast<ABaseWall>(spawntile);
+				}
+				if (auto* ai = world->SpawnActor<AComputerOne>(ComOneFactory , ArrayToWorldLocation(Loc) , FRotator::ZeroRotator)) {
+					baseChar[x][y] = Cast<ABaseCharacter>(ai);
 				}
 				break;
 			default:

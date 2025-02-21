@@ -38,7 +38,8 @@ public:
 	TSubclassOf<class ABaseWaterBalloon> BalloonFactory;
 	UPROPERTY(EditAnywhere)
 	TSubclassOf<class ABaseBalloonRange> BalloonStreamFactory;
-	
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<class AComputerOne> ComOneFactory;
 
 	// 그리드 x축, y축 지정할 변수
 	int8 gridSizeX = 15;
@@ -71,6 +72,8 @@ public:
 	class ABaseWaterBalloon* waterBalloonMap[15][17] = {};
 	// 아이템 정보를 담을 배열 변수
 	class ABaseItem* ItemMap[15][17] = {};
+	// AI 정보를 담을 배열 변수
+	class ABaseCharacter* baseChar[15][17] = {};
 	
 	
 	// 그리드 타일 세팅
@@ -115,7 +118,6 @@ public:
 	// Wall tag 함수
 	UFUNCTION()
 	void TaggingWall(int32 X, int32 Y);
-
 	
 	UFUNCTION(BlueprintCallable)
 	void DestroyAllMap();

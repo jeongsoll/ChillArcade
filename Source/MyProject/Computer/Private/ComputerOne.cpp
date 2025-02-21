@@ -1,7 +1,7 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "MyProject/Computer/Public/ComputerOne.h"
+#include "ComputerOne.h"
 
 
 // Sets default values

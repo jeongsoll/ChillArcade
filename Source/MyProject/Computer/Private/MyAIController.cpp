@@ -1,32 +1,28 @@
 ﻿// Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "My_AIController.h"
-
-#include "ComputerOne.h"
+#include "MyAIController.h"
 #include "MapGen.h"
+#include "ArrLocation.h"
+#include "ComputerOne.h"
 #include "Kismet/GameplayStatics.h"
 
-
 // Sets default values
-AMy_AIController::AMy_AIController()
+AMyAIController::AMyAIController()
 {
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 }
 
 // Called when the game starts or when spawned
-void AMy_AIController::BeginPlay()
+void AMyAIController::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	ComOne = Cast<AComputerOne>(UGameplayStatics::GetActorOfClass(GetWorld(), AComputerOne::StaticClass()));
-	map = Cast<AMapGen>(UGameplayStatics::GetActorOfClass(GetWorld(), AMapGen::StaticClass()));
+
 }
 
 // Called every frame
-void AMy_AIController::Tick(float DeltaTime)
+void AMyAIController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 }
-

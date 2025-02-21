@@ -4,16 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "Runtime/AIModule/Classes/AIController.h"
-#include "My_AIController.generated.h"
+#include "MyAIController.generated.h"
 
 UCLASS()
-class MYPROJECT_API AMy_AIController : public AAIController
+class MYPROJECT_API AMyAIController : public AAIController
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this actor's properties
-	AMy_AIController();
+	AMyAIController();
 
 protected:
 	// Called when the game starts or when spawned
@@ -24,12 +24,9 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY()
-	class AComputerOne* ComOne;
-	UPROPERTY()
-	class AMapGen* map;
+	class AMapGen* MapGen;
 
-	//탐색
-	//공격
-	//회피
-	//대기
+	UPROPERTY()
+	class AComputerOne* ComOne;
+
 };
