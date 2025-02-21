@@ -16,6 +16,7 @@ class MYPROJECT_API AMyController : public APlayerController {
 
 public:
 	AMyController();
+	
 
 protected:
 	virtual void BeginPlay() override;
