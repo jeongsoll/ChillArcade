@@ -48,7 +48,10 @@ void ABaseWaterBalloon::BeginPlay()
 	Player = Cast<ABaseCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	
 	ExplodeRange = Player->BalloonRange;
-
+	
+	// AI 용 ( 수정 필요 )
+	SendArrComponent->SendBalloonExplodeLocation_AI(CheckExplodeLocations_AI(BalloonLocation));
+	
 	// 3초 후 폭발
 	GetWorldTimerManager().SetTimer(ExplodeTimerHandle , this , &ABaseWaterBalloon::ExplodeTime ,
 	                                3.f , false);
@@ -199,6 +202,100 @@ bool ABaseWaterBalloon::CheckRemoveLocations(FArrLocation Loc)
 		return true;
 	}
 
+	
+	return false;
+}
+
+TArray<struct FArrLocation> ABaseWaterBalloon::CheckExplodeLocations_AI(struct FArrLocation Loc)
+{
+	TArray<FArrLocation> Locations;
+	// 설치된 위치 추가
+	Locations.Add(Loc);
+	
+	// 위쪽 검사
+	for (int32 i{1}; i <= ExplodeRange; ++i) {
+		FArrLocation UpLocation;
+
+		if (Loc.X + i == MAP_ROW_MAX) {
+			break;
+		}
+
+		UpLocation.X = Loc.X + i;
+		UpLocation.Y = Loc.Y;
+
+		if (CheckRemoveLocations_AI(UpLocation)) {
+			Locations.Add(UpLocation);
+		}
+		else {
+			break;
+		}
+	}
+	for (int32 i{1}; i <= ExplodeRange; ++i) {
+		FArrLocation DownLocation;
+
+		if (Loc.X - i == MAP_MIN) {
+			break;
+		}
+
+		DownLocation.X = Loc.X - i;
+		DownLocation.Y = Loc.Y;
+
+		if (CheckRemoveLocations_AI(DownLocation)) {
+			Locations.Add(DownLocation);
+		}
+		else {
+			break;
+		}
+	}
+	for (int32 i{1}; i <= ExplodeRange; ++i) {
+		FArrLocation RightLocation;
+
+		if (Loc.Y + i == MAP_COLUMN_MAX) {
+			break;
+		}
+
+		RightLocation.X = Loc.X;
+		RightLocation.Y = Loc.Y + i;
+
+		if (CheckRemoveLocations_AI(RightLocation)) {
+			Locations.Add(RightLocation);
+		}
+		else {
+			break;
+		}
+	}
+	for (int32 i{1}; i <= ExplodeRange; ++i) {
+		FArrLocation LeftLocation;
+
+		if (Loc.Y - i == MAP_MIN) {
+			break;
+		}
+
+		LeftLocation.X = Loc.X;
+		LeftLocation.Y = Loc.Y - i;
+
+		if (CheckRemoveLocations_AI(LeftLocation)) {
+			Locations.Add(LeftLocation);
+		}
+		else {
+			break;
+		}
+	}
+
+	return Locations;
+}
+
+bool ABaseWaterBalloon::CheckRemoveLocations_AI(struct FArrLocation Loc)
+{
+	int32 Input{MapGen->GameMap[Loc.X][Loc.Y]};
+	
+	if (EMapType::Blocking == Input || EMapType::Destroyable == Input || EMapType::Pushable == Input) {
+		return false;
+	}
+	if (EMapType::Movable == Input || EMapType::Bush == Input || EMapType::PlayerLoc == Input || EMapType::BalloonLoc == Input
+		|| EMapType::BalloonLoc + EMapType::PlayerLoc == Input || EMapType::BubbleItem <= Input && Input <= EMapType::TurtleItem) {
+		return true;
+	}
 	
 	return false;
 }

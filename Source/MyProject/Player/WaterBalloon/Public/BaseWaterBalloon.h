@@ -56,4 +56,9 @@ public:
 
 	UPROPERTY(EditAnywhere , BlueprintReadOnly)
 	int32 ExplodeRange;
+
+	UFUNCTION(BlueprintCallable)
+	TArray<struct FArrLocation> CheckExplodeLocations_AI(struct FArrLocation Loc);
+	UFUNCTION(BlueprintCallable)
+	bool CheckRemoveLocations_AI(struct FArrLocation Loc);
 };

@@ -63,3 +63,8 @@ void USendArrInfoManagerComponent::SendRemoveLocation(struct FArrLocation Loc)
 	//LogUtils::Log("Remove Location : " , Loc.X , Loc.Y);
 	Map->UpdateMapDestroyed(Loc);
 }
+
+void USendArrInfoManagerComponent::SendBalloonExplodeLocation_AI(TArray<struct FArrLocation> Loc)
+{
+	
+}

@@ -34,6 +34,8 @@ public:
 	void SendBalloonExplodeLocation(TArray<struct FArrLocation> Loc);
 	UFUNCTION(BlueprintCallable)
 	void SendRemoveLocation(struct FArrLocation Loc);
-	
+
+	UFUNCTION(BlueprintCallable)
+	void SendBalloonExplodeLocation_AI(TArray<struct FArrLocation> Loc);
 	
 };
