@@ -9,6 +9,12 @@ AAppleCharacter::AAppleCharacter()
 {
 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
+	
+	static ConstructorHelpers::FObjectFinder<UMaterial> BaseMaterialObject
+		(TEXT("/Game/Player/Model/m_Apple.m_Apple"));
+	if (BaseMaterialObject.Succeeded()) {
+		GetMesh()->SetMaterial(0, BaseMaterialObject.Object);
+	}
 }
 
 // Called when the game starts or when spawned

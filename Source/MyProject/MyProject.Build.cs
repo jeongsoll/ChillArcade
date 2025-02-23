@@ -25,12 +25,13 @@ public class MyProject : ModuleRules
 			"MyProject/Player/Animation/Public",
 			"MyProject/Widget/Lobby/Public",
 			"MyProject/Widget/WaitRoom/Public",
+			"MyProject/Widget/Public",
 			"MyProject/Computer/Public",
 			"MyProject/Map/Public"
 
 		});
 		// Uncomment if you are using Slate UI
-		// PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
+		PrivateDependencyModuleNames.AddRange(new string[] { "Slate", "SlateCore" });
 		
 		// Uncomment if you are using online features
 		// PrivateDependencyModuleNames.Add("OnlineSubsystem");
