@@ -12,6 +12,7 @@
 #include "FluidItem.h"
 #include "LogUtils.h"
 #include "MapGen.h"
+#include "MyGameInstance.h"
 #include "Needle.h"
 #include "RangeItem.h"
 #include "RollerItem.h"
@@ -104,6 +105,12 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 void ABaseCharacter::InitPlayer()
 {
+	UMyGameInstance* GI{Cast<UMyGameInstance>(GetGameInstance())};
+	if (GI) {
+		GetMesh()->SetSkeletalMesh(GI->SelectedCharacter);
+		GetMesh()->SetAnimInstanceClass(GI->SelectedAnimInstance);
+	}
+	
 	Speed = PLAYER_INITIAL_SPEED;
 	CurrentSpeed = Speed;
 }
