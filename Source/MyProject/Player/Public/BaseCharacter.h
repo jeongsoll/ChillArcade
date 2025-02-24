@@ -75,6 +75,8 @@ public:
 	void UpgradeRide();
 	UFUNCTION(BlueprintCallable)
 	bool CheckIfSpaceShip();
+	UFUNCTION(BlueprintCallable)
+	void Rotating();
 	
 	UPROPERTY(BlueprintReadWrite)
 	float Speed{3.f};
@@ -98,6 +100,14 @@ public:
 	bool bHasSpanner{false};
 	UPROPERTY(BlueprintReadWrite)
 	bool bIsGod{false};
+	UPROPERTY(BlueprintReadWrite)
+	float RotateTime{};
+	UPROPERTY(BlueprintReadWrite)
+	float RotateEndTime{0.5f};
+	UPROPERTY(BlueprintReadWrite)
+	bool bRotating{false};
+	UPROPERTY(BlueprintReadWrite)
+	float RotateYaw{0.f};
 	
 	UPROPERTY(BlueprintReadWrite)
 	int32 BalloonRange{1};

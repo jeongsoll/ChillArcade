@@ -14,6 +14,12 @@ class MYPROJECT_API UAppleAnimation : public UAnimInstance {
 	GENERATED_BODY()
 
 public:
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	//float Speed;
+	UFUNCTION(BlueprintImplementableEvent, Category = Anim)
+	void OnEatItem();
+	UFUNCTION(BlueprintImplementableEvent, Category = Anim)
+	void OnTouch();
+	UFUNCTION(BlueprintImplementableEvent, Category = Anim)
+	void OnDie();
+	UFUNCTION(BlueprintImplementableEvent, Category = Anim)
+	void OnUp();
 };

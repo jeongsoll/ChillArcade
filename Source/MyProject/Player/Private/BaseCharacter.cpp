@@ -89,6 +89,11 @@ void ABaseCharacter::BeginPlay()
 void ABaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+	if (bRotating) {
+		RotateYaw += DeltaTime * 5000.f;
+		GetMesh()->SetRelativeRotation(FRotator(0.f , RotateYaw , 0.f));
+	}
 }
 
 // Called to bind functionality to input
@@ -151,21 +156,17 @@ void ABaseCharacter::UseEatItem()
 	if (bHasCan && !bIsTrapped) {
 		ATurtleRide* Turtle{Cast<ATurtleRide>(RidingComponent->GetChildActor())};
 		if (CheckRide() && Turtle) {
-			CurrentSpeed = 0.f;
 			Turtle->ChangeFast();
 			bHasCan = false;
-			GetWorldTimerManager().SetTimer(UpgradeTimerHandle , this , &ABaseCharacter::UpgradeRide ,
-			                                0.5f , false);
+			Rotating();
 		}
 	}
 	if (bHasSpanner && !bIsTrapped) {
 		ASpaceShipRide* SpaceShip{Cast<ASpaceShipRide>(RidingComponent->GetChildActor())};
 		if (CheckRide() && SpaceShip) {
-			CurrentSpeed = 0.f;
 			SpaceShip->ChangeFast();
 			bHasSpanner = false;
-			GetWorldTimerManager().SetTimer(UpgradeTimerHandle , this , &ABaseCharacter::UpgradeRide ,
-			                                0.5f , false);
+			Rotating();
 		}
 	}
 }
@@ -178,10 +179,8 @@ void ABaseCharacter::UseEquipItem(int32 Input)
 	switch (Input) {
 	case EItemType::Can:
 		if (CheckRide() && Turtle && !bIsTrapped) {
-			CurrentSpeed = 0.f;
 			Turtle->ChangeFast();
-			GetWorldTimerManager().SetTimer(UpgradeTimerHandle , this , &ABaseCharacter::UpgradeRide ,
-			                                0.5f , false);
+			Rotating();
 		}
 		break;
 	case EItemType::Needle:
@@ -196,10 +195,8 @@ void ABaseCharacter::UseEquipItem(int32 Input)
 		break;
 	case EItemType::Spanner:
 		if (CheckRide() && SpaceShip && !bIsTrapped) {
-			CurrentSpeed = 0.f;
 			SpaceShip->ChangeFast();
-			GetWorldTimerManager().SetTimer(UpgradeTimerHandle , this , &ABaseCharacter::UpgradeRide ,
-			                                0.5f , false);
+			Rotating();
 		}
 		break;
 	case EItemType::Five:
@@ -223,6 +220,12 @@ void ABaseCharacter::SetRide(TSubclassOf<class ABaseRide> Ride)
 	// 캐릭터 올리기
 	GetMesh()->AddLocalOffset(FVector(0 , 0 , 90.f));
 	RidingComponent->SetChildActorClass(Ride);
+
+	StopMovement();
+	auto Anim{Cast<UAppleAnimation>(GetMesh()->GetAnimInstance())};
+	if (Anim) {
+		Anim->OnUp();
+	}
 }
 
 bool ABaseCharacter::CheckRide()
@@ -276,6 +279,11 @@ void ABaseCharacter::Escaped()
 
 void ABaseCharacter::Die()
 {
+	auto Anim{Cast<UAppleAnimation>(GetMesh()->GetAnimInstance())};
+	if (Anim) {
+		Anim->OnDie();
+	}
+
 	// 죽음
 	TrappedComponent->SetChildActorClass(nullptr);
 	//LogUtils::Log("Die!!!!!");
@@ -306,6 +314,11 @@ bool ABaseCharacter::HasItem()
 
 void ABaseCharacter::GetItem(ABaseItem* BaseItem)
 {
+	auto Anim{Cast<UAppleAnimation>(GetMesh()->GetAnimInstance())};
+	if (Anim) {
+		Anim->OnEatItem();
+	}
+
 	if (BaseItem->IsA<ABubbleItem>()) {
 		if (BalloonCount < MAX_BALLOON_COUNT) {
 			++BalloonCount;
@@ -425,7 +438,8 @@ void ABaseCharacter::StartMovement()
 void ABaseCharacter::UpgradeRide()
 {
 	CurrentSpeed = FAST_RIDE_SPEED;
-
+	bRotating = false;
+	GetMesh()->SetRelativeRotation(FRotator(0.f , 90 , 0.f));
 	GetWorldTimerManager().ClearTimer(UpgradeTimerHandle);
 }
 
@@ -438,4 +452,12 @@ bool ABaseCharacter::CheckIfSpaceShip()
 	}
 
 	return false;
+}
+
+void ABaseCharacter::Rotating()
+{
+	CurrentSpeed = 0.f;
+	bRotating = true;
+	GetWorldTimerManager().SetTimer(UpgradeTimerHandle , this , &ABaseCharacter::UpgradeRide ,
+	                                1.f , false);
 }
