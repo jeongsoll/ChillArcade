@@ -39,10 +39,10 @@ void ABaseBalloonRange::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// UMyGameInstance* GI{Cast<UMyGameInstance>(GetGameInstance())};
-	// if (GI) {
-	// 	Mesh = GI->SelectedBalloonRange;
-	// }
+	UMyGameInstance* GI{Cast<UMyGameInstance>(GetGameInstance())};
+	if (GI) {
+		Mesh->SetStaticMesh(GI->SelectedBalloonRange);
+	}
 	
 	MapGen = Cast<AMapGen>(UGameplayStatics::GetActorOfClass(GetWorld() , AMapGen::StaticClass()));
 

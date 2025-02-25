@@ -25,9 +25,9 @@ public:
 	class UClass* SelectedAnimInstance;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class UStaticMeshComponent* SelectedBalloon;
+	class UStaticMesh* SelectedBalloon;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class UStaticMeshComponent* SelectedBalloonRange;
+	class UStaticMesh* SelectedBalloonRange;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<int32> MadeMap;

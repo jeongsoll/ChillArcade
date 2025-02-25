@@ -47,11 +47,12 @@ void ABaseWaterBalloon::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// UMyGameInstance* GI{Cast<UMyGameInstance>(GetGameInstance())};
-	// if (GI) {
-	// 	Mesh = GI->SelectedBalloon;
-	// }
-	
+	UMyGameInstance* GI{Cast<UMyGameInstance>(GetGameInstance())};
+	if (GI) {
+		Mesh->SetStaticMesh(GI->SelectedBalloon);
+	}
+	Mesh->SetRelativeRotation(FRotator(Mesh->GetRelativeRotation().Pitch, FMath::FRandRange(0.f, 360.f), Mesh->GetRelativeRotation().Roll));
+
 	MapGen = Cast<AMapGen>(UGameplayStatics::GetActorOfClass(GetWorld() , AMapGen::StaticClass()));
 
 	Player = Cast<ABaseCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
