@@ -214,7 +214,7 @@ void AMapGen::InitializeMap()
 
 FVector AMapGen::ArrayToWorldLocation(struct FArrLocation Loc)
 {
-	return FVector((MAP_ROW_MAX - Loc.X) * 100.f - 50.f , (Loc.Y + 1) * 100.f - 50.f , 10.0f);
+	return FVector((MAP_ROW_MAX - Loc.X) * 100.f - 50.f , (Loc.Y + 1) * 100.f - 50.f , 50.0f);
 }
 
 void AMapGen::UpdateMapBalloonStream(TArray<struct FArrLocation> Loc)

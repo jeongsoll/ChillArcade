@@ -29,7 +29,7 @@ ABaseItem::ABaseItem()
 	ShadowSprite->SetRelativeRotation(FRotator(0.f , 90.f , -90.f));
 	ShadowSprite->SetRelativeScale3D(FVector(0.7475f , 1.f , 0.7825f));
 	ShadowSprite->SetCollisionEnabled(ECollisionEnabled::NoCollision);
-
+	ShadowSprite->SetSpriteColor(FLinearColor(0.15625f, 0.15625f, 0.15625f, 0.596f));
 	static ConstructorHelpers::FObjectFinder<UPaperSprite> ShadowSpriteObject
 	(TEXT("/Script/Paper2D.PaperSprite'/Game/Texture/shadow_Sprite.shadow_Sprite'"));
 	if (ShadowSpriteObject.Succeeded()) {

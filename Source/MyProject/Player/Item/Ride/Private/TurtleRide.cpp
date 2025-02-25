@@ -30,6 +30,10 @@ ATurtleRide::ATurtleRide()
 	if (FastMeshAsset.Succeeded()) {
 		FastMesh->SetStaticMesh(FastMeshAsset.Object);
 	}
+	
+	Mesh->CastShadow = false;
+	FastMesh->CastShadow = false;
+
 }
 
 // Called when the game starts or when spawned

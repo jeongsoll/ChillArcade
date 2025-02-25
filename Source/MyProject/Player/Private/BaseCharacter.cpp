@@ -34,7 +34,7 @@ ABaseCharacter::ABaseCharacter()
 	PrimaryActorTick.bCanEverTick = true;
 
 	static ConstructorHelpers::FObjectFinder<USkeletalMesh> BaseMeshObject
-		(TEXT("/Game/Player/Model/FBX_format/character-male-f.character-male-f"));
+		(TEXT("/Game/Player/Model/Apple/ske_apple.ske_apple"));
 	if (BaseMeshObject.Succeeded()) {
 		GetMesh()->SetSkeletalMesh(BaseMeshObject.Object);
 		GetMesh()->SetRelativeLocationAndRotation(FVector(0.f , 0.f , -90.f) , FRotator(0.f , -90.f , 0.f));
@@ -76,6 +76,9 @@ ABaseCharacter::ABaseCharacter()
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	GetCharacterMovement()->RotationRate.Yaw = 1440.f;
+
+	GetMesh()->CastShadow = false;
+	
 }
 
 // Called when the game starts or when spawned
@@ -106,7 +109,7 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 void ABaseCharacter::InitPlayer()
 {
 	UMyGameInstance* GI{Cast<UMyGameInstance>(GetGameInstance())};
-	if (GI) {
+	if (GI && GI->SelectedCharacter && GI->SelectedAnimInstance) {
 		GetMesh()->SetSkeletalMesh(GI->SelectedCharacter);
 		GetMesh()->SetAnimInstanceClass(GI->SelectedAnimInstance);
 	}
@@ -439,7 +442,12 @@ void ABaseCharacter::StopMovement()
 
 void ABaseCharacter::StartMovement()
 {
-	CurrentSpeed = Speed;
+	if (CheckRide()) {
+		CurrentSpeed = SLOW_RIDE_SPEED;
+	}
+	else {
+		CurrentSpeed = Speed;
+	}
 }
 
 void ABaseCharacter::UpgradeRide()

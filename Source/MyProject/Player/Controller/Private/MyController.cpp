@@ -102,6 +102,7 @@ void AMyController::Tick(float DeltaTime)
 
 		if (CheckCollision()) {
 			ControlledPlayer->AddActorLocalOffset(Direction * ControlledPlayer->CurrentSpeed);
+			//LogUtils::Log("Speed", ControlledPlayer->CurrentSpeed);
 			ControlledPlayer->CheckLocation();
 		}
 

@@ -7,6 +7,7 @@
 #include "BaseWaterBalloon.h"
 #include "LogUtils.h"
 #include "MapGen.h"
+#include "MyGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 
 
@@ -29,12 +30,20 @@ ABaseBalloonRange::ABaseBalloonRange()
 	if (BaseMeshObject.Succeeded()) {
 		Mesh->SetStaticMesh(BaseMeshObject.Object);
 	}
+
+	Mesh->CastShadow = false;
 }
 
 // Called when the game starts or when spawned
 void ABaseBalloonRange::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// UMyGameInstance* GI{Cast<UMyGameInstance>(GetGameInstance())};
+	// if (GI) {
+	// 	Mesh = GI->SelectedBalloonRange;
+	// }
+	
 	MapGen = Cast<AMapGen>(UGameplayStatics::GetActorOfClass(GetWorld() , AMapGen::StaticClass()));
 
 	// 0.5초 후 물줄기 제거
@@ -70,7 +79,7 @@ void ABaseBalloonRange::CapturePLayer()
 		ABaseWaterBalloon* ExtraBalloon{MapGen->waterBalloonMap[RangeLocation.X][RangeLocation.Y]};
 		ExtraBalloon->ExplodeTime();
 		
-		LogUtils::Log("Has Balloon" , RangeLocation.X , RangeLocation.Y);
+		//LogUtils::Log("Has Balloon" , RangeLocation.X , RangeLocation.Y);
 	}
 }
 

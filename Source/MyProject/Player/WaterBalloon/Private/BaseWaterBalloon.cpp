@@ -7,6 +7,7 @@
 #include "LogUtils.h"
 #include "SendArrInfoManagerComponent.h"
 #include "MapGen.h"
+#include "MyGameInstance.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -31,7 +32,9 @@ ABaseWaterBalloon::ABaseWaterBalloon()
 	SendArrComponent = CreateDefaultSubobject<USendArrInfoManagerComponent>(
 		TEXT("SendArrManager")
 	);
-	
+
+	Mesh->CastShadow = false;
+
 	// static ConstructorHelpers::FClassFinder<AMapGen> MapClass
 	// (TEXT("/Script/Engine.Blueprint'/Game/Map/Blueprints/BP_Map.BP_Map_C'"));
 	// if (MapClass.Succeeded()) {
@@ -43,6 +46,12 @@ ABaseWaterBalloon::ABaseWaterBalloon()
 void ABaseWaterBalloon::BeginPlay()
 {
 	Super::BeginPlay();
+
+	// UMyGameInstance* GI{Cast<UMyGameInstance>(GetGameInstance())};
+	// if (GI) {
+	// 	Mesh = GI->SelectedBalloon;
+	// }
+	
 	MapGen = Cast<AMapGen>(UGameplayStatics::GetActorOfClass(GetWorld() , AMapGen::StaticClass()));
 
 	Player = Cast<ABaseCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
@@ -67,7 +76,7 @@ void ABaseWaterBalloon::Initialize(const struct FArrLocation& NewLocation)
 {
 	BalloonLocation = NewLocation;
 
-	LogUtils::Log("Balloon Location" , BalloonLocation.X , BalloonLocation.Y);
+	//LogUtils::Log("Balloon Location" , BalloonLocation.X , BalloonLocation.Y);
 }
 
 void ABaseWaterBalloon::ExplodeTime()
