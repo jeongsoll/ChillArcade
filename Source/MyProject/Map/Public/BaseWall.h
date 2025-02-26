@@ -32,6 +32,8 @@ public:
 	class UBoxComponent* boxComp;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Wall")
 	class UStaticMeshComponent* wallMesh;
-	
+	//노드 위치 반환하는 함수
+	UFUNCTION(BlueprintCallable, Category = "Tile")
+	FVector2D GetBlockNumber() const;
 	
 };

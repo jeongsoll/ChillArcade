@@ -91,10 +91,28 @@ enum class EObjectType : uint8
 	OBJ_Item = 0x40 // 1000 0000
 };
 
+USTRUCT(BlueprintType)
+struct FNode_Info
+{
+	GENERATED_BODY()
+	
+	FVector2D Position;
+	int GCost; // 이동비용
+	int HCost; // 목표까지 예상 거리
+	FNode_Info* Parent; // 부모 노드
+	FNode_Info() : Position(FVector2D(0, 0)), GCost(0), HCost(0), Parent(nullptr){};
+
+	int GetCostF() const {return GCost + HCost;}
+	int GetCostH() const {return HCost;}
+	FVector2D GetCurBlock() const {return Position;}
+	FNode_Info* GetParent() const {return Parent;}
+	FVector2D SetCurBlock(FVector2D NewPosition) {return Position = NewPosition;}
+};
+
 inline int8 map[15][17] = {
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 	1, 0, 2, 2, 2, 2, 0, 0, 0, 0, 0, 1, 2, 1, 0, 1, 1,	// 5
-	1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 2, 2, 0, 0, 0, 1,	// 2
+	1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 2, 2, 0, PlayerLoc, 0, 1,	// 2
 	1, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1,	// 3
 	1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 2, 2, 2, 2, 2, 1,	// 5
 	1, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1,	// 5
