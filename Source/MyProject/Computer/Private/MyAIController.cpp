@@ -2,12 +2,9 @@
 
 
 #include "MyAIController.h"
-
 #include "AppleCharacter.h"
 #include "MapGen.h"
-#include "ArrLocation.h"
 #include "ComputerOne.h"
-#include "Tile.h"
 #include "Kismet/GameplayStatics.h"
 
 // Sets default values
@@ -41,7 +38,7 @@ void AMyAIController::Tick(float DeltaTime)
 //탐색(플레이어 위치, 물풍선을 회피할 장소, 물풍선 설치할 위치 등 탐색)
 void AMyAIController::FindTarget()
 {
-	MapGen->PathFinding(MapGen->StartTileTemp, MapGen->TargetTileTemp);
+	
 }
 //이동
 void AMyAIController::MoveToTarget()

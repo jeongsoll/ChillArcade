@@ -126,60 +126,49 @@ public:
 
 	//시작블록 선택
 	//필요 속성 : ai x, y값, 플레이어 x, y값, 그 위치에 대한 객체 정보 위치 백터값
-	int8 aiX = 0;
-	int8 aiY = 0;
-	int8 playerX = 0;
-	int8 playerY = 0;
-	AComputerOne* Ai;
-	ATile* StartTileTemp;
-	ATile* TargetTileTemp;
-	ATile* StartTile;
-	ATile* TargetTile;
-
-	// 탐색용 리스트
-	TArray<FNode_Info*> mOpenList; // 우선 순위 큐처럼 사용
-	TSet<FNode_Info*> mCloseList;
-	TArray<FVector2D> mFinalPathList;
-
-	FNode_Info* mCurrentNode; 
-	// 경로 탐색용 노드 배열
-	FNode_Info* mNodeArr[15][17];
-	
-	//4방향 이동 저장 배열
-	const FVector2D mDirInfo[4] = {
-		FVector2D(1, 0), // 위
-		FVector2D(0, 1), // 오른쪽
-		FVector2D(-1, 0), // 아래
-		FVector2D(0, -1) // 왼쪽
-	};
-	// 배열 초기화
-	void SetRelease();
-	// 타겟과 현재 노드 위치가 목표 지점에 도착 했는지 판단
-	bool GetArrvieTarget(const FVector2D& Current, const FVector2D& Target);
-	//경로를 역순으로 정렬하는 함수
-	void ReverseArray();
-	
-	// 시작 지점 선택
-	void SelectStartBlock(ATile* Start);
-	// 목표 지점 선택
-	void SelectTargetBlock(ATile* Target);
-	
-	// 새로운 노드를 오픈 리스트에 추가하는 역할을 하는 함수
-	// void OpenListAdd(int x, int y);
 	
 	// 경로 탐색 실패 시 부서지는 벽 찾기
 	FVector2D FindClosestBreakableWall(FVector2D Start);
-	
-	// 경로 탐색 하는 함수
-	TArray<FVector2D> GetPath_While(const FVector2D& Start, const FVector2D& Target);
-	// 탐색
-	void PathFinding(ATile* Start, ATile* Target);
-	
 	// 물풍선 터지는 범위로부터 안전한 위치 구하는 함수
 	bool IsSafePosition(int x, int y);
 	// 타일 위치 반환하는 함수
 	ATile* GetTileFromLocation(FVector2D Location);
 	// 회피하는 함수
-	void EscapeFromBomb(FArrLocation Loc);
+	// void EscapeFromBomb(FArrLocation Loc);
 };
 
+// 탐색용 리스트
+// TArray<FNode_Info*> mOpenList; // 우선 순위 큐처럼 사용
+// TSet<FNode_Info*> mCloseList;
+// TArray<FVector2D> mFinalPathList;
+
+// FNode_Info* mCurrentNode; 
+// 경로 탐색용 노드 배열
+// FNode_Info* mNodeArr[15][17];
+	
+//4방향 이동 저장 배열
+// const FVector2D mDirInfo[4] = {
+// 	FVector2D(1, 0), // 위
+// 	FVector2D(0, 1), // 오른쪽
+// 	FVector2D(-1, 0), // 아래
+// 	FVector2D(0, -1) // 왼쪽
+// };
+
+// 배열 초기화
+// void SetRelease();
+// 타겟과 현재 노드 위치가 목표 지점에 도착 했는지 판단
+// bool GetArrvieTarget(const FVector2D& Current, const FVector2D& Target);
+//경로를 역순으로 정렬하는 함수
+// void ReverseArray();
+	
+// 시작 지점 선택
+// void SelectStartBlock(ATile* Start);
+// 목표 지점 선택
+// void SelectTargetBlock(ATile* Target);
+	
+// 새로운 노드를 오픈 리스트에 추가하는 역할을 하는 함수
+// void OpenListAdd(int x, int y);
+// 경로 탐색 하는 함수
+// TArray<FVector2D> GetPath_While(const FVector2D& Start, const FVector2D& Target);
+// 탐색
+// void PathFinding(ATile* Start, ATile* Target);
