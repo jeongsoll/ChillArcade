@@ -3,6 +3,8 @@
 
 #include "MapGen.h"
 
+#include <string>
+
 #include "AITypes.h"
 #include "ArrLocation.h"
 #include "BaseBalloonRange.h"
@@ -226,7 +228,10 @@ void AMapGen::InitializeMap()
 	for (int i = 0; i < MAP_ROW_MAX; ++i) {
 		for (int j = 0; j < MAP_COLUMN_MAX; ++j) {
 			GameMap[i][j] = map[i][j];
-			if (mNodeArr[i][j] == nullptr) mNodeArr[i][j] = new FNode_Info();
+			if (mNodeArr[i][j] == nullptr)
+			{
+				mNodeArr[i][j] = new FNode_Info();
+			}
 			mNodeArr[i][j]->Position = FVector2D(i, j);
 			// 아이템 나올 수 있는 블럭 개수 세기
 			if (GameMap[i][j] == 2) {
@@ -403,6 +408,47 @@ void AMapGen::DestroyAllMap()
 		}
 	}
 }
+
+void AMapGen::SetRelease()
+{
+	mOpenList.Empty();
+	mCloseList.Empty();
+	mFinalPathList.Empty();
+}
+
+bool AMapGen::GetArrvieTarget(const FVector2D& Current, const FVector2D& Target)
+{
+	return Current == Target;
+}
+
+void AMapGen::ReverseArray()
+{
+	Algo::Reverse(mFinalPathList);
+}
+
+FVector2D AMapGen::FindClosestBreakableWall(FVector2D Start)
+{
+	FVector2D closestWall(-1, -1);
+	int32 minDist = INT_MAX;
+
+	for (int x = 0; x < gridSizeX; ++x)
+	{
+		for (int y = 0; y < gridSizeY; ++y)
+		{
+			if (GameMap[x][y] == 2)
+			{
+				int32 dist = FMath::Abs(x - Start.X) + FMath::Abs(y - Start.Y);
+				if (dist < minDist)
+				{
+					minDist = dist;
+					closestWall = FVector2D(x, y);
+				}
+			}
+		}
+	}
+	return closestWall;
+}
+
 //시작 블록 선택
 void AMapGen::SelectStartBlock(ATile* Start)
 {
@@ -434,158 +480,103 @@ void AMapGen::SelectTargetBlock(ATile* Target)
 			mCharPath = GetPath_While(StartTile->GetBlockNumber(), wallLoc);
 		}
 	}
-	
 }
 
-void AMapGen::SetRelease()
-{
-	mOpenList.Empty();
-	mCloseList.Empty();
-	mFinalPathList.Empty();
-}
-
-bool AMapGen::GetArrvieTarget(const FVector2D& Current, const FVector2D& Target)
-{
-	return Current == Target;
-}
-
-void AMapGen::ReverseArray()
-{
-	Algo::Reverse(mFinalPathList);
-}
-
-void AMapGen::OpenListAdd(int x, int y)
-{
-	//배열 범위를 넘어가면 추가하지 않는다.
-	if (x < 0 || x >= gridSizeX || y < 0 ||  y >= gridSizeY ) return;
-	if (mNodeArr[x][y] == nullptr) return;
-
-	//장애물 확인(1: 이동 불가)
-	if (GameMap[x][y] == 1) return;
-	
-	//부서지는 벽이면 가중치 증가
-	int moveCost = (GameMap[x][y] == 2) ? 5 : 1;
-	
-	FNode_Info* newNode = mNodeArr[x][y];
-	
-	//이미 닫힌 목록에 있으면 추가하지 않음.
-	if (mCloseList.Contains(newNode)) return;
-
-	//오픈 리스트에 없으면 추가
-	if (!mOpenList.Contains(newNode))
-	{
-		newNode->Parent = mCurrentNode;
-		newNode->GCost = mCurrentNode->GCost + moveCost; // 기본적으로 한 칸 이동하는 비용
-		newNode->HCost = FMath::Abs(x - TargetTile->GetBlockNumber().X)
-					   + FMath::Abs(y - TargetTile->GetBlockNumber().Y);
-		mOpenList.Push(newNode);
-	}
-}
-FVector2D AMapGen::FindClosestBreakableWall(FVector2D Start)
-{
-	FVector2D closestWall(-1, -1);
-	int32 minDist = INT_MAX;
-
-	for (int x = 0; x < gridSizeX; ++x)
-	{
-		for (int y = 0; y < gridSizeY; ++y)
-		{
-			if (GameMap[x][y] == 2)
-			{
-				int32 dist = FMath::Abs(x - Start.X) + FMath::Abs(y - Start.Y);
-				if (dist < minDist)
-				{
-					minDist = dist;
-					closestWall = FVector2D(x, y);
-				}
-			}
-		}
-	}
-	return closestWall;
-}
 TArray<FVector2D> AMapGen::GetPath_While(const FVector2D& Start, const FVector2D& Target)
 {
 	//열린 리스트, 닫힌 리스트, 최종 경로 리스트 초기화 함수
 	this->SetRelease();
-
-	// **유효한 범위인지 확인**
-	if (Start.X < 0 || Start.X >= gridSizeX || Start.Y < 0 || Start.Y >= gridSizeY ||
-		Target.X < 0 || Target.X >= gridSizeX || Target.Y < 0 || Target.Y >= gridSizeY) 
-	{
-		UE_LOG(LogTemp, Error, TEXT("Invalid Start or Target position!"));
-		return mFinalPathList;
-	}
-
-	// **mNodeArr가 nullptr인지 체크 후 초기화**
-	if (mNodeArr[static_cast<int>(Start.X)][static_cast<int>(Start.Y)] == nullptr) 
-	{
-		UE_LOG(LogTemp, Error, TEXT("Start node is nullptr!"));
-		mNodeArr[static_cast<int>(Start.X)][static_cast<int>(Start.Y)] = new FNode_Info();
-	}
-
-	if (mNodeArr[static_cast<int>(Target.X)][static_cast<int>(Target.Y)] == nullptr) 
-	{
-		UE_LOG(LogTemp, Error, TEXT("Target node is nullptr!"));
-		mNodeArr[static_cast<int>(Target.X)][static_cast<int>(Target.Y)] = new FNode_Info();
-	}
 	
 	FNode_Info* startNode = mNodeArr[static_cast<int>(Start.X)][static_cast<int>(Start.Y)];
+	// 시작 노드 부모는 nullptr
+	startNode->Parent = nullptr; 
+	// 시작 비용 0
+	startNode->GCost = 0; 
+	// 맨해튼 거리
+	startNode->HCost = FMath::Abs(Start.X - Target.X) + FMath::Abs(Start.Y - Target.Y);
+	
 	mOpenList.Push(startNode);
 	
 	while (mOpenList.Num() > 0)
 	{
+		// 오픈 리스트에서 F값이 가장 작은 노드 찾기
 		mCurrentNode = mOpenList[0];
-		int curNodeSize = mOpenList.Num();
+		int curNodeIndex = 0;
 
 		//오픈 리스트끼리 F값과 H값을 비교한다.
-		for (int i = 0; i < curNodeSize; ++i)
+		for (int i = 1; i < mOpenList.Num(); ++i)
 		{
-			const int curNodeF = mOpenList[i]->GetCostF();
-			const int curNodeH = mOpenList[i]->GetCostH();
-
-			if ((curNodeF < mCurrentNode->GetCostF()) || curNodeF == mCurrentNode->GetCostF() && curNodeH < mCurrentNode->GetCostH())
-			{
-				mCurrentNode = mOpenList[i];
-				// mCurrentNode->SetCurBlock(mOpenList[i]->GetCurBlock());
-			}
+			// F값이 더 작거나 F값이 같을 경우 H값이 더 작은 노드 선택
+			if(mOpenList[i]->GetCostF() < mCurrentNode->GetCostF() ||
+			  (mOpenList[i]->GetCostF() == mCurrentNode->GetCostF() &&
+			   mOpenList[i]->GetCostH() < mCurrentNode->GetCostH())){
+					mCurrentNode = mOpenList[i];
+					curNodeIndex = i;
+			   }
 		}
 
-		mOpenList.Remove(mCurrentNode); // 계산이 끝난 값을 오픈 리스트에서 지운다.
-		mCloseList.Add(mCurrentNode); // 그리고 닫힌 목록에 추가하여 다시 계산되지 않게 한다.
+		// 계산이 끝난 값을 오픈 리스트에서 제거.
+		mOpenList.RemoveAt(curNodeIndex);
+		// 그리고 닫힌 목록에 추가하여 다시 계산되지 않게 한다.
+		mCloseList.Add(mCurrentNode); 
 
-		//GetCurBlock과 Target이 같다면 도착 아니라면 if 탈출
-		//도착이라면 마지막 현재 노드의 X,Y좌표를 가져와서 시작점과 같아질 때까지, 현재 노드의 부모 노드를 가져와 mFinalPathList에 저장
-		//시작 좌표와 같아지면 while을 탈출하고 시작 지점까지 넣어준 뒤 역으로 뒤집어준다. 그리고 return
-		const int curX = mCurrentNode->GetCurBlock().X;
-		const int curY = mCurrentNode->GetCurBlock().Y;
-
-		//플레이어에게 도착 했는지
+		//목표에 도착 했는지 확인
 		if (GetArrvieTarget(mCurrentNode->GetCurBlock(), Target))
 		{
-			FNode_Info* targetNode = mNodeArr[curX][curY];
+			FNode_Info* targetNode = mCurrentNode;
 			
-			while (targetNode->GetCurBlock() != Start)
+			while (targetNode != nullptr)
 			{
 				mFinalPathList.Push(targetNode->GetCurBlock());
 				targetNode = targetNode->GetParent();
 			}
-
-			mFinalPathList.Push(Start);
-
+			
 			//정확한 경로를 추출하기 위한 역추적 
 			ReverseArray();
 			return mFinalPathList;
 		}
 
+		// 인접 노드 탐색
+		const int curX = mCurrentNode->GetCurBlock().X;
+		const int curY = mCurrentNode->GetCurBlock().Y;
+		
 		//Diagonal up down left right
 		for (int i = 0; i < 4; ++i)
 		{
 			const int nextX = curX + mDirInfo[i].X;
 			const int nextY = curY + mDirInfo[i].Y;
-			OpenListAdd(nextX, nextY);
+
+			//배열 범위 확인
+			if (nextX < 0 || nextX >= gridSizeX || nextY < 0 || nextY >= gridSizeY) continue;
+
+			//노드 유효성 확인
+			FNode_Info* nextNode = mNodeArr[nextX][nextY];
+			if (nextNode == nullptr) continue;
+
+			//이동 불가 지역 확인
+			if (GameMap[nextX][nextY] == 1) continue;
+
+			//이미 닫힌 목록에 있는지 확인
+			if (mCloseList.Contains(nextNode)) continue;
+
+			//부서지는 벽 가중치 증가
+			int moveCost = (GameMap[nextX][nextY] == 2) ? 5 : 1;
+			int newGCost = mCurrentNode->GCost + moveCost;
+
+			//이미 오픈 리스트에 있고, 더 좋은 경로가 아니면 스킵
+			bool inOpenList = mOpenList.Contains(nextNode);
+			if (inOpenList && newGCost >= nextNode->GCost) continue;
+
+			//새 비용 및 부모 설정
+			nextNode->Parent = mCurrentNode;
+			nextNode->GCost = newGCost;
+			nextNode->HCost = FMath::Abs(nextX - Target.X) + FMath::Abs(nextY - Target.Y);
+
+			if (!inOpenList) mOpenList.Push(nextNode);
 		}
 	}
-	
+
+	//경로를 못 찾음
 	return mFinalPathList;
 }
 
@@ -690,3 +681,47 @@ void AMapGen::EscapeFromBomb(FArrLocation Loc)
 		GameMap[Loc.X][Loc.Y] = 0;
 	}
 }*/
+// void AMapGen::OpenListAdd(int x, int y)
+// {
+// 	//배열 범위를 넘어가면 추가하지 않는다.
+// 	if (x < 0 || x >= gridSizeX || y < 0 ||  y >= gridSizeY )
+// 	{
+// 		UE_LOG(LogTemp, Warning, TEXT("OpenListAdd : 배열 범위를 넘김"));
+// 		return;
+// 	}
+// 	if (mNodeArr[x][y] == nullptr)
+// 	{
+// 		UE_LOG(LogTemp, Warning, TEXT("AMapGen::OpenListAdd mNodeArr 배열 널값"));
+// 		return;
+// 	}
+// 	//장애물 확인(1: 이동 불가)
+// 	if (GameMap[x][y] == 1)
+// 	{
+// 		UE_LOG(LogTemp, Warning, TEXT("AMapGen::OpenListAdd 장애물 1 확인 %d"), GameMap[x][y]);
+// 		return;
+// 	}
+// 	//부서지는 벽이면 가중치 증가
+// 	int moveCost = (GameMap[x][y] == 2) ? 5 : 1;
+// 	
+// 	FNode_Info* newNode = mNodeArr[x][y];
+// 	
+// 	//이미 닫힌 목록에 있으면 추가하지 않음.
+// 	if (mCloseList.Contains(newNode)) return;
+//
+// 	//새로운 G 비용 계산
+// 	int newGCost = mCurrentNode->GCost + moveCost;
+//
+// 	// 오픈 리스트에 있는지 확인
+// 	bool inOpenList = mOpenList.Contains(newNode);
+// 	
+// 	//오픈 리스트에 없으면 추가
+// 	if (!inOpenList || newGCost < newNode->GCost)
+// 	{
+// 		newNode->Parent = mCurrentNode;
+// 		newNode->GCost = newGCost;
+// 		newNode->HCost = FMath::Abs(x - TargetTile->GetBlockNumber().X)
+// 					   + FMath::Abs(y - TargetTile->GetBlockNumber().Y);
+//
+// 		if (!inOpenList) mOpenList.Push(newNode);
+// 	}
+// }
