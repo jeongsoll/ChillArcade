@@ -3,6 +3,7 @@
 
 #include "BaseWall.h"
 
+#include "ArrLocation.h"
 #include "Components/BoxComponent.h"
 
 
@@ -32,3 +33,12 @@ void ABaseWall::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
+FVector2D ABaseWall::GetBlockNumber() const
+{
+	float TileSize = 100.0f;
+
+	int gridX = FMath::RoundToInt(GetActorLocation().X / TileSize);
+	int gridY = FMath::RoundToInt(GetActorLocation().Y / TileSize);
+	
+	return FVector2D(gridX, gridY);
+}

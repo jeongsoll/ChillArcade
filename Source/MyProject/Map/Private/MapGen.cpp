@@ -3,20 +3,18 @@
 
 #include "MapGen.h"
 
+#include "AITypes.h"
 #include "ArrLocation.h"
 #include "BaseBalloonRange.h"
 #include "BaseCharacter.h"
 #include "BaseWaterBalloon.h"
-#include "Bush.h"
 #include "ComputerOne.h"
 #include "LogUtils.h"
-#include "MovingWall.h"
 #include "SpawnItem.h"
 #include "StrongWall.h"
 #include "Tile.h"
 #include "WeakWall.h"
-#include "HLSLTree/HLSLTree.h"
-#include "Runtime/Datasmith/CADKernel/Base/Public/Mesh/Structure/ModelMesh.h"
+#include "Kismet/GameplayStatics.h"
 
 class ABaseWaterBalloon;
 // Sets default values
@@ -25,21 +23,29 @@ AMapGen::AMapGen()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 }
-
-// Called when the game starts or when spawned
-void AMapGen::BeginPlay()
+void AMapGen::PostInitializeComponents()
 {
-	Super::BeginPlay();
-
-	SpawnItem = GetWorld()->SpawnActor<ASpawnItem>(ASpawnItem::StaticClass());
-
-	Player = Cast<ABaseCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
-
+	Super::PostInitializeComponents();
+	
+	
 	//맵 초기화;
 	InitializeMap();
 
 	SetGrid(gridSizeX , gridSizeY);
 }
+
+// Called when the game starts or when spawned
+void AMapGen::BeginPlay()
+{
+	Super::BeginPlay();
+	
+	SpawnItem = GetWorld()->SpawnActor<ASpawnItem>(ASpawnItem::StaticClass());
+
+	Player = Cast<ABaseCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+
+}
+
+
 
 // Called every frame
 void AMapGen::Tick(float DeltaTime)
@@ -70,6 +76,7 @@ void AMapGen::SetGrid(int8 gridX , int8 gridY)
 				// 바닥 타일
 				if (auto* spawntile = world->SpawnActor<ATile>(TileFactory , location , FRotator::ZeroRotator)) {
 					baseWalls[x][y] = Cast<ABaseWall>(spawntile);
+					TargetTileTemp = spawntile;
 				}
 				break;
 			case 1:
@@ -90,9 +97,10 @@ void AMapGen::SetGrid(int8 gridX , int8 gridY)
 			case PlayerLoc:
 				if (auto* spawntile = world->SpawnActor<ATile>(TileFactory , location , FRotator::ZeroRotator)) {
 					baseWalls[x][y] = Cast<ABaseWall>(spawntile);
+					StartTileTemp = spawntile;
 				}
 				if (auto* ai = world->SpawnActor<AComputerOne>(ComOneFactory , ArrayToWorldLocation(Loc) , FRotator::ZeroRotator)) {
-					baseChar[x][y] = Cast<ABaseCharacter>(ai);
+					AiMap[x][y] = Cast<AComputerOne>(ai);
 				}
 				break;
 			default:
@@ -218,7 +226,8 @@ void AMapGen::InitializeMap()
 	for (int i = 0; i < MAP_ROW_MAX; ++i) {
 		for (int j = 0; j < MAP_COLUMN_MAX; ++j) {
 			GameMap[i][j] = map[i][j];
-
+			if (mNodeArr[i][j] == nullptr) mNodeArr[i][j] = new FNode_Info();
+			mNodeArr[i][j]->Position = FVector2D(i, j);
 			// 아이템 나올 수 있는 블럭 개수 세기
 			if (GameMap[i][j] == 2) {
 				++ItemBlockCount;
@@ -394,6 +403,259 @@ void AMapGen::DestroyAllMap()
 		}
 	}
 }
+//시작 블록 선택
+void AMapGen::SelectStartBlock(ATile* Start)
+{
+	if (StartTile != nullptr) return;
+	StartTile = Start;
+	FString s = StartTile->GetName();
+	UE_LOG(LogTemp, Warning, TEXT("StartTile = %s"), *s);
+}
+//끝 블록 선택
+void AMapGen::SelectTargetBlock(ATile* Target)
+{
+	if (Target == nullptr) return;
+	if (TargetTile != nullptr) return;
+	
+	TargetTile = Target;
+	FString s = TargetTile->GetName();
+	UE_LOG(LogTemp, Warning, TEXT("TargetTile = %s"), *s);
+	if (StartTile == nullptr || TargetTile == nullptr) return;
+
+	//경로 탐색 후 결과 Path를 받음
+	TArray<FVector2D> mCharPath = GetPath_While(StartTile->GetBlockNumber(), TargetTile->GetBlockNumber());
+
+	//패스를 찾지 못하면
+	if (mCharPath.Num() <= 0)
+	{
+		FVector2D wallLoc = FindClosestBreakableWall(StartTile->GetBlockNumber());
+		if (wallLoc.X != -1)
+		{
+			mCharPath = GetPath_While(StartTile->GetBlockNumber(), wallLoc);
+		}
+	}
+	
+}
+
+void AMapGen::SetRelease()
+{
+	mOpenList.Empty();
+	mCloseList.Empty();
+	mFinalPathList.Empty();
+}
+
+bool AMapGen::GetArrvieTarget(const FVector2D& Current, const FVector2D& Target)
+{
+	return Current == Target;
+}
+
+void AMapGen::ReverseArray()
+{
+	Algo::Reverse(mFinalPathList);
+}
+
+void AMapGen::OpenListAdd(int x, int y)
+{
+	//배열 범위를 넘어가면 추가하지 않는다.
+	if (x < 0 || x >= gridSizeX || y < 0 ||  y >= gridSizeY ) return;
+	if (mNodeArr[x][y] == nullptr) return;
+
+	//장애물 확인(1: 이동 불가)
+	if (GameMap[x][y] == 1) return;
+	
+	//부서지는 벽이면 가중치 증가
+	int moveCost = (GameMap[x][y] == 2) ? 5 : 1;
+	
+	FNode_Info* newNode = mNodeArr[x][y];
+	
+	//이미 닫힌 목록에 있으면 추가하지 않음.
+	if (mCloseList.Contains(newNode)) return;
+
+	//오픈 리스트에 없으면 추가
+	if (!mOpenList.Contains(newNode))
+	{
+		newNode->Parent = mCurrentNode;
+		newNode->GCost = mCurrentNode->GCost + moveCost; // 기본적으로 한 칸 이동하는 비용
+		newNode->HCost = FMath::Abs(x - TargetTile->GetBlockNumber().X)
+					   + FMath::Abs(y - TargetTile->GetBlockNumber().Y);
+		mOpenList.Push(newNode);
+	}
+}
+FVector2D AMapGen::FindClosestBreakableWall(FVector2D Start)
+{
+	FVector2D closestWall(-1, -1);
+	int32 minDist = INT_MAX;
+
+	for (int x = 0; x < gridSizeX; ++x)
+	{
+		for (int y = 0; y < gridSizeY; ++y)
+		{
+			if (GameMap[x][y] == 2)
+			{
+				int32 dist = FMath::Abs(x - Start.X) + FMath::Abs(y - Start.Y);
+				if (dist < minDist)
+				{
+					minDist = dist;
+					closestWall = FVector2D(x, y);
+				}
+			}
+		}
+	}
+	return closestWall;
+}
+TArray<FVector2D> AMapGen::GetPath_While(const FVector2D& Start, const FVector2D& Target)
+{
+	//열린 리스트, 닫힌 리스트, 최종 경로 리스트 초기화 함수
+	this->SetRelease();
+
+	// **유효한 범위인지 확인**
+	if (Start.X < 0 || Start.X >= gridSizeX || Start.Y < 0 || Start.Y >= gridSizeY ||
+		Target.X < 0 || Target.X >= gridSizeX || Target.Y < 0 || Target.Y >= gridSizeY) 
+	{
+		UE_LOG(LogTemp, Error, TEXT("Invalid Start or Target position!"));
+		return mFinalPathList;
+	}
+
+	// **mNodeArr가 nullptr인지 체크 후 초기화**
+	if (mNodeArr[static_cast<int>(Start.X)][static_cast<int>(Start.Y)] == nullptr) 
+	{
+		UE_LOG(LogTemp, Error, TEXT("Start node is nullptr!"));
+		mNodeArr[static_cast<int>(Start.X)][static_cast<int>(Start.Y)] = new FNode_Info();
+	}
+
+	if (mNodeArr[static_cast<int>(Target.X)][static_cast<int>(Target.Y)] == nullptr) 
+	{
+		UE_LOG(LogTemp, Error, TEXT("Target node is nullptr!"));
+		mNodeArr[static_cast<int>(Target.X)][static_cast<int>(Target.Y)] = new FNode_Info();
+	}
+	
+	FNode_Info* startNode = mNodeArr[static_cast<int>(Start.X)][static_cast<int>(Start.Y)];
+	mOpenList.Push(startNode);
+	
+	while (mOpenList.Num() > 0)
+	{
+		mCurrentNode = mOpenList[0];
+		int curNodeSize = mOpenList.Num();
+
+		//오픈 리스트끼리 F값과 H값을 비교한다.
+		for (int i = 0; i < curNodeSize; ++i)
+		{
+			const int curNodeF = mOpenList[i]->GetCostF();
+			const int curNodeH = mOpenList[i]->GetCostH();
+
+			if ((curNodeF < mCurrentNode->GetCostF()) || curNodeF == mCurrentNode->GetCostF() && curNodeH < mCurrentNode->GetCostH())
+			{
+				mCurrentNode = mOpenList[i];
+				// mCurrentNode->SetCurBlock(mOpenList[i]->GetCurBlock());
+			}
+		}
+
+		mOpenList.Remove(mCurrentNode); // 계산이 끝난 값을 오픈 리스트에서 지운다.
+		mCloseList.Add(mCurrentNode); // 그리고 닫힌 목록에 추가하여 다시 계산되지 않게 한다.
+
+		//GetCurBlock과 Target이 같다면 도착 아니라면 if 탈출
+		//도착이라면 마지막 현재 노드의 X,Y좌표를 가져와서 시작점과 같아질 때까지, 현재 노드의 부모 노드를 가져와 mFinalPathList에 저장
+		//시작 좌표와 같아지면 while을 탈출하고 시작 지점까지 넣어준 뒤 역으로 뒤집어준다. 그리고 return
+		const int curX = mCurrentNode->GetCurBlock().X;
+		const int curY = mCurrentNode->GetCurBlock().Y;
+
+		//플레이어에게 도착 했는지
+		if (GetArrvieTarget(mCurrentNode->GetCurBlock(), Target))
+		{
+			FNode_Info* targetNode = mNodeArr[curX][curY];
+			
+			while (targetNode->GetCurBlock() != Start)
+			{
+				mFinalPathList.Push(targetNode->GetCurBlock());
+				targetNode = targetNode->GetParent();
+			}
+
+			mFinalPathList.Push(Start);
+
+			//정확한 경로를 추출하기 위한 역추적 
+			ReverseArray();
+			return mFinalPathList;
+		}
+
+		//Diagonal up down left right
+		for (int i = 0; i < 4; ++i)
+		{
+			const int nextX = curX + mDirInfo[i].X;
+			const int nextY = curY + mDirInfo[i].Y;
+			OpenListAdd(nextX, nextY);
+		}
+	}
+	
+	return mFinalPathList;
+}
+
+void AMapGen::PathFinding(ATile* Start, ATile* Target)
+{
+	if (Start == nullptr || Target == nullptr) {
+		UE_LOG(LogTemp, Error, TEXT("Start or Target is nullptr!"));
+		return;
+	}
+
+	SelectStartBlock(Start);
+	SelectTargetBlock(Target);
+	
+	for (int i = 0; i < mFinalPathList.Num(); ++i)
+	{
+		FString s = mFinalPathList[i].ToString();
+		UE_LOG(LogTemp, Warning, TEXT("AMapGen::PathFinding %s"), *s);
+	}
+	
+}
+
+bool AMapGen::IsSafePosition(int x, int y)
+{
+	if (x < 0 || x >= gridSizeX || y < 0 || y >= gridSizeY) return false;
+	
+	// 물풍선 터질 위치 확인(3초 후 터짐)
+	for (int i = -2; i <= 2; ++i)
+	{
+		if (GameMap[x + i][y] == 10 || GameMap[x][y + i] == 10) return false;
+	}
+	return true;
+}
+
+ATile* AMapGen::GetTileFromLocation(FVector2D Location)
+{
+	int x = static_cast<int>(Location.X);
+	int y = static_cast<int>(Location.Y);
+
+	if ( x >= 0 && x < gridSizeX && y >= 0 && y < gridSizeY) return Cast<ATile>(baseWalls[x][y]);
+
+	return nullptr;
+}
+
+void AMapGen::EscapeFromBomb(FArrLocation Loc)
+{
+	FVector2D safestLoc = FVector2D(-1, -1);
+
+	for ( int i = 0; i < 4; ++i)
+	{
+		int newX = Loc.X + mDirInfo[i].X;
+		int newY = Loc.Y + mDirInfo[i].Y;
+
+		if (IsSafePosition(newX, newY))
+		{
+			safestLoc = FVector2D(newX, newY);
+			break;
+		}
+	}
+
+	if ( safestLoc != FVector2D(-1, -1))
+	{
+		ATile* Start = GetTileFromLocation(FVector2D(Loc.X, Loc.Y));
+		ATile* Target = GetTileFromLocation(safestLoc);
+		if (Start && Target) PathFinding(Start, Target);
+		else UE_LOG(LogTemp, Warning, TEXT("No path found"));
+	}
+}
+
+
+
 
 //보류
 /*void AMapGen::UpdateMapPushed(struct FArrLocation Loc, struct FArrLocation PlayerLoc)
