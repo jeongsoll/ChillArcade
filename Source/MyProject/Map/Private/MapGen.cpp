@@ -14,6 +14,7 @@
 #include "StrongWall.h"
 #include "Tile.h"
 #include "WeakWall.h"
+#include "Kismet/GameplayStatics.h"
 
 class ABaseWaterBalloon;
 // Sets default values
@@ -30,7 +31,14 @@ void AMapGen::BeginPlay()
 
 	SpawnItem = GetWorld()->SpawnActor<ASpawnItem>(ASpawnItem::StaticClass());
 
-	Player = Cast<ABaseCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	UGameplayStatics::GetAllActorsOfClass(
+		GetWorld() ,
+		ABaseCharacter::StaticClass() ,
+		BaseCharacters
+	);
+
+
+	//Player = Cast<ABaseCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
 
 	//맵 초기화;
 	InitializeMap();
@@ -140,7 +148,7 @@ void AMapGen::UpdateMapBalloon(struct FArrLocation Loc)
 		GameMap[Loc.X][Loc.Y] = 0;
 		ItemMap[Loc.X][Loc.Y]->Destroy();
 	}
-	
+
 	//플레이어가 설치한 위치에 물풍선(10)으로 변경
 	//그 위치 위에 물풍선 스폰
 	GameMap[Loc.X][Loc.Y] += 10;
@@ -149,12 +157,17 @@ void AMapGen::UpdateMapBalloon(struct FArrLocation Loc)
 	FActorSpawnParameters SpawnParams;
 	SpawnParams.SpawnCollisionHandlingOverride =
 		ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	if (Player) {
+	if (BaseCharacters.Num() != 0) {
 		ABaseWaterBalloon* NewBalloon = GetWorld()->SpawnActor<ABaseWaterBalloon>(
 			BalloonFactory , ArrayToWorldLocation(Loc) , FRotator::ZeroRotator);
 		returnWaterBalloonLoc(NewBalloon , Loc);
 		if (NewBalloon) {
-			NewBalloon->Initialize(Loc);
+			for (auto* Actor : BaseCharacters) {
+				ABaseCharacter* Character = Cast<ABaseCharacter>(Actor);
+				if (Loc == Character->CheckLocation()) {
+					NewBalloon->Initialize(Loc , Character);
+				}
+			}
 		}
 	}
 	else {
@@ -224,11 +237,14 @@ void AMapGen::UpdateMapBalloonStream(TArray<struct FArrLocation> Loc)
 		FActorSpawnParameters SpawnParams;
 		SpawnParams.SpawnCollisionHandlingOverride =
 			ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-		if (Player) {
+		if (BaseCharacters.Num() != 0) {
 			ABaseBalloonRange* NewBalloonRange{
 				GetWorld()->SpawnActor<ABaseBalloonRange>(
 					BalloonStreamFactory ,
-					ArrayToWorldLocation(Location) , FRotator::ZeroRotator
+					FVector(ArrayToWorldLocation(Location).X ,
+					        ArrayToWorldLocation(Location).Y ,
+					        ArrayToWorldLocation(Location).Z - 30.f) ,
+					FRotator::ZeroRotator
 				)
 			};
 			if (NewBalloonRange) {
@@ -270,7 +286,7 @@ void AMapGen::TaggingWall(int32 X , int32 Y)
 				baseWalls[X][Y]->Tags.Add(FName("Can"));
 				break;
 			}
-			
+
 			ItemValid[ChooseTag] = true;
 		}
 		else if (ChooseTag + ITEM_COUNT == EMapType::DevilItem) {
@@ -279,7 +295,7 @@ void AMapGen::TaggingWall(int32 X , int32 Y)
 				baseWalls[X][Y]->Tags.Add(FName("Devil"));
 				break;
 			}
-			
+
 			ItemValid[ChooseTag] = true;
 		}
 		else if (ChooseTag + ITEM_COUNT == EMapType::FluidItem) {
@@ -288,7 +304,7 @@ void AMapGen::TaggingWall(int32 X , int32 Y)
 				baseWalls[X][Y]->Tags.Add(FName("Fluid"));
 				break;
 			}
-			
+
 			ItemValid[ChooseTag] = true;
 		}
 		else if (ChooseTag + ITEM_COUNT == EMapType::NeedleItem) {
@@ -297,7 +313,7 @@ void AMapGen::TaggingWall(int32 X , int32 Y)
 				baseWalls[X][Y]->Tags.Add(FName("Needle"));
 				break;
 			}
-			
+
 			ItemValid[ChooseTag] = true;
 		}
 		else if (ChooseTag + ITEM_COUNT == EMapType::RangeItem) {
@@ -306,7 +322,7 @@ void AMapGen::TaggingWall(int32 X , int32 Y)
 				baseWalls[X][Y]->Tags.Add(FName("Range"));
 				break;
 			}
-			
+
 			ItemValid[ChooseTag] = true;
 		}
 		else if (ChooseTag + ITEM_COUNT == EMapType::RollerItem) {
@@ -315,7 +331,7 @@ void AMapGen::TaggingWall(int32 X , int32 Y)
 				baseWalls[X][Y]->Tags.Add(FName("Roller"));
 				break;
 			}
-			
+
 			ItemValid[ChooseTag] = true;
 		}
 		else if (ChooseTag + ITEM_COUNT == EMapType::ShieldItem) {
@@ -324,7 +340,7 @@ void AMapGen::TaggingWall(int32 X , int32 Y)
 				baseWalls[X][Y]->Tags.Add(FName("Shield"));
 				break;
 			}
-			
+
 			ItemValid[ChooseTag] = true;
 		}
 		else if (ChooseTag + ITEM_COUNT == EMapType::SpaceShipItem) {
@@ -333,7 +349,7 @@ void AMapGen::TaggingWall(int32 X , int32 Y)
 				baseWalls[X][Y]->Tags.Add(FName("SpaceShip"));
 				break;
 			}
-			
+
 			ItemValid[ChooseTag] = true;
 		}
 		else if (ChooseTag + ITEM_COUNT == EMapType::SpannerItem) {
@@ -342,7 +358,7 @@ void AMapGen::TaggingWall(int32 X , int32 Y)
 				baseWalls[X][Y]->Tags.Add(FName("Spanner"));
 				break;
 			}
-			
+
 			ItemValid[ChooseTag] = true;
 		}
 		else if (ChooseTag + ITEM_COUNT == EMapType::TurtleItem) {
@@ -351,7 +367,7 @@ void AMapGen::TaggingWall(int32 X , int32 Y)
 				baseWalls[X][Y]->Tags.Add(FName("Turtle"));
 				break;
 			}
-			
+
 			ItemValid[ChooseTag] = true;
 		}
 		else {

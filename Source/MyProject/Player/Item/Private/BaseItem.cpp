@@ -42,7 +42,7 @@ void ABaseItem::BeginPlay()
 {
 	Super::BeginPlay();
 
-	Player = Cast<ABaseCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	//Player = Cast<ABaseCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	
 	ItemLocation = ItemSprite->GetRelativeLocation();
 }
@@ -60,9 +60,10 @@ void ABaseItem::Tick(float DeltaTime)
 	//LogUtils::Log("Scale", );
 }
 
-void ABaseItem::EquipItem()
+void ABaseItem::EquipItem(ABaseCharacter* NewPlayer)
 {
-	Player->GetItem(this);
+	//Player = NewPlayer;
+	NewPlayer->GetItem(this);
 	DestroyItem();
 }
 

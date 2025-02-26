@@ -48,16 +48,17 @@ void ABaseWaterBalloon::BeginPlay()
 	Super::BeginPlay();
 
 	UMyGameInstance* GI{Cast<UMyGameInstance>(GetGameInstance())};
-	if (GI) {
+	if (GI && GI->SelectedBalloon) {
 		Mesh->SetStaticMesh(GI->SelectedBalloon);
 	}
+	
 	Mesh->SetRelativeRotation(FRotator(Mesh->GetRelativeRotation().Pitch, FMath::FRandRange(0.f, 360.f), Mesh->GetRelativeRotation().Roll));
 
 	MapGen = Cast<AMapGen>(UGameplayStatics::GetActorOfClass(GetWorld() , AMapGen::StaticClass()));
 
-	Player = Cast<ABaseCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	//Player = Cast<ABaseCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	
-	ExplodeRange = Player->BalloonRange;
+	//ExplodeRange = Player->BalloonRange;
 	
 	// AI 용 ( 수정 필요 )
 	SendArrComponent->SendBalloonExplodeLocation_AI(CheckExplodeLocations_AI(BalloonLocation));
@@ -73,10 +74,15 @@ void ABaseWaterBalloon::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 }
 
-void ABaseWaterBalloon::Initialize(const struct FArrLocation& NewLocation)
+void ABaseWaterBalloon::Initialize(const struct FArrLocation& NewLocation, class ABaseCharacter* NewPlayer)
 {
 	BalloonLocation = NewLocation;
 
+	FString Message = NewPlayer->GetName();
+	UE_LOG(LogTemp, Display, TEXT("Player Name : %s"), *Message);
+	
+	Player = NewPlayer;
+	ExplodeRange = Player->BalloonRange;
 	//LogUtils::Log("Balloon Location" , BalloonLocation.X , BalloonLocation.Y);
 }
 

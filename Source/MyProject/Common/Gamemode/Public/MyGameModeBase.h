@@ -15,4 +15,11 @@ class MYPROJECT_API AMyGameModeBase : public AGameModeBase {
 
 public:
 	AMyGameModeBase();
+
+	virtual void BeginPlay() override;
+
+	// UPROPERTY(EditAnywhere)
+	// class ABaseCharacter* Player1;
+	// UPROPERTY(EditAnywhere)
+	// class ABaseCharacter* Player2;
 };

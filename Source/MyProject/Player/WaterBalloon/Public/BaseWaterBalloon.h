@@ -23,7 +23,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void Initialize(const struct FArrLocation& NewLocation);
+	void Initialize(const struct FArrLocation& NewLocation, class ABaseCharacter* NewPlayer);
 	
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	class USendArrInfoManagerComponent* SendArrComponent;

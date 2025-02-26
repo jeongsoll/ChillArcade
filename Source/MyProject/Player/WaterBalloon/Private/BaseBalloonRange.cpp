@@ -40,12 +40,18 @@ void ABaseBalloonRange::BeginPlay()
 	Super::BeginPlay();
 
 	UMyGameInstance* GI{Cast<UMyGameInstance>(GetGameInstance())};
-	if (GI) {
+	if (GI && GI->SelectedBalloonRange) {
 		Mesh->SetStaticMesh(GI->SelectedBalloonRange);
 	}
 	
 	MapGen = Cast<AMapGen>(UGameplayStatics::GetActorOfClass(GetWorld() , AMapGen::StaticClass()));
-
+	
+	UGameplayStatics::GetAllActorsOfClass(
+		GetWorld(), 
+		ABaseCharacter::StaticClass(), 
+		BaseCharacters
+	);
+	
 	// 0.5초 후 물줄기 제거
 	GetWorldTimerManager().SetTimer(RangeTimerHandle , this , &ABaseBalloonRange::RangeTime ,
 									0.5f , false);
@@ -68,11 +74,17 @@ void ABaseBalloonRange::Initialize(const struct FArrLocation& NewLocation)
 
 void ABaseBalloonRange::CapturePLayer()
 {
-	// basecharacter 상속 받은 녀석을 전부 검사하는걸로 수정 필요
-	ABaseCharacter* Character = Cast<ABaseCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
-	if (Character->CheckLocation() == RangeLocation) {
-		Character->Trapped();
+	for (auto* Actor : BaseCharacters) {
+		ABaseCharacter* Character = Cast<ABaseCharacter>(Actor);
+		if (Character->CheckLocation() == RangeLocation) {
+			Character->Trapped();
+		}
 	}
+	
+	// ABaseCharacter* Character = Cast<ABaseCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
+	// if (Character->CheckLocation() == RangeLocation) {
+	// 	Character->Trapped();
+	// }
 	
 	if (MapGen->GameMap[RangeLocation.X][RangeLocation.Y] % 100 == 10) {
 		// 이 위치 물풍선 터뜨리기

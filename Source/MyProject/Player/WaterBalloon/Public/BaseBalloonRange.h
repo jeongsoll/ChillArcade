@@ -43,4 +43,7 @@ public:
 	TSubclassOf<class AMapGen> MapGenClass;
 	UPROPERTY(EditAnywhere , BlueprintReadOnly)
 	class AMapGen* MapGen;
+
+	UPROPERTY(EditAnywhere , BlueprintReadOnly)
+	TArray<AActor*> BaseCharacters;
 };

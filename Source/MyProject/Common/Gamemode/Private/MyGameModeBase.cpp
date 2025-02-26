@@ -8,5 +8,12 @@
 AMyGameModeBase::AMyGameModeBase()
 {
 	PlayerControllerClass = AMyController::StaticClass();
-	DefaultPawnClass = AAppleCharacter::StaticClass();
+	//DefaultPawnClass = AAppleCharacter::StaticClass();
+}
+
+void AMyGameModeBase::BeginPlay()
+{
+	Super::BeginPlay();
+
+	//Player1 = GetWorld()->SpawnActor()
 }

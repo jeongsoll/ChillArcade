@@ -78,7 +78,6 @@ ABaseCharacter::ABaseCharacter()
 	GetCharacterMovement()->RotationRate.Yaw = 1440.f;
 
 	GetMesh()->CastShadow = false;
-	
 }
 
 // Called when the game starts or when spawned
@@ -113,7 +112,7 @@ void ABaseCharacter::InitPlayer()
 		GetMesh()->SetSkeletalMesh(GI->SelectedCharacter);
 		GetMesh()->SetAnimInstanceClass(GI->SelectedAnimInstance);
 	}
-	
+
 	Speed = PLAYER_INITIAL_SPEED;
 	CurrentSpeed = Speed;
 }
@@ -153,7 +152,7 @@ struct FArrLocation ABaseCharacter::CheckLocation()
 
 void ABaseCharacter::UseEatItem()
 {
-	LogUtils::Log();
+	//LogUtils::Log();
 
 	if (bHasNeedle && bIsTrapped) {
 		Escaped();
@@ -298,6 +297,7 @@ void ABaseCharacter::Die()
 	TrappedComponent->SetChildActorClass(nullptr);
 	//LogUtils::Log("Die!!!!!");
 	GetWorldTimerManager().ClearTimer(TrappedTimerHandle);
+	// 키 입력 종
 }
 
 void ABaseCharacter::SetShield()
@@ -475,4 +475,12 @@ void ABaseCharacter::Rotating()
 	bRotating = true;
 	GetWorldTimerManager().SetTimer(UpgradeTimerHandle , this , &ABaseCharacter::UpgradeRide ,
 	                                1.f , false);
+}
+
+void ABaseCharacter::WinGame()
+{
+	bWin = true;
+
+	// 키 입력 종료
+	// 종료 애니메이션
 }

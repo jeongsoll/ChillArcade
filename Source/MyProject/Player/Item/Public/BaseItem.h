@@ -22,7 +22,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 	UFUNCTION(BlueprintCallable)
-	void EquipItem();
+	void EquipItem(ABaseCharacter* NewPlayer);
 	void DestroyItem();
 
 	UPROPERTY(EditAnywhere , BlueprintReadWrite)

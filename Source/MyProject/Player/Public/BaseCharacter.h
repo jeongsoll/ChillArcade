@@ -77,6 +77,8 @@ public:
 	bool CheckIfSpaceShip();
 	UFUNCTION(BlueprintCallable)
 	void Rotating();
+	UFUNCTION(BlueprintCallable)
+	void WinGame();
 	
 	UPROPERTY(BlueprintReadWrite)
 	float Speed{3.f};
@@ -101,6 +103,8 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	bool bIsGod{false};
 	UPROPERTY(BlueprintReadWrite)
+	bool bWin{false};
+	UPROPERTY(BlueprintReadWrite)
 	float RotateTime{};
 	UPROPERTY(BlueprintReadWrite)
 	float RotateEndTime{0.5f};
@@ -108,6 +112,8 @@ public:
 	bool bRotating{false};
 	UPROPERTY(BlueprintReadWrite)
 	float RotateYaw{0.f};
+	UPROPERTY(EditAnywhere , BlueprintReadOnly)
+	FVector Direction;
 	
 	UPROPERTY(BlueprintReadWrite)
 	int32 BalloonRange{1};

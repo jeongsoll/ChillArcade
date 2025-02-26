@@ -62,7 +62,9 @@ public:
 	
 	// 캐릭터 변수
 	class ABaseCharacter* Player;
-
+	UPROPERTY(EditAnywhere , BlueprintReadOnly)
+	TArray<AActor*> BaseCharacters;
+	
 	//객체에 대한 맵 위치 정보를 담을 배열 변수
 	FVector TileLocation[15][17];
 	//객체 정보를 담을 배열 변수
