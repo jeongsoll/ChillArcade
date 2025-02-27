@@ -330,22 +330,20 @@ void ABaseCharacter::Escaped()
 
 void ABaseCharacter::Die()
 {
-	auto Anim{Cast<UAppleAnimation>(GetMesh()->GetAnimInstance())};
-	if (Anim) {
-		Anim->OnDie();
-	}
-
-
 	if (ExplodeSoundCue && !bPlayOnce) {
+		auto Anim{Cast<UAppleAnimation>(GetMesh()->GetAnimInstance())};
+		if (Anim) {
+			Anim->OnDie();
+		}
+		
 		UGameplayStatics::PlaySound2D(GetWorld() , ExplodeSoundCue , 1.f);
 		bPlayOnce = true;
+		TrappedComponent->SetChildActorClass(nullptr);
+		GetWorldTimerManager().ClearTimer(TrappedTimerHandle);
 	}
-
-
+	
 	// 죽음
-	TrappedComponent->SetChildActorClass(nullptr);
 	//LogUtils::Log("Die!!!!!");
-	GetWorldTimerManager().ClearTimer(TrappedTimerHandle);
 	// 키 입력 종
 }
 
