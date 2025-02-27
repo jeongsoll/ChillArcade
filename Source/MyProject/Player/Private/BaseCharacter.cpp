@@ -157,6 +157,10 @@ void ABaseCharacter::InitPlayer()
 
 void ABaseCharacter::SetBalloon()
 {
+	if (bIsTrapped) {
+		return;
+	}
+	
 	FArrLocation BalloonLoc;
 	BalloonLoc.X = FMath::FloorToInt(MAP_ROW_MAX - GetActorLocation().X / 100);
 	BalloonLoc.Y = FMath::FloorToInt(GetActorLocation().Y / 100);
