@@ -116,6 +116,8 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	bool bRotating{false};
 	UPROPERTY(BlueprintReadWrite)
+	bool bPlayOnce{false};
+	UPROPERTY(BlueprintReadWrite)
 	float RotateYaw{0.f};
 	UPROPERTY(EditAnywhere , BlueprintReadOnly)
 	FVector Direction;

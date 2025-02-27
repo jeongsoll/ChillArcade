@@ -54,7 +54,7 @@ ABaseCharacter::ABaseCharacter()
 
 	ShieldComponent = CreateDefaultSubobject<UChildActorComponent>(TEXT("ShieldComponent"));
 	ShieldComponent->SetupAttachment(GetMesh());
-	
+
 	ConstructorHelpers::FClassFinder<ATrappedBalloon> TempTrappedBalloon
 		(TEXT("/Game/Player/Balloon/BP_TrappedBalloon.BP_TrappedBalloon_C"));
 	if (TempTrappedBalloon.Succeeded()) {
@@ -89,22 +89,22 @@ ABaseCharacter::ABaseCharacter()
 		EscapeSoundCue = EscapeSoundAsset.Object;
 	}
 	static ConstructorHelpers::FObjectFinder<USoundBase> ExplodeSoundAsset(
-	TEXT("/Game/Sound/explodeCharacter_Cue.explodeCharacter_Cue"));
+		TEXT("/Game/Sound/explodeCharacter_Cue.explodeCharacter_Cue"));
 	if (ExplodeSoundAsset.Succeeded()) {
 		ExplodeSoundCue = ExplodeSoundAsset.Object;
 	}
 
 	static ConstructorHelpers::FObjectFinder<USoundBase> ShieldSoundAsset(
-	TEXT("/Game/Sound/shield_Cue.shield_Cue"));
+		TEXT("/Game/Sound/shield_Cue.shield_Cue"));
 	if (ShieldSoundAsset.Succeeded()) {
 		ShieldSoundCue = ShieldSoundAsset.Object;
 	}
 	static ConstructorHelpers::FObjectFinder<USoundBase> ChangeSoundAsset(
-	TEXT("/Game/Sound/change_Cue.change_Cue"));
+		TEXT("/Game/Sound/change_Cue.change_Cue"));
 	if (ChangeSoundAsset.Succeeded()) {
 		ChangeSoundCue = ChangeSoundAsset.Object;
 	}
-	
+
 
 	SendArrComponent = CreateDefaultSubobject<USendArrInfoManagerComponent>(
 		TEXT("SendArrManager")
@@ -315,9 +315,9 @@ void ABaseCharacter::Trapped()
 void ABaseCharacter::Escaped()
 {
 	if (EscapeSoundCue) {
-		UGameplayStatics::PlaySound2D(GetWorld(), EscapeSoundCue, 1.f);
+		UGameplayStatics::PlaySound2D(GetWorld() , EscapeSoundCue , 1.f);
 	}
-	
+
 	GodMode();
 
 	bIsTrapped = false;
@@ -334,9 +334,14 @@ void ABaseCharacter::Die()
 	if (Anim) {
 		Anim->OnDie();
 	}
-	if (ExplodeSoundCue) {
-		UGameplayStatics::PlaySound2D(GetWorld(), ExplodeSoundCue, 1.f);
+
+
+	if (ExplodeSoundCue && !bPlayOnce) {
+		UGameplayStatics::PlaySound2D(GetWorld() , ExplodeSoundCue , 1.f);
+		bPlayOnce = true;
 	}
+
+
 	// 죽음
 	TrappedComponent->SetChildActorClass(nullptr);
 	//LogUtils::Log("Die!!!!!");
@@ -347,7 +352,7 @@ void ABaseCharacter::Die()
 void ABaseCharacter::SetShield()
 {
 	if (ShieldSoundCue) {
-		UGameplayStatics::PlaySound2D(GetWorld(), ShieldSoundCue, 2.f);
+		UGameplayStatics::PlaySound2D(GetWorld() , ShieldSoundCue , 2.f);
 	}
 	bIsShield = true;
 	ShieldComponent->SetChildActorClass(ShieldClass);
@@ -377,9 +382,9 @@ void ABaseCharacter::GetItem(ABaseItem* BaseItem)
 	}
 
 	if (EatSoundCue) {
-		UGameplayStatics::PlaySound2D(GetWorld(), EatSoundCue, 0.6f);
+		UGameplayStatics::PlaySound2D(GetWorld() , EatSoundCue , 0.6f);
 	}
-	
+
 	if (BaseItem->IsA<ABubbleItem>()) {
 		if (BalloonCount < MAX_BALLOON_COUNT) {
 			++BalloonCount;
@@ -503,7 +508,6 @@ void ABaseCharacter::StartMovement()
 
 void ABaseCharacter::UpgradeRide()
 {
-	
 	CurrentSpeed = FAST_RIDE_SPEED;
 	bRotating = false;
 	GetMesh()->SetRelativeRotation(FRotator(0.f , 90 , 0.f));
@@ -524,9 +528,9 @@ bool ABaseCharacter::CheckIfSpaceShip()
 void ABaseCharacter::Rotating()
 {
 	if (ChangeSoundCue) {
-		UGameplayStatics::PlaySound2D(GetWorld(), ChangeSoundCue, 1.2f, 1.f, 1.f);
+		UGameplayStatics::PlaySound2D(GetWorld() , ChangeSoundCue , 1.2f , 1.f , 1.f);
 	}
-	
+
 	CurrentSpeed = 0.f;
 	bRotating = true;
 	GetWorldTimerManager().SetTimer(UpgradeTimerHandle , this , &ABaseCharacter::UpgradeRide ,
@@ -545,8 +549,7 @@ void ABaseCharacter::WinGame()
 
 void ABaseCharacter::KeyPause()
 {
-	if (APlayerController* pc = GetWorld()->GetFirstPlayerController())
-	{
+	if (APlayerController* pc = GetWorld()->GetFirstPlayerController()) {
 		FInputModeGameOnly input;
 		pc->SetInputMode(input);
 		// Direction = FVector(0, 0, 0);
@@ -555,12 +558,10 @@ void ABaseCharacter::KeyPause()
 
 void ABaseCharacter::PlayWinUI()
 {
-	if (bIsPlayWinUI)
-	{
+	if (bIsPlayWinUI) {
 		bIsPlayWinUI = false;
-		UGameplayStatics::PlaySound2D(GetWorld(), WinSound);
-		if (auto* winUI = CreateWidget<UWinWidget>(GetWorld(), WindUIClass))
-		{
+		UGameplayStatics::PlaySound2D(GetWorld() , WinSound);
+		if (auto* winUI = CreateWidget<UWinWidget>(GetWorld() , WindUIClass)) {
 			winUI->AddToViewport();
 			winUI->PlayWinAnimation();
 		}
