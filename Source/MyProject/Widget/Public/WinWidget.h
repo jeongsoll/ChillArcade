@@ -18,6 +18,11 @@ public:
 	UPROPERTY(Transient, meta = (BindWidgetAnim))
 	class UWidgetAnimation* WinAnimation;
 	
+	FTimerHandle OpenLevelTimer;
+	
 	UFUNCTION(BlueprintCallable)
 	void PlayWinAnimation();
+	UFUNCTION(BlueprintCallable)
+	void OpenWaitRoomLevel();
+	
 };
