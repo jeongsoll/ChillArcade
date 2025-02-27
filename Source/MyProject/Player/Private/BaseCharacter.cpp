@@ -12,6 +12,7 @@
 #include "FluidItem.h"
 #include "LogUtils.h"
 #include "MapGen.h"
+#include "MyController.h"
 #include "MyGameInstance.h"
 #include "Needle.h"
 #include "RangeItem.h"
@@ -26,6 +27,10 @@
 #include "SpawnableShield.h"
 #include "TurtleItem.h"
 #include "TurtleRide.h"
+#include "WinWidget.h"
+#include "Blueprint/UserWidget.h"
+#include "Kismet/GameplayStatics.h"
+#include "Sound/SoundCue.h"
 
 // Sets default values
 ABaseCharacter::ABaseCharacter()
@@ -49,7 +54,7 @@ ABaseCharacter::ABaseCharacter()
 
 	ShieldComponent = CreateDefaultSubobject<UChildActorComponent>(TEXT("ShieldComponent"));
 	ShieldComponent->SetupAttachment(GetMesh());
-
+	
 	ConstructorHelpers::FClassFinder<ATrappedBalloon> TempTrappedBalloon
 		(TEXT("/Game/Player/Balloon/BP_TrappedBalloon.BP_TrappedBalloon_C"));
 	if (TempTrappedBalloon.Succeeded()) {
@@ -62,6 +67,11 @@ ABaseCharacter::ABaseCharacter()
 		ShieldClass = TempShield.Class;
 	}
 
+	ConstructorHelpers::FObjectFinder<USoundCue> TempSound
+		(TEXT("'/Game/Sound/win_Cue.win_Cue'"));
+	if (TempSound.Succeeded()) {
+		WinSound = TempSound.Object;
+	}
 	// static ConstructorHelpers::FClassFinder<UAppleAnimation> AnimBP
 	// 	(TEXT("/Game/Player/Animation/ABP_AppleAnimation.ABP_AppleAnimation_C"));
 	// if (AnimBP.Succeeded()) {
@@ -482,5 +492,31 @@ void ABaseCharacter::WinGame()
 	bWin = true;
 
 	// 키 입력 종료
+	KeyPause();
 	// 종료 애니메이션
+	PlayWinUI();
+}
+
+void ABaseCharacter::KeyPause()
+{
+	if (APlayerController* pc = GetWorld()->GetFirstPlayerController())
+	{
+		FInputModeGameOnly input;
+		pc->SetInputMode(input);
+		// Direction = FVector(0, 0, 0);
+	}
+}
+
+void ABaseCharacter::PlayWinUI()
+{
+	if (bIsPlayWinUI)
+	{
+		bIsPlayWinUI = false;
+		UGameplayStatics::PlaySound2D(GetWorld(), WinSound);
+		if (auto* winUI = CreateWidget<UWinWidget>(GetWorld(), WindUIClass))
+		{
+			winUI->AddToViewport();
+			winUI->PlayWinAnimation();
+		}
+	}
 }
