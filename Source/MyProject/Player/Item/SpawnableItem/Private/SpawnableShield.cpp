@@ -17,7 +17,7 @@ ASpawnableShield::ASpawnableShield()
 	Mesh->SetupAttachment(RootComponent);
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> BaseMeshObject
-		(TEXT("/Game/Player/Item/Model/sm_Shield.sm_Shield"));
+		(TEXT("/Game/Player/Item/Model/shield/aura_bubble.aura_bubble"));
 	if (BaseMeshObject.Succeeded()) {
 		Mesh->SetStaticMesh(BaseMeshObject.Object);
 	}

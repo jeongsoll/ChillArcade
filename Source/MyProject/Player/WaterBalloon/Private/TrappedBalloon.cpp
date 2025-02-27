@@ -17,7 +17,7 @@ ATrappedBalloon::ATrappedBalloon()
 	Mesh->SetupAttachment(RootComponent);
 
 	static ConstructorHelpers::FObjectFinder<UStaticMesh> BaseMeshObject
-		(TEXT("/Game/Player/Balloon/Model/sm_trapBalloon.sm_trapBalloon"));
+		(TEXT("/Game/Player/Item/Model/trapped/bubble.bubble"));
 	if (BaseMeshObject.Succeeded()) {
 		Mesh->SetStaticMesh(BaseMeshObject.Object);
 	}

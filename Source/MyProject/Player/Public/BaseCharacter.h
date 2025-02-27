@@ -143,4 +143,16 @@ public:
 	TSubclassOf<class ATrappedBalloon> TrapBalloonClass;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<class ASpawnableShield> ShieldClass;
+	UPROPERTY(EditDefaultsOnly, Category="Sound")
+	class USoundBase* EatSoundCue;
+	UPROPERTY(EditDefaultsOnly, Category="Sound")
+	class USoundBase* EscapeSoundCue;
+	UPROPERTY(EditDefaultsOnly, Category="Sound")
+	class USoundBase* ExplodeSoundCue;
+
+	UPROPERTY(EditDefaultsOnly, Category="Sound")
+	class USoundBase* ShieldSoundCue;
+	UPROPERTY(EditDefaultsOnly, Category="Sound")
+	class USoundBase* ChangeSoundCue;
+	
 };
