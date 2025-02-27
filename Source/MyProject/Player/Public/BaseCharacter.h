@@ -28,7 +28,9 @@ public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components")
 	class USendArrInfoManagerComponent* SendArrComponent;
-
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Sound")
+	class USoundCue* WinSound;
+	
 	UFUNCTION(BlueprintCallable)
 	void InitPlayer();
 	UFUNCTION(BlueprintCallable)
@@ -79,7 +81,10 @@ public:
 	void Rotating();
 	UFUNCTION(BlueprintCallable)
 	void WinGame();
-	
+	UFUNCTION(BlueprintCallable)
+	void KeyPause();
+	UFUNCTION(BlueprintCallable)
+	void PlayWinUI();
 	UPROPERTY(BlueprintReadWrite)
 	float Speed{3.f};
 	UPROPERTY(BlueprintReadWrite)
@@ -114,7 +119,8 @@ public:
 	float RotateYaw{0.f};
 	UPROPERTY(EditAnywhere , BlueprintReadOnly)
 	FVector Direction;
-	
+	UPROPERTY(BlueprintReadWrite)
+	bool bIsPlayWinUI{true};
 	UPROPERTY(BlueprintReadWrite)
 	int32 BalloonRange{1};
 	UPROPERTY(BlueprintReadWrite)
@@ -143,6 +149,9 @@ public:
 	TSubclassOf<class ATrappedBalloon> TrapBalloonClass;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TSubclassOf<class ASpawnableShield> ShieldClass;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=UI)
+	TSubclassOf<class UWinWidget> WindUIClass;
+	
 	UPROPERTY(EditDefaultsOnly, Category="Sound")
 	class USoundBase* EatSoundCue;
 	UPROPERTY(EditDefaultsOnly, Category="Sound")
