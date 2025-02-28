@@ -46,11 +46,6 @@ ABaseWaterBalloon::ABaseWaterBalloon()
 void ABaseWaterBalloon::BeginPlay()
 {
 	Super::BeginPlay();
-
-	UMyGameInstance* GI{Cast<UMyGameInstance>(GetGameInstance())};
-	if (GI && GI->SelectedBalloon) {
-		Mesh->SetStaticMesh(GI->SelectedBalloon);
-	}
 	
 	Mesh->SetRelativeRotation(FRotator(Mesh->GetRelativeRotation().Pitch, FMath::FRandRange(0.f, 360.f), Mesh->GetRelativeRotation().Roll));
 
@@ -79,10 +74,24 @@ void ABaseWaterBalloon::Initialize(const struct FArrLocation& NewLocation, class
 	BalloonLocation = NewLocation;
 
 	FString Message = NewPlayer->GetName();
-	UE_LOG(LogTemp, Display, TEXT("Player Name : %s"), *Message);
+	//UE_LOG(LogTemp, Display, TEXT("Player Name : %s"), *Message);
 	
 	Player = NewPlayer;
 	ExplodeRange = Player->BalloonRange;
+
+	UMyGameInstance* GI{Cast<UMyGameInstance>(GetGameInstance())};
+	if (GI && GI->SelectedBalloon && Player->Tags.Num() == 0) {
+		Mesh->SetStaticMesh(GI->SelectedBalloon);
+	}
+	if (GI && GI->SelectedBalloon2 && Player->Tags.Num() > 0) {
+		Mesh->SetStaticMesh(GI->SelectedBalloon2);
+	}
+
+	TagName = NewPlayer->GetName();
+	Tags.Add(*TagName);
+
+	//UE_LOG(LogTemp, Warning, TEXT("%s"), *TagName);
+	
 	//LogUtils::Log("Balloon Location" , BalloonLocation.X , BalloonLocation.Y);
 }
 
@@ -174,7 +183,7 @@ void ABaseWaterBalloon::CheckExplodeLocations(FArrLocation Loc)
 		}
 	}
 
-	SendArrComponent->SendBalloonExplodeLocation(Locations);
+	SendArrComponent->SendBalloonExplodeLocation(Locations, TagName);
 }
 
 bool ABaseWaterBalloon::CheckRemoveLocations(FArrLocation Loc)

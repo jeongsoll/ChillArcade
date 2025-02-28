@@ -31,7 +31,7 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SendBalloonLocation(struct FArrLocation Loc);
 	UFUNCTION(BlueprintCallable)
-	void SendBalloonExplodeLocation(TArray<struct FArrLocation> Loc);
+	void SendBalloonExplodeLocation(TArray<struct FArrLocation> Loc,  const FString& TagName);
 	UFUNCTION(BlueprintCallable)
 	void SendRemoveLocation(struct FArrLocation Loc);
 

@@ -240,7 +240,7 @@ FVector AMapGen::ArrayToWorldLocation(struct FArrLocation Loc)
 	return FVector((MAP_ROW_MAX - Loc.X) * 100.f - 50.f , (Loc.Y + 1) * 100.f - 50.f , 50.0f);
 }
 
-void AMapGen::UpdateMapBalloonStream(TArray<struct FArrLocation> Loc)
+void AMapGen::UpdateMapBalloonStream(TArray<struct FArrLocation> Loc, const FString& TagName)
 {
 	for (const auto& Location : Loc) {
 		// 스폰 예시
@@ -258,6 +258,7 @@ void AMapGen::UpdateMapBalloonStream(TArray<struct FArrLocation> Loc)
 				)
 			};
 			if (NewBalloonRange) {
+				NewBalloonRange->Tags.Add(*TagName);
 				NewBalloonRange->Initialize(Location);
 			}
 		}

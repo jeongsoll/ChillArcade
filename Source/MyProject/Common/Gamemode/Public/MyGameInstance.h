@@ -28,6 +28,20 @@ public:
 	class UStaticMesh* SelectedBalloon;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UStaticMesh* SelectedBalloonRange;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class USkeletalMesh* SelectedCharacter2;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UMaterial* SelectedCharacterMaterial2;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UClass* SelectedAnimInstance2;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FLinearColor SelectedColor2;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UStaticMesh* SelectedBalloon2;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UStaticMesh* SelectedBalloonRange2;
+
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	TArray<int32> MadeMap;

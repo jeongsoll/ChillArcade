@@ -101,7 +101,7 @@ public:
 	FVector ArrayToWorldLocation(struct FArrLocation Loc); 
 
 	//8. 물풍선 범위 스폰 함수
-	void UpdateMapBalloonStream(TArray<struct FArrLocation> Loc);
+	void UpdateMapBalloonStream(TArray<struct FArrLocation> Loc, const FString& TagName);
 
 	//9. 물풍선 객체 반환 하는 함수
 	ABaseWaterBalloon* returnWaterBalloonLoc(ABaseWaterBalloon* balloon, struct FArrLocation Loc);
