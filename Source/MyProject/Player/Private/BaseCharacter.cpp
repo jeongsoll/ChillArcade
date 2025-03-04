@@ -336,6 +336,12 @@ void ABaseCharacter::RemoveRide()
 	// 내리기
 	GetMesh()->AddLocalOffset(FVector(0 , 0 , -90.f));
 	RidingComponent->SetChildActorClass(nullptr);
+
+	// 먹는 애니메이션으로 내리는 애니메이션 대체
+	auto Anim{Cast<UAppleAnimation>(GetMesh()->GetAnimInstance())};
+	if (Anim) {
+		Anim->OnEatItem();
+	}
 }
 
 void ABaseCharacter::Trapped()

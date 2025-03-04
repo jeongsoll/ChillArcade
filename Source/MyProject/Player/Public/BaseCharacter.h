@@ -125,7 +125,7 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	bool bIsPlayWinUI{true};
 	UPROPERTY(BlueprintReadWrite)
-	int32 BalloonRange{1};
+	int32 BalloonRange{2};
 	UPROPERTY(BlueprintReadWrite)
 	int32 BalloonCount{1};
 	
