@@ -18,7 +18,6 @@
 
 #define ITEM_COUNT 20
 
-
 USTRUCT(BlueprintType)
 struct FArrLocation {
 	GENERATED_BODY()
@@ -33,6 +32,10 @@ struct FArrLocation {
 		return X == Other.X && Y == Other.Y;
 	}
 };
+FORCEINLINE uint32 GetTypeHash(const FArrLocation& Location)
+{
+	return HashCombine(GetTypeHash(Location.X), GetTypeHash(Location.Y));
+}
 
 UENUM(BlueprintType)
 enum EMapType : uint8 {
@@ -56,7 +59,8 @@ enum EMapType : uint8 {
 	TurtleItem = 30,
 	// ~ 40 까지 사용 금지
 	PlayerLoc = 100,
-	PlayerBalloonLoc = 110
+	PlayerBalloonLoc = 110,
+	AILoc = 101
 };
 
 UENUM(BlueprintType)
@@ -112,7 +116,7 @@ struct FNode_Info
 inline int8 map[15][17] = {
 	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
 	1, 0, 2, 2, 2, 2, 0, 0, 0, 0, 0, 1, 2, 1, 0, 1, 1,	// 5
-	1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 2, 2, 0, 0, 0, 1,	// 2
+	1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 2, 2, 0, 101, 0, 1,	// 2
 	1, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1,	// 3
 	1, 0, 1, 0, 1, 0, 1, 0, 0, 0, 1, 2, 2, 2, 2, 2, 1,	// 5
 	1, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 1,	// 5
