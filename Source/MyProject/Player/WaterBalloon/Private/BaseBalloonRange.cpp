@@ -17,7 +17,7 @@ ABaseBalloonRange::ABaseBalloonRange()
 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-	
+
 	Root = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
 	RootComponent = Root;
 
@@ -39,29 +39,24 @@ void ABaseBalloonRange::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UMyGameInstance* GI{Cast<UMyGameInstance>(GetGameInstance())};
-	if (GI && GI->SelectedBalloonRange) {
-		Mesh->SetStaticMesh(GI->SelectedBalloonRange);
-	}
-	
 	MapGen = Cast<AMapGen>(UGameplayStatics::GetActorOfClass(GetWorld() , AMapGen::StaticClass()));
-	
+
 	UGameplayStatics::GetAllActorsOfClass(
-		GetWorld(), 
-		ABaseCharacter::StaticClass(), 
+		GetWorld() ,
+		ABaseCharacter::StaticClass() ,
 		BaseCharacters
 	);
-	
+
 	// 0.5초 후 물줄기 제거
 	GetWorldTimerManager().SetTimer(RangeTimerHandle , this , &ABaseBalloonRange::RangeTime ,
-									0.5f , false);
+	                                0.5f , false);
 }
 
 // Called every frame
 void ABaseBalloonRange::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
+
 	CapturePLayer();
 }
 
@@ -70,6 +65,13 @@ void ABaseBalloonRange::Initialize(const struct FArrLocation& NewLocation)
 	RangeLocation = NewLocation;
 	//LogUtils::Log("RangeLocation" , RangeLocation.X , RangeLocation.Y);
 
+	UMyGameInstance* GI{Cast<UMyGameInstance>(GetGameInstance())};
+	if (GI && GI->SelectedBalloonRange && ActorHasTag("BP_BaseCharacter_C_0")) {
+		Mesh->SetStaticMesh(GI->SelectedBalloonRange);
+	}
+	if (GI && GI->SelectedBalloonRange2 && ActorHasTag("BP_BaseCharacter_C_1")) {
+		Mesh->SetStaticMesh(GI->SelectedBalloonRange2);
+	}
 }
 
 void ABaseBalloonRange::CapturePLayer()
@@ -80,23 +82,22 @@ void ABaseBalloonRange::CapturePLayer()
 			Character->Trapped();
 		}
 	}
-	
+
 	// ABaseCharacter* Character = Cast<ABaseCharacter>(GetWorld()->GetFirstPlayerController()->GetPawn());
 	// if (Character->CheckLocation() == RangeLocation) {
 	// 	Character->Trapped();
 	// }
-	
+
 	if (MapGen->GameMap[RangeLocation.X][RangeLocation.Y] % 100 == 10) {
 		// 이 위치 물풍선 터뜨리기
 		ABaseWaterBalloon* ExtraBalloon{MapGen->waterBalloonMap[RangeLocation.X][RangeLocation.Y]};
 		ExtraBalloon->ExplodeTime();
-		
+
 		//LogUtils::Log("Has Balloon" , RangeLocation.X , RangeLocation.Y);
 	}
 }
 
 void ABaseBalloonRange::RangeTime()
 {
-	
 	Destroy();
 }

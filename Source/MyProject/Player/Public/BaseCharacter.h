@@ -85,6 +85,7 @@ public:
 	void KeyPause();
 	UFUNCTION(BlueprintCallable)
 	void PlayWinUI();
+	
 	UPROPERTY(BlueprintReadWrite)
 	float Speed{3.f};
 	UPROPERTY(BlueprintReadWrite)
@@ -124,7 +125,7 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	bool bIsPlayWinUI{true};
 	UPROPERTY(BlueprintReadWrite)
-	int32 BalloonRange{1};
+	int32 BalloonRange{2};
 	UPROPERTY(BlueprintReadWrite)
 	int32 BalloonCount{1};
 	
@@ -165,5 +166,13 @@ public:
 	class USoundBase* ShieldSoundCue;
 	UPROPERTY(EditDefaultsOnly, Category="Sound")
 	class USoundBase* ChangeSoundCue;
-	
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BillBoard")
+	class UTexture2D* ArrowTexture;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BillBoard")
+	class UTexture2D* WhoTexture;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BillBoard")
+	class UBillboardComponent* ArrowBillboard;
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="BillBoard")
+	class UBillboardComponent* WhoBillboard;
 };

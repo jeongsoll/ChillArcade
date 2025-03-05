@@ -29,6 +29,7 @@
 #include "TurtleRide.h"
 #include "WinWidget.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/BillboardComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "Sound/SoundCue.h"
 
@@ -105,6 +106,38 @@ ABaseCharacter::ABaseCharacter()
 		ChangeSoundCue = ChangeSoundAsset.Object;
 	}
 
+	WhoBillboard =CreateDefaultSubobject<UBillboardComponent>(TEXT("WhoBillboard"));
+	WhoBillboard->SetupAttachment(RootComponent);
+	WhoBillboard->bHiddenInGame = false;
+	ArrowBillboard =CreateDefaultSubobject<UBillboardComponent>(TEXT("ArrowBillboard"));
+	ArrowBillboard->SetupAttachment(RootComponent);
+	ArrowBillboard->bHiddenInGame = false;
+	
+	static ConstructorHelpers::FObjectFinder<UTexture2D> WhoBillBoardAsset
+		(TEXT("/Game/Player/billboard/1p.1p"));
+	if (WhoBillBoardAsset.Succeeded()) {
+		WhoBillboard->SetRelativeLocation(FVector(118, 1.8, 154));
+		WhoBillboard->SetRelativeScale3D(FVector(0.97));
+		WhoBillboard->SetSprite(WhoBillBoardAsset.Object);
+	}
+	static ConstructorHelpers::FObjectFinder<UTexture2D> ArrowBillBoardAsset
+		(TEXT("/Game/Player/billboard/1pArrow.1pArrow"));
+	if (ArrowBillBoardAsset.Succeeded()) {
+		ArrowBillboard->SetRelativeLocation(FVector(73, 0, 111));
+		ArrowBillboard->SetRelativeScale3D(FVector(0.2175));
+		ArrowBillboard->SetSprite(ArrowBillBoardAsset.Object);
+	}
+	static ConstructorHelpers::FObjectFinder<UTexture2D> Who2BillBoardAsset
+		(TEXT("/Game/Player/billboard/2p.2p"));
+	if (Who2BillBoardAsset.Succeeded()) {
+		WhoTexture = Who2BillBoardAsset.Object;
+	}
+	static ConstructorHelpers::FObjectFinder<UTexture2D> Arrow2BillBoardAsset
+		(TEXT("/Game/Player/billboard/2pArrow.2pArrow"));
+	if (Arrow2BillBoardAsset.Succeeded()) {
+		ArrowTexture = Arrow2BillBoardAsset.Object;
+	}
+	
 
 	SendArrComponent = CreateDefaultSubobject<USendArrInfoManagerComponent>(
 		TEXT("SendArrManager")
@@ -124,6 +157,7 @@ void ABaseCharacter::BeginPlay()
 	Super::BeginPlay();
 
 	InitPlayer();
+
 }
 
 // Called every frame
@@ -146,17 +180,30 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 void ABaseCharacter::InitPlayer()
 {
 	UMyGameInstance* GI{Cast<UMyGameInstance>(GetGameInstance())};
-	if (GI && GI->SelectedCharacter && GI->SelectedAnimInstance) {
+	// 1p
+	if (GI && GI->SelectedCharacter && GI->SelectedAnimInstance && Tags.Num() == 0) {
 		GetMesh()->SetSkeletalMesh(GI->SelectedCharacter);
 		GetMesh()->SetAnimInstanceClass(GI->SelectedAnimInstance);
 	}
+	// 2p
+	if (GI && GI->SelectedCharacter2 && GI->SelectedAnimInstance2 && Tags.Num() > 0) {
+		WhoBillboard->SetSprite(WhoTexture);
+		ArrowBillboard->SetSprite(ArrowTexture);
 
+		GetMesh()->SetSkeletalMesh(GI->SelectedCharacter2);
+		GetMesh()->SetAnimInstanceClass(GI->SelectedAnimInstance2);
+	}
+	
 	Speed = PLAYER_INITIAL_SPEED;
 	CurrentSpeed = Speed;
 }
 
 void ABaseCharacter::SetBalloon()
 {
+	if (bIsTrapped) {
+		return;
+	}
+
 	FArrLocation BalloonLoc;
 	BalloonLoc.X = FMath::FloorToInt(MAP_ROW_MAX - GetActorLocation().X / 100);
 	BalloonLoc.Y = FMath::FloorToInt(GetActorLocation().Y / 100);
@@ -289,6 +336,12 @@ void ABaseCharacter::RemoveRide()
 	// 내리기
 	GetMesh()->AddLocalOffset(FVector(0 , 0 , -90.f));
 	RidingComponent->SetChildActorClass(nullptr);
+
+	// 먹는 애니메이션으로 내리는 애니메이션 대체
+	auto Anim{Cast<UAppleAnimation>(GetMesh()->GetAnimInstance())};
+	if (Anim) {
+		Anim->OnEatItem();
+	}
 }
 
 void ABaseCharacter::Trapped()
@@ -335,13 +388,13 @@ void ABaseCharacter::Die()
 		if (Anim) {
 			Anim->OnDie();
 		}
-		
+
 		UGameplayStatics::PlaySound2D(GetWorld() , ExplodeSoundCue , 1.f);
 		bPlayOnce = true;
 		TrappedComponent->SetChildActorClass(nullptr);
 		GetWorldTimerManager().ClearTimer(TrappedTimerHandle);
 	}
-	
+
 	// 죽음
 	//LogUtils::Log("Die!!!!!");
 	// 키 입력 종

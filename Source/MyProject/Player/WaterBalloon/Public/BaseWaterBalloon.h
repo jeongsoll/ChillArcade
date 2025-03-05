@@ -61,4 +61,7 @@ public:
 	TArray<struct FArrLocation> CheckExplodeLocations_AI(struct FArrLocation Loc);
 	UFUNCTION(BlueprintCallable)
 	bool CheckRemoveLocations_AI(struct FArrLocation Loc);
+	
+	UPROPERTY(EditAnywhere , BlueprintReadOnly)
+	FString TagName;
 };
