@@ -28,6 +28,9 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	void MoveToLocation(FArrLocation NewLocation);
 
+	float MoveSpeed = 0.0f;
+	FVector NextLocation;
+	bool bIsUpdating = false;
 	// 현재 AI 위치
 	FArrLocation CurrentLocation;
 
